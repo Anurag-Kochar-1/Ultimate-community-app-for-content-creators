@@ -6,6 +6,7 @@ import AccountDropdown from './AccountDropdown/AccountDropdown'
 import LogIn from './Buttons/LogIn'
 import SignUp from './Buttons/SignUp'
 import ChoosePageDropdown from './ChoosePageDropdown/ChoosePageDropdown'
+import HeaderButtonOptions from './HeaderButtonOptions/HeaderButtonOptions'
 
 
 
@@ -16,6 +17,7 @@ const Header = () => {
       <LogoWname />
       <ChoosePageDropdown />
       <SearchBar />
+      <HeaderButtonOptions />
       <SignUp />
       <LogIn />
       <AccountDropdown />

@@ -6,16 +6,27 @@ import { Menu, Transition } from '@headlessui/react'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import DarkModeToggle from './DarkModeToggle'
+import { auth } from '../../../firebaseConfig'
+import { useAuthState } from 'react-firebase-hooks/auth'
 
 export default function AccountDropdown() {
+  const [user, loading, error] = useAuthState(auth);
   return (
     <div className="px-2 text-right">
       <Menu as="div" className="relative inline-block text-left">
         <div>
-          <Menu.Button className="inline-flex w-full justify-center rounded-md border  border-gray-300 px-3 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
-            <AiOutlineUser className='w-5 h-5 text-gray-300'/>
+          <Menu.Button className="inline-flex w-full justify-center items-center rounded-md border  border-gray-200 px-3 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+            {!user && <AiOutlineUser className='w-5 h-5 text-gray-200'/>}
+
+            {user && (
+              <div className='flex items-center justify-between space-x-2'>
+                <img src={user?.photoURL as string} alt="dp" className='w-7 h-7 rounded-full'/>
+                <p className='hidden md:inline-block text-black font-normal text-sm'> {user.displayName} </p>
+              </div>
+            )}
+
             <ChevronDownIcon
-              className="ml-2 -mr-1 h-5 w-5 text-gray-400"
+              className="ml-2 -mr-1 h-5 w-5 text-gray-400 hidden md:inline-block"
               aria-hidden="true"
             />
           </Menu.Button>
