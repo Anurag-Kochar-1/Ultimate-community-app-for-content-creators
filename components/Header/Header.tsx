@@ -15,6 +15,8 @@ import { auth } from '../../firebaseConfig'
 
 const Header = () => {
   const [user] = useAuthState(auth)
+  console.log(user);
+  
 
   return (
     <div className='w-full h-[6vh] bg-white py-4 px-3 flex justify-between items-center'>

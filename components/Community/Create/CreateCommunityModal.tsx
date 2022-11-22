@@ -1,6 +1,8 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment, useState, useRef } from 'react'
+import { Fragment, useState } from 'react'
 import { FaUserAlt , FaEye , FaLock } from 'react-icons/fa'
+import { addDoc, collection, doc, setDoc , updateDoc , arrayUnion, arrayRemove } from "firebase/firestore"
+import { auth, db } from '../../../firebaseConfig'
 
 interface Props {
     openModal: () => void
@@ -8,10 +10,71 @@ interface Props {
     isCreateCommunityModalOpen: boolean
 }
 
-export default function CreateCommunityModal ({isCreateCommunityModalOpen , openModal , closeModal}:Props) {
+const types = [
+  {
+    name: 'Public',
+    description: 'Anyone can view, post, and comment to this community',
+    icon: <FaUserAlt />
+  },
+  {
+    name: 'Restricted',
+    description: 'Anyone can view this community, but only approved users can post',
+    icon: <FaEye />
+  },
+  {
+    name: 'Private',
+    description: 'Only approved users can view and submit to this community',
+    icon: <FaLock />
+  },
+]
 
+
+
+export default function CreateCommunityModal ({isCreateCommunityModalOpen , openModal , closeModal}:Props) {
+  const [user] = useAuthState(auth)
   const [communityNameInput, setCommunityNameInput  ] = useState<string>('')
+  const [communityType, setCommunityType] = useState(types[0])
   const [isAdultCommunityCheckboxChecked, setIsAdultCommunityCheckboxChecked] = useState<boolean>(false)
+  
+  const subredditsCollectionRef = collection(db, "subreddits")
+  const usersCollectionRef = collection(db, "users")
+ 
+  const specificUsersCollectionRef = doc(db, "users" , user?.uid as string)
+
+  const createSubreddit = async () => {
+    await addDoc(subredditsCollectionRef, {
+      subredditName : communityNameInput,
+      communityType : communityType.name,
+      isSubbreditNSFW : isAdultCommunityCheckboxChecked,
+      creatorName : user?.displayName,
+      creatorEmail : user?.email,
+      creatorPhotoURL : user?.photoURL,
+    })
+
+    // updateUser()
+
+    setCommunityNameInput("")
+    setCommunityType(types[0])
+    setIsAdultCommunityCheckboxChecked(false)
+    closeModal()
+  }
+
+  const updateUser = async () => {
+    await updateDoc(specificUsersCollectionRef, {
+      subredditsOwned: arrayUnion({
+        subredditName : communityNameInput,
+        communityType : communityType.name,
+        isSubbreditNSFW : isAdultCommunityCheckboxChecked,
+      }),
+      subredditsJoined: arrayUnion({
+        subredditName : communityNameInput,
+        communityType : communityType.name,
+        isSubbreditNSFW : isAdultCommunityCheckboxChecked,
+      })
+    })
+  }
+
+
 
   return (
     <>
@@ -45,7 +108,7 @@ export default function CreateCommunityModal ({isCreateCommunityModalOpen , open
                     as="h3"
                     className="text-lg pb-2 font-medium leading-6 text-gray-900"
                   >
-                    Create a community
+                    Create a community 
                   </Dialog.Title>
 
                   <hr />
@@ -72,7 +135,62 @@ export default function CreateCommunityModal ({isCreateCommunityModalOpen , open
 
                   <span className={communityNameInput.length >= 21 ? "text-red-700 text-xs" : "text-gray-500 text-xs"}> {21 - communityNameInput.length} Characters remaining </span>
 
-                  <CommunityTypeRadio />
+                  {/* ---------------------------------- COMMUNITY TYPE ---------------------------------- */}
+                  <div className="w-full px-1 py-4 pb-5">
+                    <div className="w-full ">
+                      <RadioGroup value={communityType} onChange={setCommunityType}> 
+                        <RadioGroup.Label className="text-normal font-normal text-black"> Community Type</RadioGroup.Label>
+                        <div className="space-y-2 pt-2 ">
+                          {types.map((type) => (
+                            <RadioGroup.Option
+                              key={type.name}
+                              value={type}
+                              className={({ active, checked }) =>
+                                `${
+                                  active
+                                    ? 'ring-2 ring-white ring-opacity-60 ring-offset-2 ring-offset-sky-300'
+                                    : ''
+                                }
+                                ${
+                                  checked ? 'bg-[#0079D3] bg-opacity-75 text-white' : 'bg-white'
+                                }
+                                w-full  relative flex cursor-pointer rounded-lg px-5 py-4 shadow-md focus:outline-none`
+                              }
+                            >
+                              {({ active, checked }) => (
+                                <>
+                                  <div className="flex w-full items-center justify-between">
+                                    <div className="flex  items-center ">
+                                      <div className="text-sm space-y-2 ">
+                                        <RadioGroup.Label
+                                          as="div"
+                                          className={`w-[100%] font-medium flex justify-between items-center space-x-3 ${
+                                            checked ? 'text-white' : 'text-gray-900'
+                                          }`}
+                                        >
+                                          {type.icon}
+                                          <p className='text-normal font-medium'> {type.name} </p>
+                                          <p className={checked ? 'flex-1 text-xs text-white' : 'flex-1 text-xs text-gray-500'} > {type.description} </p>
+                                          
+                                        </RadioGroup.Label>
+                                      </div>
+
+                                    </div>
+                                    {checked && (
+                                      <div className="shrink-0 z-20 text-white">
+                                        <CheckIcon className="h-5 w-5" />
+                                      </div>
+                                    )}
+                                  </div>
+                                </>
+                              )}
+                            </RadioGroup.Option>
+                          ))}
+                        </div>
+                      </RadioGroup>
+                    </div>
+                  </div>
+                  {/* ---------------------------------- COMMUNITY TYPE ---------------------------------- */}
 
 
                   <div className='flex flex-col mb-7'>
@@ -108,6 +226,10 @@ export default function CreateCommunityModal ({isCreateCommunityModalOpen , open
                     <button
                       type="button"
                       className="inline-flex justify-center rounded-full bg-[#0079D3] px-4 py-2 text-sm font-medium text-white outline-none"
+                      onClick={() => {
+                        createSubreddit()
+                        updateUser()
+                      }}
                     >
                       Create Community
                     </button>
@@ -125,85 +247,10 @@ export default function CreateCommunityModal ({isCreateCommunityModalOpen , open
 
 
 import { RadioGroup } from '@headlessui/react'
+import { useAuthState } from 'react-firebase-hooks/auth'
 
-const types = [
-  {
-    name: 'Public',
-    description: 'Anyone can view, post, and comment to this community',
-    icon: <FaUserAlt />
-  },
-  {
-    name: 'Restricted',
-    description: 'Anyone can view this community, but only approved users can post',
-    icon: <FaEye />
-  },
-  {
-    name: 'Private',
-    description: 'Only approved users can view and submit to this community',
-    icon: <FaLock />
-  },
-]
 
-export function CommunityTypeRadio() {
-  const [selected, setSelected] = useState(types[0])
 
-  return (
-    <div className="w-full px-1 py-4 pb-5">
-      <div className="w-full ">
-        <RadioGroup value={selected} onChange={setSelected}> 
-          <RadioGroup.Label className="text-normal font-normal text-black"> Community Type</RadioGroup.Label>
-          <div className="space-y-2 pt-2 ">
-            {types.map((type) => (
-              <RadioGroup.Option
-                key={type.name}
-                value={type}
-                className={({ active, checked }) =>
-                  `${
-                    active
-                      ? 'ring-2 ring-white ring-opacity-60 ring-offset-2 ring-offset-sky-300'
-                      : ''
-                  }
-                  ${
-                    checked ? 'bg-[#0079D3] bg-opacity-75 text-white' : 'bg-white'
-                  }
-                   w-full  relative flex cursor-pointer rounded-lg px-5 py-4 shadow-md focus:outline-none`
-                }
-              >
-                {({ active, checked }) => (
-                  <>
-                    <div className="flex w-full items-center justify-between">
-                      <div className="flex  items-center ">
-                        <div className="text-sm space-y-2 ">
-                          <RadioGroup.Label
-                            as="div"
-                            className={`w-[100%] font-medium flex justify-between items-center space-x-3 ${
-                              checked ? 'text-white' : 'text-gray-900'
-                            }`}
-                          >
-                            {type.icon}
-                            <p className='text-normal font-medium'> {type.name} </p>
-                            <p className={checked ? 'flex-1 text-xs text-white' : 'flex-1 text-xs text-gray-500'} > {type.description} </p>
-                            
-                          </RadioGroup.Label>
-                        </div>
-
-                      </div>
-                      {checked && (
-                        <div className="shrink-0 z-20 text-white">
-                          <CheckIcon className="h-5 w-5" />
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
-              </RadioGroup.Option>
-            ))}
-          </div>
-        </RadioGroup>
-      </div>
-    </div>
-  )
-}
 
 function CheckIcon(props:any) {
   return (

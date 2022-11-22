@@ -8,6 +8,7 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import DarkModeToggle from './DarkModeToggle'
 import { auth } from '../../../firebaseConfig'
 import { useAuthState } from 'react-firebase-hooks/auth'
+import { signOut } from "firebase/auth"
 
 export default function AccountDropdown() {
   const [user] = useAuthState(auth);
@@ -20,7 +21,7 @@ export default function AccountDropdown() {
 
             {user && (
               <div className='flex items-center justify-between space-x-2'>
-                <img src={user?.photoURL as string} alt="dp" className='w-7 h-7 rounded-full aspect-auto'/>
+                <img  src={user?.photoURL as string} alt="dp" className='w-7 h-7 rounded-full aspect-auto'/>
                 <p className='hidden lg:inline-block text-black font-normal text-sm'> {user.displayName} </p>
               </div>
             )}
@@ -140,6 +141,7 @@ export default function AccountDropdown() {
               <Menu.Item>
                 {({ active }) => (
                   <button
+                    onClick={() => signOut(auth)}
                     className={`${
                       active ? 'bg-[#FF4500] text-white' : 'text-gray-900'
                     } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
