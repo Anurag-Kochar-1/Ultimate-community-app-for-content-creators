@@ -1,5 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useRef } from 'react'
 import { FaUserAlt , FaEye , FaLock } from 'react-icons/fa'
 
 interface Props {
@@ -11,7 +11,8 @@ interface Props {
 export default function CreateCommunityModal ({isCreateCommunityModalOpen , openModal , closeModal}:Props) {
 
   const [communityNameInput, setCommunityNameInput  ] = useState<string>('')
-  
+  const [isAdultCommunityCheckboxChecked, setIsAdultCommunityCheckboxChecked] = useState<boolean>(false)
+
   return (
     <>
       <Transition appear show={isCreateCommunityModalOpen} as={Fragment}>
@@ -28,8 +29,8 @@ export default function CreateCommunityModal ({isCreateCommunityModalOpen , open
             <div className="fixed inset-0 bg-black bg-opacity-25" />
           </Transition.Child>
 
-          <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4 text-center">
+          <div className="fixed inset-0 overflow-y-auto ">
+            <div className="flex min-h-full items-center justify-center p-4 text-center ">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -39,43 +40,79 @@ export default function CreateCommunityModal ({isCreateCommunityModalOpen , open
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-xl h-[60vh] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-full max-w-xl h-[100vh] md:h-[70vh] lg:h-[70vh] xl:h-[65vh] transform overflow-y-scoll overflow-x-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
                     as="h3"
-                    className="text-lg font-medium leading-6 text-gray-900"
+                    className="text-lg pb-2 font-medium leading-6 text-gray-900"
                   >
                     Create a community
                   </Dialog.Title>
+
+                  <hr />
                   
-                  <div className="mt-2">
-                    <p className="text-base text-gray-500">
+                  <div className="my-2">
+                    <p className="text-normal font-normal text-black">
                       Name
                     </p>
-                    <p>Community names including capitalization cannot be changed.</p>
+                    <p className='text-gray-600 text-sm'>Community names including capitalization cannot be changed.</p>
                   </div>
 
                   <input
                     type="text"
                     placeholder='r/'
                     value={ communityNameInput }
-                    onChange={(e) => communityNameInput.length < 21 && setCommunityNameInput(e.target.value)}
+                    onChange={(e) => communityNameInput.length < 21  && setCommunityNameInput(e.target.value)}
                     className=" outline-none border border-gray-200 rounded-md w-full py-2 px-2"
+                    onKeyDown={(e) => {
+                      if(communityNameInput.length >= 21 && e.key === 'Backspace') {
+                        setCommunityNameInput(communityNameInput.slice(0, communityNameInput.length - 1))  
+                      }
+                    }}
                   />
 
-                  <span className={communityNameInput.length >= 21 ? "text-red-700" : "text-gray-500"}> {communityNameInput.length} Characters remaining </span>
+                  <span className={communityNameInput.length >= 21 ? "text-red-700 text-xs" : "text-gray-500 text-xs"}> {21 - communityNameInput.length} Characters remaining </span>
 
                   <CommunityTypeRadio />
 
 
-                  <div className="mt-4">
+                  <div className='flex flex-col mb-7'>
+                     <span onClick={() => console.log(isAdultCommunityCheckboxChecked)}
+                      className="text-normal font-normal text-black py-2"
+                     > Adult Content </span>
+                    <div className='flex space-x-2'>
+                      <input 
+                        type="checkbox" 
+                        id="AdultContentCheckbox"
+                        name="AdultContentCheckbox" 
+                        onClick={() => setIsAdultCommunityCheckboxChecked(isAdultCommunityCheckboxChecked ? false : true )}
+
+                        
+                        />  
+                      <span className='bg-red-500 rounded-md text-xs px-2 py-1 text-white'> NSFW </span>
+                      <label htmlFor="AdultContentCheckbox" className="select-none text-sm font-normal text-gray-700"> 18+ year old community </label> 
+                    </div>
+                  </div>
+
+                  <div className="mt-4 w-full bg-white pt-2 pb-4 flex justify-end items-center space-x-2">
                     <button
                       type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                      onClick={closeModal}
+                      className="inline-flex justify-center rounded-full border border-[#0079D3] bg-none px-4 py-2 text-sm font-medium text-[#0079D3] outline-none"
+                      onClick={() => {
+                        closeModal()
+                        setCommunityNameInput("")
+                      }}
                     >
-                      Got it, thanks!
+                      Cancel
+                    </button>
+
+                    <button
+                      type="button"
+                      className="inline-flex justify-center rounded-full bg-[#0079D3] px-4 py-2 text-sm font-medium text-white outline-none"
+                    >
+                      Create Community
                     </button>
                   </div>
+
                 </Dialog.Panel>
               </Transition.Child>
             </div>
@@ -89,7 +126,7 @@ export default function CreateCommunityModal ({isCreateCommunityModalOpen , open
 
 import { RadioGroup } from '@headlessui/react'
 
-const plans = [
+const types = [
   {
     name: 'Public',
     description: 'Anyone can view, post, and comment to this community',
@@ -108,18 +145,18 @@ const plans = [
 ]
 
 export function CommunityTypeRadio() {
-  const [selected, setSelected] = useState(plans[0])
+  const [selected, setSelected] = useState(types[0])
 
   return (
-    <div className="w-full px-1 py-4">
+    <div className="w-full px-1 py-4 pb-5">
       <div className="w-full ">
         <RadioGroup value={selected} onChange={setSelected}> 
-          <RadioGroup.Label className="font-normal text-base">Community Type</RadioGroup.Label>
+          <RadioGroup.Label className="text-normal font-normal text-black"> Community Type</RadioGroup.Label>
           <div className="space-y-2 pt-2 ">
-            {plans.map((plan) => (
+            {types.map((type) => (
               <RadioGroup.Option
-                key={plan.name}
-                value={plan}
+                key={type.name}
+                value={type}
                 className={({ active, checked }) =>
                   `${
                     active
@@ -134,42 +171,29 @@ export function CommunityTypeRadio() {
               >
                 {({ active, checked }) => (
                   <>
-                    <div className="flex w-full items-center justify-between bg-red-400">
-                      <div className="flex  items-center bg-green-400">
+                    <div className="flex w-full items-center justify-between">
+                      <div className="flex  items-center ">
                         <div className="text-sm space-y-2 ">
                           <RadioGroup.Label
                             as="div"
-                            className={`w-[40%] font-medium flex justify-start items-center space-x-2 ${
+                            className={`w-[100%] font-medium flex justify-between items-center space-x-3 ${
                               checked ? 'text-white' : 'text-gray-900'
                             }`}
                           >
-                            {plan.icon}
-                            <p> {plan.name} </p>
-                          </RadioGroup.Label>
-
-                          <RadioGroup.Description
-                            as="span"
-                            className={`inline-block ${
-                              checked ? 'text-sky-100' : 'text-gray-500'
-                            }`}
-                          >
-                            <span className='text-sm'>
-                              {plan.description}
-                            </span>
-
+                            {type.icon}
+                            <p className='text-normal font-medium'> {type.name} </p>
+                            <p className={checked ? 'flex-1 text-xs text-white' : 'flex-1 text-xs text-gray-500'} > {type.description} </p>
                             
-                           
-                          </RadioGroup.Description>
+                          </RadioGroup.Label>
                         </div>
 
                       </div>
                       {checked && (
-                        <div className="shrink-0 text-white">
-                          <CheckIcon className="h-6 w-6" />
+                        <div className="shrink-0 z-20 text-white">
+                          <CheckIcon className="h-5 w-5" />
                         </div>
                       )}
                     </div>
-                    
                   </>
                 )}
               </RadioGroup.Option>
