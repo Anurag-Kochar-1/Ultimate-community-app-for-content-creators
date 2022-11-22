@@ -10,23 +10,23 @@ import { auth } from '../../../firebaseConfig'
 import { useAuthState } from 'react-firebase-hooks/auth'
 
 export default function AccountDropdown() {
-  const [user, loading, error] = useAuthState(auth);
+  const [user] = useAuthState(auth);
   return (
-    <div className="px-2 text-right">
-      <Menu as="div" className="relative inline-block text-left">
+    <div className="px-0 text-right w-[20%] md:w-[10%] lg:w-[15%] bg-red-300">
+      <Menu as="div" className="relative w-full bg-green-300 inline-block text-left ">
         <div>
           <Menu.Button className="inline-flex w-full justify-center items-center rounded-md border  border-gray-200 px-3 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
             {!user && <AiOutlineUser className='w-5 h-5 text-gray-200'/>}
 
             {user && (
               <div className='flex items-center justify-between space-x-2'>
-                <img src={user?.photoURL as string} alt="dp" className='w-7 h-7 rounded-full'/>
-                <p className='hidden md:inline-block text-black font-normal text-sm'> {user.displayName} </p>
+                <img src={user?.photoURL as string} alt="dp" className='w-7 h-7 rounded-full aspect-auto'/>
+                <p className='hidden lg:inline-block text-black font-normal text-sm'> {user.displayName} </p>
               </div>
             )}
 
             <ChevronDownIcon
-              className="ml-2 -mr-1 h-5 w-5 text-gray-400 hidden md:inline-block"
+              className="ml-2 -mr-1 h-5 w-5  text-gray-400 hidden lg:inline-block"
               aria-hidden="true"
             />
           </Menu.Button>
