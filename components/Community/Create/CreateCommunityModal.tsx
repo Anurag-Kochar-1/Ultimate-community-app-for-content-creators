@@ -37,11 +37,17 @@ export default function CreateCommunityModal ({isCreateCommunityModalOpen , open
   const [isAdultCommunityCheckboxChecked, setIsAdultCommunityCheckboxChecked] = useState<boolean>(false)
   
   const subredditsCollectionRef = collection(db, "subreddits")
-  const usersCollectionRef = collection(db, "users")
- 
-  const specificUsersCollectionRef = doc(db, "users" , user?.uid as string)
-
+  // const usersCollectionRef = collection(db, "users")
+  // console.log(specificUsersCollectionRef);
+  
+  
   const createSubreddit = async () => {
+    const specificUsersCollectionRef = doc(db, "users" , user?.uid as string)
+    
+
+    
+
+
     await addDoc(subredditsCollectionRef, {
       subredditName : communityNameInput,
       communityType : communityType.name,
@@ -51,27 +57,14 @@ export default function CreateCommunityModal ({isCreateCommunityModalOpen , open
       creatorPhotoURL : user?.photoURL,
     })
 
-    // updateUser()
+    await updateDoc(specificUsersCollectionRef, {
+      subredditsOwned: arrayUnion(communityNameInput)
+    })
 
+    closeModal()
     setCommunityNameInput("")
     setCommunityType(types[0])
     setIsAdultCommunityCheckboxChecked(false)
-    closeModal()
-  }
-
-  const updateUser = async () => {
-    await updateDoc(specificUsersCollectionRef, {
-      subredditsOwned: arrayUnion({
-        subredditName : communityNameInput,
-        communityType : communityType.name,
-        isSubbreditNSFW : isAdultCommunityCheckboxChecked,
-      }),
-      subredditsJoined: arrayUnion({
-        subredditName : communityNameInput,
-        communityType : communityType.name,
-        isSubbreditNSFW : isAdultCommunityCheckboxChecked,
-      })
-    })
   }
 
 
@@ -228,7 +221,6 @@ export default function CreateCommunityModal ({isCreateCommunityModalOpen , open
                       className="inline-flex justify-center rounded-full bg-[#0079D3] px-4 py-2 text-sm font-medium text-white outline-none"
                       onClick={() => {
                         createSubreddit()
-                        updateUser()
                       }}
                     >
                       Create Community

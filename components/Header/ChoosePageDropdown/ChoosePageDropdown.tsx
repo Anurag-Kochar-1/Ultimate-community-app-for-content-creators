@@ -1,6 +1,8 @@
 import React from 'react'
 import {RiHomeLine} from "react-icons/ri"
-import { AiOutlineMenu} from "react-icons/ai"
+import {IoIosAdd} from "react-icons/io"
+import { AiOutlineMenu } from "react-icons/ai"
+import { BsFillArrowUpRightCircleFill} from "react-icons/bs"
 import { Menu, Transition } from '@headlessui/react'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
@@ -8,8 +10,15 @@ import DarkModeToggle from '../AccountDropdown/DarkModeToggle'
 import { auth } from '../../../firebaseConfig'
 import { useAuthState } from 'react-firebase-hooks/auth'
 
-export default function ChoosePageDropdown() {
+
+interface Iprops {
+  openModal: () => void
+}
+
+export default function ChoosePageDropdown({openModal}:Iprops) {
   const [user] = useAuthState(auth);
+  const [ filterInput , setFilterInput ] = useState<string>("")
+
   return (
     <div className="w-[30%] sm:w-[15%] md:w-[10%] text-right ">
       <Menu as="div" className="w-full relative inline-block text-left px-0">
@@ -38,8 +47,39 @@ export default function ChoosePageDropdown() {
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
+          
           <Menu.Items className="absolute left-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
             <div className="px-1 py-1 ">
+
+              <div className='w-full flex justify-center items-center py-2'>
+                <input 
+                  type="text" 
+                  placeholder='Filter' 
+                  className='w-[90%] h-8 px-2 rounded-sm border-none outline-none bg-[#F5F6F8] '
+                  value={filterInput}
+                  onChange={(e) => setFilterInput(e.target.value)}
+                  />
+              </div>
+
+              <Menu.Item>
+                <div className='w-full flex justify-center items-center py-2'>
+                  <button 
+                    type='button'
+                    className='w-[90%] h-8 flex justify-start items-center space-x-2 px-3 rounded-sm border-none outline-none bg-[#F5F6F8] hover:cursor-pointer'
+                    onClick={openModal}
+                  >
+                    <IoIosAdd />
+                    <p className='text-sm'> Create a community </p>
+                  </button>
+                
+                </div>
+              </Menu.Item>
+
+              
+
+              
+
+
               <Menu.Item>
                 {({ active }) => (
                   <button
