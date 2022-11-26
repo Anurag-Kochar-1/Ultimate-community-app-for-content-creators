@@ -2,10 +2,11 @@ import React from 'react'
 import { signInWithPopup , GoogleAuthProvider } from "firebase/auth"
 import {auth, createUserDocument, db} from "../../../firebaseConfig"
 import { Firestore , doc, addDoc, collection, setDoc, getDoc} from 'firebase/firestore'
-
+import { useDispatch } from "react-redux"
+import { setUser } from "../../../redux/slices/userSlice"
 
 const LogIn = () => {
-
+  const dispatch = useDispatch()
   const googleProvider = new GoogleAuthProvider()
 
   const GoogleLogin = async () => {
@@ -18,6 +19,7 @@ const LogIn = () => {
       if(specificUserDocSnap.exists()) {
         // console.log("Document data:", specificUserDocSnap.data());
         console.log(`user already exists`)
+        // dispatch(setUser(specificUserDocSnap.data()))
       }else {
         console.log("creating user!");
         await setDoc(doc(db, "users", result.user.uid), {
@@ -27,6 +29,8 @@ const LogIn = () => {
           postsUpvoted: [],
           postsDownvoted: [], 
         });  
+
+        // dispatch(setUser(specificUserDocSnap.data()))
       }
 
       

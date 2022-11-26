@@ -13,7 +13,7 @@ import { signOut } from "firebase/auth"
 export default function AccountDropdown() {
   const [user] = useAuthState(auth);
   return (
-    <div className="px-0 text-right w-[20%] md:w-[10%] lg:w-[15%] bg-red-300">
+    <div className="px-0 text-right w-[20%] md:w-[10%] lg:w-[15%] bg-red-300 ">
       <Menu as="div" className="relative w-full bg-green-300 inline-block text-left ">
         <div>
           <Menu.Button className="inline-flex w-full justify-center items-center rounded-md border  border-gray-200 px-3 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
@@ -41,7 +41,7 @@ export default function AccountDropdown() {
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20 ">
             <div className="px-1 py-1 ">
               <Menu.Item>
                 {({ active }) => (

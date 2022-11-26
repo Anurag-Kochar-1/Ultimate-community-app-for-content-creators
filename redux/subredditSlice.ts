@@ -7,26 +7,24 @@ export const STATUSES = Object.freeze({
     LOADING: 'loading',
 });
 
+const initialState = {
+    subredditData: [],
+    
+};
+
+
 const subredditSlice = createSlice({
     name: "subreddit",
-    initialState: {
-        data: []
-    },
+    initialState ,
     reducers: {
-        setSubreddit (state, action) {
-            state.data = action.payload
+        setSubreddit : (state, action) => {
+            state.subredditData = action.payload
         }
     },
 
-    // extraReducers: (builder) => {
-        
-    // }
 })
 
 export const {setSubreddit} = subredditSlice.actions
 export default subredditSlice.reducer
 
 
-// export const fetchSubreddit = createAsyncThunk(`/r/${id}` , async (id) => {
-
-// })
