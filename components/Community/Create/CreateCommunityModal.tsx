@@ -3,6 +3,7 @@ import { Fragment, useState } from 'react'
 import { FaUserAlt , FaEye , FaLock } from 'react-icons/fa'
 import { addDoc, collection, doc, setDoc , updateDoc , arrayUnion, arrayRemove } from "firebase/firestore"
 import { auth, db } from '../../../firebaseConfig'
+import { useRouter } from "next/router"
 
 interface Props {
     openModal: () => void
@@ -32,6 +33,7 @@ const types = [
 
 export default function CreateCommunityModal ({isCreateCommunityModalOpen , openModal , closeModal}:Props) {
   const [user] = useAuthState(auth)
+  const router = useRouter()
   const [communityNameInput, setCommunityNameInput  ] = useState<string>('')
   const [communityType, setCommunityType] = useState(types[0])
   const [isAdultCommunityCheckboxChecked, setIsAdultCommunityCheckboxChecked] = useState<boolean>(false)
@@ -42,29 +44,43 @@ export default function CreateCommunityModal ({isCreateCommunityModalOpen , open
   
   
   const createSubreddit = async () => {
-    const specificUsersCollectionRef = doc(db, "users" , user?.uid as string)
+    const specificUsersDocRef = doc(db, "users" , user?.uid as string)
     
 
     
 
 
-    await addDoc(subredditsCollectionRef, {
+    const subredditDoc = await addDoc(subredditsCollectionRef, {
       subredditName : communityNameInput,
       communityType : communityType.name,
       isSubbreditNSFW : isAdultCommunityCheckboxChecked,
+      category: "",
+      about: "",
+      logo: "",
+      banner : "",
+      customMemberName: "",
       creatorName : user?.displayName,
       creatorEmail : user?.email,
       creatorPhotoURL : user?.photoURL,
+      user: [],
+      posts: []
+
     })
 
-    await updateDoc(specificUsersCollectionRef, {
-      subredditsOwned: arrayUnion(communityNameInput)
+    // await updateDoc(specificUsersDocRef, {
+    //   subredditsOwned: arrayUnion(communityNameInput)
+    // })
+
+    await updateDoc(specificUsersDocRef, {
+      subredditsOwnedID: arrayUnion(subredditDoc.id),
+      subredditsJoinedID: arrayUnion(subredditDoc.id)
     })
 
     closeModal()
     setCommunityNameInput("")
     setCommunityType(types[0])
     setIsAdultCommunityCheckboxChecked(false)
+    router.push(`r/${subredditDoc.id}`)
   }
 
 

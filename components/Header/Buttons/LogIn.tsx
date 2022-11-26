@@ -21,11 +21,11 @@ const LogIn = () => {
       }else {
         console.log("creating user!");
         await setDoc(doc(db, "users", result.user.uid), {
-          subredditsOwned: [],
-          subredditsJoined: [],
+          subredditsOwnedID: [],
+          subredditsJoinedID: [],
           postsCreated: [],
           postsUpvoted: [],
-          postsDownvoted: [],
+          postsDownvoted: [], 
         });  
       }
 

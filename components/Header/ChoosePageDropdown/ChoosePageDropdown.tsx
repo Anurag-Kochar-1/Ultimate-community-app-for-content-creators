@@ -19,6 +19,9 @@ export default function ChoosePageDropdown({openModal}:Iprops) {
   const [user] = useAuthState(auth);
   const [ filterInput , setFilterInput ] = useState<string>("")
 
+
+  
+
   return (
     <div className="w-[30%] sm:w-[15%] md:w-[10%] text-right ">
       <Menu as="div" className="w-full relative inline-block text-left px-0">
@@ -75,9 +78,6 @@ export default function ChoosePageDropdown({openModal}:Iprops) {
                 </div>
               </Menu.Item>
 
-              
-
-              
 
 
               <Menu.Item>
@@ -101,7 +101,6 @@ export default function ChoosePageDropdown({openModal}:Iprops) {
                         )}
                             <p> Dark Mode </p>
                     </div>
-                        <DarkModeToggle />
                   </button>
                 )}
               </Menu.Item>
