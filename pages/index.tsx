@@ -18,7 +18,6 @@ const Home: NextPage = () => {
   // const [allUsers, setAllUsers] = useState<any[]>([])
 
   const dispatch = useDispatch()
-  // const userRedux = useSelector((state:any) => state.user)
   const router = useRouter()
   
   
@@ -26,12 +25,8 @@ const Home: NextPage = () => {
     if(db && user) {
       const userRef = doc(db, "users" , user?.uid as string)
       const userDocSnap = await getDoc(userRef)
-      // console.log(userDocSnap.data());
       dispatch(setUser(userDocSnap.data()))
       setCurrentUser([userDocSnap.data()])
-    } else if(!db) {
-      console.log(`no db`);
-      
     }
   }
 
@@ -66,7 +61,7 @@ const Home: NextPage = () => {
   return (
     
     <HomePageLayout>
-      <h1 className='mt-20 text-xl font-semibold' onClick={() => {console.log(currentUser)}}> LOG currentUser </h1>
+      {/* <h1 className='mt-20 text-xl font-semibold' onClick={() => {console.log(currentUser)}}> LOG currentUser </h1> */}
         
       
       <HomePage />

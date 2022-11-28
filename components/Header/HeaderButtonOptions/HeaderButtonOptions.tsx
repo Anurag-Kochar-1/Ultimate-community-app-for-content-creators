@@ -2,6 +2,7 @@ import { useState } from 'react'
 import {AiOutlineMessage , AiOutlineBell } from 'react-icons/ai'
 import { BiPlus } from 'react-icons/bi'
 import CreateCommunityModal from '../../Community/Create/CreateCommunityModal'
+import Link from 'next/link'
 
 const HeaderButtonOptions = () => {
   
@@ -11,10 +12,11 @@ const HeaderButtonOptions = () => {
       
         <AiOutlineMessage className='h-6 w-6 text-gray-800 hover:cursor-pointer' />
         <AiOutlineBell  className='h-6 w-6 text-gray-800 hover:cursor-pointer' />
-
-        <BiPlus 
-          className='h-6 w-6 text-gray-800 hover:cursor-pointer'
-          />
+        <Link href={`/submit`}>
+          <BiPlus 
+            className='h-6 w-6 text-gray-800 hover:cursor-pointer'
+            />
+        </Link>
     </div>
   )
 }
