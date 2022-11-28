@@ -2,25 +2,28 @@ import React, {useState, useEffect} from 'react'
 import allSubreddits from 'next/link'
 import HomeFeedHeader from './HomeFeedHeader/HomeFeedHeader'
 import {doc, getDoc , collection, query , where, getDocs} from "firebase/firestore"
-import { db } from '../../firebaseConfig'
+import { auth, db } from '../../firebaseConfig'
 import Link from 'next/link'
 import { useSelector } from 'react-redux'
+import { useAuthState } from 'react-firebase-hooks/auth'
 
 const HomeFeed = () => {
-  const userRedux = useSelector((state:any) => state.user)
+  const [user] = useAuthState(auth)
+  const { currentUserData } = useSelector((state:any) => state.user)
+
   const [allSubreddits, setAllSubdreddits] = useState<any[]>([])
   const subredditCollectionRef = collection(db, "subreddits")
   
   const fetchingSubreddits = async () => {
     const subredditsCollection = await getDocs(subredditCollectionRef)
-    
     setAllSubdreddits(subredditsCollection.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     
   }
+
+
   
   useEffect(() => {
     fetchingSubreddits()
-    
   },[])
 
   return (
@@ -28,7 +31,7 @@ const HomeFeed = () => {
     className='w-[100%] lg:w-[70%] h-[90vh] bg-red-900'
     >
       <HomeFeedHeader />
-      <h1 className='text-xl text-center' onClick={() => console.log(userRedux)}> LOG userRedux : {userRedux?.currentUserData?.subredditsJoinedID} </h1>
+      <h1 className='text-xl text-center' onClick={() => console.log(currentUserData)}> LOG userRedux : subredditsOwnedID : {currentUserData?.subredditsOwnedID} </h1>
 
 
       {allSubreddits && allSubreddits.map((subreddit) => {
