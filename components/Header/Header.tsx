@@ -11,11 +11,13 @@ import HeaderButtonOptions from './HeaderButtonOptions/HeaderButtonOptions'
 import {useAuthState} from "react-firebase-hooks/auth"
 import { auth } from '../../firebaseConfig'
 import CreateCommunityModal from '../Community/Create/CreateCommunityModal'
+import { useSelector } from 'react-redux'
 
 
 
 const Header = () => {
   let [isCreateCommunityModalOpen, setIsCreateCommunityModalOpen] = useState<boolean>(false)
+  // const { currentUserData } = useSelector((state:any) => state.user)
 
   function closeModal() {
     setIsCreateCommunityModalOpen(false)
