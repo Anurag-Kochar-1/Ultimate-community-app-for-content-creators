@@ -3,23 +3,33 @@ import dynamic from 'next/dynamic'
 import {RiFileList2Line , RiImage2Fill } from "react-icons/ri"
 import { TfiLink } from "react-icons/tfi"
 import RichTextEditor from './RichTextEditor'
-import {storage} from "../../firebaseConfig"
+import {auth, db, storage} from "../../firebaseConfig"
 import { ref , uploadBytes , getDownloadURL} from "firebase/storage"
 import { v4 as uuidv4 } from "uuid"
+import { addDoc, arrayUnion, collection, doc, updateDoc } from 'firebase/firestore'
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { useSelector } from 'react-redux'
 
-import { useUploadFile , useDownloadURL  } from 'react-firebase-hooks/storage';
 
 
 const CreatePostBox = () => {
     const [hydrated, setHydrated] = useState<boolean>(false);
-    const [uploadFile, uploading, snapshot, error] = useUploadFile();
-
-
+    const [user] = useAuthState(auth)
+    const {currentUserData} = useSelector((state:any) => state?.user)
     const [ uploadType, setUploadType ] = useState<string>('post')
+    const [selectedSubredditID, setSelectedSubredditID] = useState<string>("")
     const [postTitleInput, setPostTitleInput ] = useState<string>("")
     const [postCaptionInput, setPostCaptionInput ] = useState<string>("")
     const [postURLInput, setPostURLInput ] = useState<string>("")
     const [postMedia, setPostMedia] = useState<any>(null)
+
+    const [subbreditsJoined, setSubbreditsJoined] = useState<any>([])
+
+    // const postCollectionRef = collection(db, "posts")
+    // const userDocRef = doc(db, "users" , user?.uid as string)
+    // const subbreditDocRef = doc(db, "subreddits", selectedSubredditID)
+    
+    
     
     const uploadMedia = async () => {
         console.log(postMedia);
@@ -28,25 +38,54 @@ const CreatePostBox = () => {
             return
         }
         const imageRef = ref(storage, `post/${postMedia.name + uuidv4()}`)
-        // const data = await uploadBytes(imageRef, postMedia)
-        // const snapshot =  await getDownloadURL(data.ref)
-        // console.log(snapshot);
+        const data = await uploadBytes(imageRef, postMedia)
+        console.log(data);
         
-        const result = await uploadFile(imageRef, postMedia , {
-            contentType: 'image/jpeg'
-        })
-        // alert(`Result: ${JSON.stringify(result)}`)
-        console.log(result);
         
 
         
     }
 
 
+    
+    // const addPost = async () => {
+    //     try {
+    //         const postDoc = await addDoc(postCollectionRef, {
+    //             creatorName : user?.displayName,
+    //             creatorEmail: user?.email,
+    //             subredditID: selectedSubredditID,
+    //             postTitle: postTitleInput,
+    //             postCaption: postCaptionInput,
+    //             postMediaImage: [''],
+    //             postMediaVideo: [''],
+    //             postMediaURL: postURLInput,
+    
+      
+    //         })
+    
+    //         await updateDoc(subbreditDocRef, {
+    //             posts: arrayUnion(postDoc.id),
+    //         })
+    
+    //         await updateDoc(userDocRef , {
+    //             createdPosts: arrayUnion(postDoc.id)
+    //         })
+    //     } catch (error) {
+    //         console.error(error)
+    //     }
+    
+    // }
+
+    
+
+
 
     useEffect(() => {
         setHydrated(true)
         // console.log(`setHydrated is set to true from writeBlog  index.tsx`);
+        currentUserData?.subredditsJoinedID?.map((subreddit:any) => (
+            setSubbreditsJoined([...subbreditsJoined , subreddit])
+        ))
         
         
     },[])
@@ -132,11 +171,13 @@ const CreatePostBox = () => {
                 
                 <div className='w-[90%] h-40 bg-red-200 flex justify-center items-center outline-none border border-gray-200 rounded-md'>
                     <input 
+                        placeholder='upload'
                         type="file"
                         className='px-3 py-1 border-none outline-none bg-[#0079D3] rounded-full text-white font-medium text-base'
                         onChange={(e) => setPostMedia(e?.target?.files)}
                     />
                     <button
+                        type='button'
                         onClick={uploadMedia}
                     > Upload </button>
                 </div>
@@ -145,8 +186,9 @@ const CreatePostBox = () => {
 
             <div className='w-full flex justify-end items-center px-5 py-1'>
                 <button
-                    
+                    type='button'
                     className='px-4 py-1 border-none outline-none bg-[#0079D3] rounded-full text-white font-medium text-base'
+                    onClick={() => console.log(subbreditsJoined)}
                 > Post </button>
             </div>
 

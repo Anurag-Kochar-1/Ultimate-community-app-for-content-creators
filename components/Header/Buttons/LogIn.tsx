@@ -1,6 +1,6 @@
 import React from 'react'
 import { signInWithPopup , GoogleAuthProvider } from "firebase/auth"
-import {auth, createUserDocument, db} from "../../../firebaseConfig"
+import {auth, db} from "../../../firebaseConfig"
 import { Firestore , doc, addDoc, collection, setDoc, getDoc} from 'firebase/firestore'
 import { useDispatch } from "react-redux"
 import { setUser } from "../../../redux/slices/userSlice"
@@ -28,6 +28,9 @@ const LogIn = () => {
           postsCreated: [],
           postsUpvoted: [],
           postsDownvoted: [], 
+          createdPosts: [],
+          upvotedPosts: [],
+          downvotedPosts: []
         });  
 
         // dispatch(setUser(specificUserDocSnap.data()))

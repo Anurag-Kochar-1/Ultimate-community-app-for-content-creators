@@ -1,7 +1,7 @@
 import React, {useEffect , useState} from 'react'
 import { useRouter } from "next/router"
 import SubredditPageLayout from '../../components/Layouts/SubredditPageLayout'
-import { doc, getDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, query } from 'firebase/firestore'
 import { auth, db } from '../../firebaseConfig'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSubreddit } from '../../redux/subredditSlice'
@@ -27,6 +27,8 @@ const SubredditHomePage = () => {
     dispatch(setSubreddit( subredditDocSnap.data() ))
   }
 
+  
+
 
   useEffect(() => {
     if(router.isReady) {
@@ -40,7 +42,7 @@ const SubredditHomePage = () => {
         className='w-full h-[92vh] mt-[7vh] bg-red-200 flex flex-col justify-start items-center overflow-x-hidden overflow-y-scroll'
       >
        <TopSection />
-       <h1 onClick={() => console.log(subredditState)}> LOG subreddit State  </h1>
+       <h1 onClick={() => console.log(1)}> LOG 1 </h1>
        <Tabs />
 
       

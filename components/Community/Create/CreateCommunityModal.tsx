@@ -41,40 +41,39 @@ export default function CreateCommunityModal ({isCreateCommunityModalOpen , open
   const subredditsCollectionRef = collection(db, "subreddits")
   // const usersCollectionRef = collection(db, "users")
   // console.log(specificUsersCollectionRef);
+
+  const userQuery = collection(db, `users/${user?.uid}/usersJoinedSubredditsSubCollection` )
+  const [docs, loading, error] = useCollectionData(userQuery)
   
   
   const createSubreddit = async () => {
-    const specificUsersDocRef = doc(db, "users" , user?.uid as string)
-    
-
-    
-
-
+    // const specificUsersDocRef = doc(db, "users" , user?.uid as string)
     const subredditDoc = await addDoc(subredditsCollectionRef, {
       subredditName : communityNameInput,
       communityType : communityType.name,
       isSubbreditNSFW : isAdultCommunityCheckboxChecked,
-      category: "",
+      category: null,
       about: "",
-      logo: "",
-      banner : "",
+      logo: null,
+      banner : null,
       customMemberName: "",
       creatorName : user?.displayName,
       creatorEmail : user?.email,
       creatorPhotoURL : user?.photoURL,
-      user: [],
-      posts: []
 
     })
+
 
     // await updateDoc(specificUsersDocRef, {
-    //   subredditsOwned: arrayUnion(communityNameInput)
+    //   subredditsOwnedID: arrayUnion(subredditDoc.id),
+    //   subredditsJoinedID: arrayUnion(subredditDoc.id)
     // })
 
-    await updateDoc(specificUsersDocRef, {
-      subredditsOwnedID: arrayUnion(subredditDoc.id),
-      subredditsJoinedID: arrayUnion(subredditDoc.id)
-    })
+    // const userJoinedSubredditsSubCollectionRef = collection(db,"users" , user?.uid as string, "usersJoinedSubredditsSubCollection" )
+    // setDoc(userJoinedSubredditsSubCollectionRef, {
+    //   subredditName : communityNameInput,
+    // })
+    
 
     closeModal()
     setCommunityNameInput("")
@@ -256,6 +255,7 @@ export default function CreateCommunityModal ({isCreateCommunityModalOpen , open
 
 import { RadioGroup } from '@headlessui/react'
 import { useAuthState } from 'react-firebase-hooks/auth'
+import { useCollectionData } from 'react-firebase-hooks/firestore'
 
 
 
