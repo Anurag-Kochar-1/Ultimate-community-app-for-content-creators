@@ -24,6 +24,7 @@ const CreatePostBox = () => {
     const [postMedia, setPostMedia] = useState<any>(null)
 
     const [subbreditsJoined, setSubbreditsJoined] = useState<any>([])
+    const postsCollectionRef = collection(db, "posts")
 
     // const postCollectionRef = collection(db, "posts")
     // const userDocRef = doc(db, "users" , user?.uid as string)
@@ -46,35 +47,36 @@ const CreatePostBox = () => {
         
     }
 
+    
 
-    
-    // const addPost = async () => {
-    //     try {
-    //         const postDoc = await addDoc(postCollectionRef, {
-    //             creatorName : user?.displayName,
-    //             creatorEmail: user?.email,
-    //             subredditID: selectedSubredditID,
-    //             postTitle: postTitleInput,
-    //             postCaption: postCaptionInput,
-    //             postMediaImage: [''],
-    //             postMediaVideo: [''],
-    //             postMediaURL: postURLInput,
-    
-      
-    //         })
-    
-    //         await updateDoc(subbreditDocRef, {
-    //             posts: arrayUnion(postDoc.id),
-    //         })
-    
-    //         await updateDoc(userDocRef , {
-    //             createdPosts: arrayUnion(postDoc.id)
-    //         })
-    //     } catch (error) {
-    //         console.error(error)
-    //     }
-    
-    // }
+    const addPost = async () => {
+        // ---- adding post to post collection ----
+        const postDoc = await addDoc(postsCollectionRef, {
+            postTitle : postTitleInput,
+            creatorUserID : user?.uid
+        })
+
+
+
+        // ---- adding post to subreddit ----
+        const subredditPostsSubCollectionRef = collection(db, `subreddits/jdNxiZVPCUQpZbyjm48L/subredditPosts`); 
+        const addPostToSubreddit = await addDoc(subredditPostsSubCollectionRef, {
+            postTitle : postTitleInput,
+            creatorUserID : user?.uid
+        })
+        
+        
+        // ---- adding post to user ----
+        const userPostsSubCollectionRef = collection(db, `users/${user?.uid as string}/userCreatedPosts`);
+        const addPostToUser = await addDoc(userPostsSubCollectionRef, {
+            postTitle : postTitleInput,
+            creatorUserID : user?.uid
+        })
+
+
+        // ---- Reseting States ----
+        setPostTitleInput("")
+    }
 
     
 
@@ -82,12 +84,9 @@ const CreatePostBox = () => {
 
     useEffect(() => {
         setHydrated(true)
-        // console.log(`setHydrated is set to true from writeBlog  index.tsx`);
         currentUserData?.subredditsJoinedID?.map((subreddit:any) => (
             setSubbreditsJoined([...subbreditsJoined , subreddit])
         ))
-        
-        
     },[])
 
 
@@ -147,7 +146,8 @@ const CreatePostBox = () => {
 
                 <div className='w-full flex justify-end items-center px-5 py-1'>
                     <button
-                        
+                        type='button'
+                        onClick={addPost}
                         className='px-4 py-1 border-none outline-none bg-[#0079D3] rounded-full text-white font-medium text-base'
                     > Post </button>
                 </div>
@@ -232,3 +232,15 @@ const CreatePostBox = () => {
 }
 
 export default CreatePostBox
+
+
+
+
+/*
+ ---- Process ----
+
+1. adding Post to Posts collection
+2. adding Post to selected subreddit's sub collection
+3. adding Post to users's sub collection
+
+*/

@@ -8,7 +8,7 @@ import { setUser } from "../redux/slices/userSlice"
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { useCollectionData, useDocument } from "react-firebase-hooks/firestore"
 import { auth, db } from '../firebaseConfig'
-import { collection, doc, Firestore, getDoc, getDocs , getFirestore, onSnapshot, query, where } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs , onSnapshot, where , query, Query } from 'firebase/firestore'
 import { useRouter } from "next/router"
 
 const Home: NextPage = () => {
@@ -19,8 +19,8 @@ const Home: NextPage = () => {
   const [currentUser, setCurrentUser] = useState<any[]>([])
   const [usersJoinedSubredditsSubCollection, setUsersJoinedSubredditsSubCollection] = useState<any>([])
   
-  const query = collection(db, `users/${user?.uid}/usersJoinedSubredditsSubCollection` )
-  const [docs] = useCollectionData(query)
+  const queryUserJoinedSubreddits = collection(db, `users/${user?.uid}/usersJoinedSubredditsSubCollection` )
+  const [docs] = useCollectionData(queryUserJoinedSubreddits)
   
   
   const fetchUserDetails = async () =>  {
@@ -36,18 +36,33 @@ const Home: NextPage = () => {
       
     }
   }
+
+  const postsCollectionRef = collection(db, "posts")
+
+  const queryUserCreatedPost = async () => {
+    if(!loading) {
+      const q = query(postsCollectionRef, where("creatorUserID" , "==" , user?.uid as string))
+    
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+      console.log(doc.id, " => ", doc.data());
+      });
+    }
+    
+  }
   
  
   
   
   
   useEffect(() => {
-    console.log(`----------------useEffect is running-----------------`);
+    // console.log(`----------------useEffect is running-----------------`);
     setHydrated(true)
     
     fetchUserDetails()
     setUsersJoinedSubredditsSubCollection([docs])
-    
+
+    queryUserCreatedPost()
 
   },[user , docs])
 
@@ -56,8 +71,10 @@ const Home: NextPage = () => {
     
     <HomePageLayout>
       <h1 className='mt-20 text-xl font-semibold' onClick={() => {
-        console.log(user)
-      }} > LOG USER </h1>
+        // console.log(currentUser[0]?.subredditsOwnedID[0])
+        console.log(currentUser)
+
+      }} > LOG currentUserState </h1>
 
       <h1 className='mt-20 text-xl font-semibold' onClick={() => {
         console.log(usersJoinedSubredditsSubCollection)
@@ -66,6 +83,10 @@ const Home: NextPage = () => {
       <h1 className='mt-20 text-xl font-semibold' onClick={() => {
         console.log(docs)
       }} > LOG docs </h1>
+
+      {/* {docs && docs.map((doc) => (
+        <p> {doc.subredditID} </p>
+      ))} */}
         
       {!loading && <HomePage />}
       {loading && <h1 className='text-6xl font-bold'> LOADING.............................. </h1>}

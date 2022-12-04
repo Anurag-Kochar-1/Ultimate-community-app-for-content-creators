@@ -42,7 +42,7 @@ const SubredditHomePage = () => {
         className='w-full h-[92vh] mt-[7vh] bg-red-200 flex flex-col justify-start items-center overflow-x-hidden overflow-y-scroll'
       >
        <TopSection />
-       <h1 onClick={() => console.log(1)}> LOG 1 </h1>
+       <h1 onClick={() => console.log(subredditState)}> LOG subredditState </h1>
        <Tabs />
 
       

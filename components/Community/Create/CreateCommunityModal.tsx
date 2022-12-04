@@ -5,6 +5,10 @@ import { addDoc, collection, doc, setDoc , updateDoc , arrayUnion, arrayRemove }
 import { auth, db } from '../../../firebaseConfig'
 import { useRouter } from "next/router"
 
+import { RadioGroup } from '@headlessui/react'
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { useCollectionData } from 'react-firebase-hooks/firestore'
+
 interface Props {
     openModal: () => void
     closeModal: () => void
@@ -39,16 +43,15 @@ export default function CreateCommunityModal ({isCreateCommunityModalOpen , open
   const [isAdultCommunityCheckboxChecked, setIsAdultCommunityCheckboxChecked] = useState<boolean>(false)
   
   const subredditsCollectionRef = collection(db, "subreddits")
-  // const usersCollectionRef = collection(db, "users")
-  // console.log(specificUsersCollectionRef);
 
   const userQuery = collection(db, `users/${user?.uid}/usersJoinedSubredditsSubCollection` )
   const [docs, loading, error] = useCollectionData(userQuery)
   
   
   const createSubreddit = async () => {
-    // const specificUsersDocRef = doc(db, "users" , user?.uid as string)
-    const subredditDoc = await addDoc(subredditsCollectionRef, {
+
+    // ------ creating subreddit ------
+  const subredditDoc = await addDoc(subredditsCollectionRef, {
       subredditName : communityNameInput,
       communityType : communityType.name,
       isSubbreditNSFW : isAdultCommunityCheckboxChecked,
@@ -60,21 +63,25 @@ export default function CreateCommunityModal ({isCreateCommunityModalOpen , open
       creatorName : user?.displayName,
       creatorEmail : user?.email,
       creatorPhotoURL : user?.photoURL,
-
-    })
-
-
-    // await updateDoc(specificUsersDocRef, {
-    //   subredditsOwnedID: arrayUnion(subredditDoc.id),
-    //   subredditsJoinedID: arrayUnion(subredditDoc.id)
-    // })
-
-    // const userJoinedSubredditsSubCollectionRef = collection(db,"users" , user?.uid as string, "usersJoinedSubredditsSubCollection" )
-    // setDoc(userJoinedSubredditsSubCollectionRef, {
-    //   subredditName : communityNameInput,
-    // })
     
+  })
+  console.log(`subredditDoc ID : ${subredditDoc.id}`);
+  
 
+   // ------ updating user's sub collection ------
+  const userJoinedSubredditsSubCollectionRef = collection(db, `users/${user?.uid as string}/userJoinedSubredditsSubCollection`);
+
+  const addingToUserJoinedSubredditsSubCollection = await addDoc(userJoinedSubredditsSubCollectionRef, {
+    subredditName : communityNameInput,
+    subredditID : subredditDoc.id,
+    isCurrentUserCreator : true
+  })
+
+
+  console.log(`addingToUserOwnedubredditsSubCollection ID : ${addingToUserJoinedSubredditsSubCollection.id}`)
+
+
+    // ------ Reseting states ------
     closeModal()
     setCommunityNameInput("")
     setCommunityType(types[0])
@@ -253,12 +260,6 @@ export default function CreateCommunityModal ({isCreateCommunityModalOpen , open
 }
 
 
-import { RadioGroup } from '@headlessui/react'
-import { useAuthState } from 'react-firebase-hooks/auth'
-import { useCollectionData } from 'react-firebase-hooks/firestore'
-
-
-
 
 function CheckIcon(props:any) {
   return (
@@ -274,3 +275,13 @@ function CheckIcon(props:any) {
     </svg>
   )
 }
+
+
+
+/* ---- Process -----
+
+  1. creating a subreddit doc inside subreddits collection
+  2. adding subreddit ID to the current user's subredditsJoinedID and subredditsOwnedID
+
+
+*/
