@@ -1,18 +1,43 @@
-import React from 'react'
+import React, {Fragment} from 'react'
 import {RiHomeLine} from "react-icons/ri"
 import {IoIosAdd} from "react-icons/io"
 import { AiOutlineMenu } from "react-icons/ai"
 import { BsFillArrowUpRightCircleFill} from "react-icons/bs"
 import { Menu, Transition } from '@headlessui/react'
-import { Fragment, useEffect, useRef, useState } from 'react'
+import {  useEffect, useRef, useState } from 'react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { collection, getDocs, query, where } from 'firebase/firestore'
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { auth, db } from '../../firebaseConfig'
 
+interface IProps {
+  selectedCommunityID : string
+  setSelectedCommunityID : React.Dispatch<React.SetStateAction<string>>
+}
 
+export default function ChooseCommunityDropdown ({selectedCommunityID, setSelectedCommunityID}:IProps) {
+  const [user , loading, error] = useAuthState(auth)
+  const [userJoinedSubredditsState , setUserJoinedSubredditsState] = useState<any[]>([])
+  const subbreditCollectionRef = collection(db, "subreddits")
 
-export default function ChooseCommunityDropdown () {
+  const fetchUserJoinedSubbredit = async () => {
+    if(!loading && user) {
+      const queryUser = query(subbreditCollectionRef, where("members" , "array-contains", user?.uid as string))
+      
+      const queryUserJoinedSubreddits = await getDocs(queryUser)
+      // queryUserJoinedSubreddits.forEach((doc) => {
+      //   console.log(doc.data());
+      //   setUserJoinedSubredditsState([])
+      // })
+      setUserJoinedSubredditsState(queryUserJoinedSubreddits.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      
+    }
+    
+  }
 
-  
-
+  useEffect(() => {
+    fetchUserJoinedSubbredit()
+  }, [user])
 
 
   return (
@@ -45,7 +70,7 @@ export default function ChooseCommunityDropdown () {
         >
           
           <Menu.Items className="absolute left-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-            <div className="px-1 py-1 ">
+            <div className="px-1 py-1 bg-red-800">
 
               {/* <div className='w-full flex justify-center items-center py-2'>
                 <input 
@@ -70,126 +95,24 @@ export default function ChooseCommunityDropdown () {
                 
                 </div>
               </Menu.Item> */}
+              
+
+              {userJoinedSubredditsState && userJoinedSubredditsState.map((subreddit) => (
+                <div 
+                  key={subreddit.subredditID}
+                  className='flex-1 h-full bg-emerald-200'
+                  onClick={() => setSelectedCommunityID(subreddit.subredditID)}
+                  > 
+                {subreddit.subredditName} 
+                </div>
+              ))}
 
 
+  
+            
 
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    className={`${
-                      active ? 'bg-[#FF4500] text-white' : 'text-gray-900'
-                    } group flex w-full justify-between items-center rounded-md px-2 py-2 text-sm`}
-                  >
-                    <div className='w-full flex'>
-                        {active ? (
-                        <IconMoonOutline
-                            className="mr-2 h-5 w-5"
-                            aria-hidden="true"
-                        />
-                        ) : (
-                        <IconMoonOutline
-                            className="mr-2 h-5 w-5"
-                            aria-hidden="true"
-                        />
-                        )}
-                            <p> Dark Mode </p>
-                    </div>
-                  </button>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    className={`${
-                      active ? 'bg-[#FF4500] text-white' : 'text-gray-900'
-                    } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                  >
-                    {active ? (
-                      <IconHelpCircleOutline
-                        className="mr-2 h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    ) : (
-                      <IconHelpCircleOutline
-                        className="mr-2 h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    )}
-                    Help center
-                  </button>
-                )}
-              </Menu.Item>
             </div>
-            <div className="px-1 py-1">
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    className={`${
-                      active ? 'bg-[#FF4500] text-white' : 'text-gray-900'
-                    } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                  >
-                    {active ? (
-                      <IconNewspaperOutline
-                        className="mr-2 h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    ) : (
-                      <IconNewspaperOutline
-                        className="mr-2 h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    )}
-                    Terms & Policies
-                  </button>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    className={`${
-                      active ? 'bg-[#FF4500] text-white' : 'text-gray-900'
-                    } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                  >
-                    {active ? (
-                      <IconMegaphone
-                        className="mr-2 h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    ) : (
-                      <IconMegaphone
-                        className="mr-2 h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    )}
-                    Advertise on Reddit
-                  </button>
-                )}
-              </Menu.Item>
-            </div>
-            <div className="px-1 py-1">
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    className={`${
-                      active ? 'bg-[#FF4500] text-white' : 'text-gray-900'
-                    } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                  >
-                    {active ? (
-                      <IconLogout
-                        className="mr-2 h-5 w-5 text-white"
-                        aria-hidden="true"
-                      />
-                    ) : (
-                      <IconLogout
-                        className="mr-2 h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    )}
-                    Log In / Sign Up
-                  </button>
-                )}
-              </Menu.Item>
-            </div>
+
           </Menu.Items>
         </Transition>
       </Menu>

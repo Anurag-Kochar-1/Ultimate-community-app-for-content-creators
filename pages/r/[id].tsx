@@ -23,8 +23,16 @@ const SubredditHomePage = () => {
   const fetchSubreddit = async () => {
     const subredditRef = doc(db, "subreddits", id as string)
     const subredditDocSnap = await getDoc(subredditRef)
+    // console.log(`subredditDocSnap.id : ${subredditDocSnap.id}`);
     setSubredditState([subredditDocSnap.data()])
     dispatch(setSubreddit( subredditDocSnap.data() ))
+  }
+
+
+  
+  const fetchSubredditMembers = async() => {
+    console.log(`ID : ${id}`);
+    const subredditRef = doc(db, "subreddits" , id as string)
   }
 
   
@@ -42,7 +50,7 @@ const SubredditHomePage = () => {
         className='w-full h-[92vh] mt-[7vh] bg-red-200 flex flex-col justify-start items-center overflow-x-hidden overflow-y-scroll'
       >
        <TopSection />
-       <h1 onClick={() => console.log(subredditState)}> LOG subredditState </h1>
+       <h1 className='text-4xl' onClick={() => fetchSubredditMembers()}> LOG fetchSubredditMembers  </h1>
        <Tabs />
 
       

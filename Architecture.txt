@@ -1,0 +1,15 @@
+---- Creating Subreddit ----
+
+1. creating subreddit to subreddits collection
+2. Adding subreddit ID to user's joinedSubredditsID array
+3.  Adding current user to subreddit's users Sub collection 
+    or 
+    Adding current user to subreddit's users array => ***
+
+
+
+---- Creating Post ----
+
+1. creating Post to posts collection
+2. Adding posts ID to user's createdPostID array
+3. Adding posts  to subreddit's posts sub collection

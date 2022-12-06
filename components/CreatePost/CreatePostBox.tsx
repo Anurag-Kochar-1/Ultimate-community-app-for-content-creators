@@ -6,13 +6,17 @@ import RichTextEditor from './RichTextEditor'
 import {auth, db, storage} from "../../firebaseConfig"
 import { ref , uploadBytes , getDownloadURL} from "firebase/storage"
 import { v4 as uuidv4 } from "uuid"
-import { addDoc, arrayUnion, collection, doc, updateDoc } from 'firebase/firestore'
+import { addDoc, arrayUnion, collection, doc, setDoc, updateDoc } from 'firebase/firestore'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { useSelector } from 'react-redux'
 
+interface IProps {
+    selectedCommunityID : string
+    setSelectedCommunityID : React.Dispatch<React.SetStateAction<string>>
+  }
 
 
-const CreatePostBox = () => {
+const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) => {
     const [hydrated, setHydrated] = useState<boolean>(false);
     const [user] = useAuthState(auth)
     const {currentUserData} = useSelector((state:any) => state?.user)
@@ -21,7 +25,8 @@ const CreatePostBox = () => {
     const [postTitleInput, setPostTitleInput ] = useState<string>("")
     const [postCaptionInput, setPostCaptionInput ] = useState<string>("")
     const [postURLInput, setPostURLInput ] = useState<string>("")
-    const [postMedia, setPostMedia] = useState<any>(null)
+    const [postMedia, setPostMedia] = useState<any>([])
+    const [mediaURL, setMediaURL] = useState<string>("")
 
     const [subbreditsJoined, setSubbreditsJoined] = useState<any>([])
     const postsCollectionRef = collection(db, "posts")
@@ -33,18 +38,23 @@ const CreatePostBox = () => {
     
     
     const uploadMedia = async () => {
-        console.log(postMedia);
+        // console.log(postMedia[0].name);
         if(postMedia == null) {
-            alert("upload image or video")
-            return
+            alert("Upload a file.....")
+            return;
         }
-        const imageRef = ref(storage, `post/${postMedia.name + uuidv4()}`)
-        const data = await uploadBytes(imageRef, postMedia)
-        console.log(data);
-        
-        
+       
+        try {
+            const mediaRef = ref(storage, uuidv4() + "--" + postMedia[0].name)
 
-        
+
+
+            // ---- Resetting States ----- 
+            setPostMedia([])
+        } catch (error) {
+            console.log(error);
+            
+        }
     }
 
     
@@ -53,29 +63,28 @@ const CreatePostBox = () => {
         // ---- adding post to post collection ----
         const postDoc = await addDoc(postsCollectionRef, {
             postTitle : postTitleInput,
+            postedAtSubbredditID : selectedCommunityID,
             creatorUserID : user?.uid
         })
 
-
-
-        // ---- adding post to subreddit ----
-        const subredditPostsSubCollectionRef = collection(db, `subreddits/jdNxiZVPCUQpZbyjm48L/subredditPosts`); 
+        // ---- adding post to subreddit posts sub-collection ----
+        const subredditPostsSubCollectionRef = collection(db, `subreddits/${selectedCommunityID}/subredditPosts`); 
         const addPostToSubreddit = await addDoc(subredditPostsSubCollectionRef, {
+            postID: postDoc.id,
             postTitle : postTitleInput,
             creatorUserID : user?.uid
         })
-        
-        
-        // ---- adding post to user ----
-        const userPostsSubCollectionRef = collection(db, `users/${user?.uid as string}/userCreatedPosts`);
-        const addPostToUser = await addDoc(userPostsSubCollectionRef, {
-            postTitle : postTitleInput,
-            creatorUserID : user?.uid
+
+        // Upadating User
+        const userRef = doc(db, "users" , user?.uid as string)
+        const updateUser = await updateDoc(userRef, {
+            createdPostsID: arrayUnion(postDoc.id)
         })
 
 
         // ---- Reseting States ----
         setPostTitleInput("")
+        setSelectedCommunityID('')
     }
 
     
@@ -166,7 +175,7 @@ const CreatePostBox = () => {
                     placeholder='Title'    
                     className='w-[90%] h-12 outline-none border border-gray-200 rounded-md px-3 placeholder:text-gray-600 focus:border focus:border-gray-400'
                     value={postTitleInput}
-                    onChange={(e) => setPostTitleInput(e.target.value )}
+                    onChange={(e) => setPostTitleInput(e.target.value)}
                 />
                 
                 <div className='w-[90%] h-40 bg-red-200 flex justify-center items-center outline-none border border-gray-200 rounded-md'>

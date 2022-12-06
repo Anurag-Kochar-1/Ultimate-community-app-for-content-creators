@@ -4,8 +4,50 @@ import subredditDefaultLogo from "../../../../public/images/subredditDefaultLogo
 import subredditDefaultBanner from "../../../../public/images/subredditDefaultBanner.png"
 import {BsBellFill , BsBellSlashFill , BsBell } from "react-icons/bs"
 import { useSelector } from "react-redux"
+import { arrayUnion, doc, updateDoc } from 'firebase/firestore'
+import { auth, db } from '../../../../firebaseConfig'
+import { useAuthState } from 'react-firebase-hooks/auth'
 const TopSection = () => {
+    const [user, loading] = useAuthState(auth)
     const {subredditData} = useSelector((state:any) => state.subreddit)
+
+    
+    
+    
+    
+    const addMember = async () => {
+        const subredditRef = doc(db, "subreddits" , subredditData?.subredditID)
+        console.log(`adding to ${subredditData?.subredditID}`);
+        if(!loading && user) {
+            // console.log(user);
+            try {
+                await updateDoc(subredditRef, {
+                    members: arrayUnion(user?.uid)
+                })
+            } catch (error) {
+             console.log(error);
+                
+            }
+            
+        }
+    }
+
+    const updateUser = async() => {
+        if(!loading && user) {
+            const userRef = doc(db, "users" , user?.uid)
+            try {
+                await updateDoc(userRef, {
+                    subredditsJoinedID: arrayUnion(subredditData?.subredditID)
+                })
+            } catch (error) {
+                console.log(error);
+                
+            }
+        }
+    }
+
+    
+
   return (
     <div
         className='w-full h-[25vh] bg-red-600  flex flex-col items-center justify-end'
@@ -22,7 +64,14 @@ const TopSection = () => {
             </div>
 
             <div className='flex justify-between items-center'>
-                <button type='button' className='bg-[#0079D3] text-white text-sm hover:cursor-pointer rounded-full px-4 py-1'> Join </button>
+                <button 
+                    type='button' 
+                    className='bg-[#0079D3] text-white text-sm hover:cursor-pointer rounded-full px-4 py-1'
+                    onClick={() => {
+                        addMember()
+                        updateUser()
+                    }}
+                    > Join </button>
 
             </div>
         </div>

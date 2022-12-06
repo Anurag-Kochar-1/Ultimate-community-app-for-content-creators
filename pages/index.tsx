@@ -20,8 +20,9 @@ const Home: NextPage = () => {
   const [usersJoinedSubredditsSubCollection, setUsersJoinedSubredditsSubCollection] = useState<any>([])
   
   const queryUserJoinedSubreddits = collection(db, `users/${user?.uid}/usersJoinedSubredditsSubCollection` )
-  const [docs] = useCollectionData(queryUserJoinedSubreddits)
-  
+  // const [docs] = useCollectionData(queryUserJoinedSubreddits)
+  const postsCollectionRef = collection(db, "posts")
+  const subbreditCollectionRef = collection(db, "subreddits")
   
   const fetchUserDetails = async () =>  {
     if( !loading ) {
@@ -37,7 +38,7 @@ const Home: NextPage = () => {
     }
   }
 
-  const postsCollectionRef = collection(db, "posts")
+  
 
   const queryUserCreatedPost = async () => {
     if(!loading) {
@@ -50,21 +51,35 @@ const Home: NextPage = () => {
     }
     
   }
-  
- 
-  
+
+
+  const fetchUserJoinedSubbredit = async () => {
+    if(!loading && user) {
+      const queryUser = query(subbreditCollectionRef, where("members" , "array-contains", user?.uid as string))
+      
+      const queryUserJoinedSubreddits = await getDocs(queryUser)
+      queryUserJoinedSubreddits.forEach((doc) => {
+        console.log(doc.data());
+        
+      })
+    }
+    
+  }
   
   
   useEffect(() => {
     // console.log(`----------------useEffect is running-----------------`);
     setHydrated(true)
     
-    fetchUserDetails()
-    setUsersJoinedSubredditsSubCollection([docs])
+    if(user) {
+      fetchUserDetails()
+    }
+    // setUsersJoinedSubredditsSubCollection([docs])
 
-    queryUserCreatedPost()
+    // queryUserCreatedPost()
+    fetchUserJoinedSubbredit()
 
-  },[user , docs])
+  },[user ])
 
   if(!hydrated) return null
   return (
@@ -81,7 +96,7 @@ const Home: NextPage = () => {
       }} > LOG usersJoinedSubredditsSubCollection </h1>
 
       <h1 className='mt-20 text-xl font-semibold' onClick={() => {
-        console.log(docs)
+        console.log(1)
       }} > LOG docs </h1>
 
       {/* {docs && docs.map((doc) => (

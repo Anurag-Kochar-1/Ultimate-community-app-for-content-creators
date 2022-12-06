@@ -17,27 +17,25 @@ const LogIn = () => {
       
 
       if(specificUserDocSnap.exists()) {
-        // console.log("Document data:", specificUserDocSnap.data());
+        console.log("Document data:", specificUserDocSnap.data());
         console.log(`user already exists`)
-        // dispatch(setUser(specificUserDocSnap.data()))
       }else {
         console.log("creating user!");
         await setDoc(doc(db, "users", result.user.uid), {
           subredditsOwnedID: [],
           subredditsJoinedID: [],
-          postsCreated: [],
           postsUpvoted: [],
           postsDownvoted: [], 
-          createdPosts: [],
+          createdPostsID: [],
           upvotedPosts: [],
           downvotedPosts: []
         });  
+      } 
 
         // dispatch(setUser(specificUserDocSnap.data()))
-      }
+      
 
-      
-      
+
      
     } catch (error) {
       console.log(error);   

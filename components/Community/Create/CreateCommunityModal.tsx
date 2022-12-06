@@ -52,6 +52,7 @@ export default function CreateCommunityModal ({isCreateCommunityModalOpen , open
 
     // ------ creating subreddit ------
   const subredditDoc = await addDoc(subredditsCollectionRef, {
+      subredditID : null,
       subredditName : communityNameInput,
       communityType : communityType.name,
       isSubbreditNSFW : isAdultCommunityCheckboxChecked,
@@ -63,22 +64,54 @@ export default function CreateCommunityModal ({isCreateCommunityModalOpen , open
       creatorName : user?.displayName,
       creatorEmail : user?.email,
       creatorPhotoURL : user?.photoURL,
+      createrUserID: user?.uid,
+      members: [user?.uid]
     
   })
-  console.log(`subredditDoc ID : ${subredditDoc.id}`);
+
+  const subbreditRef = doc(db, "subreddits", subredditDoc.id)
+
+  // ---- Adding ID Manually ----
+  const addingIDtoSubreddit = await updateDoc(subbreditRef, {
+    subredditID: subredditDoc.id
+  })
+
   
+  // ------ adding user to the users array ------
+  const addingUserToUsersArray = await updateDoc(subbreditRef, {
+    members: arrayUnion(user?.uid)
+  })
 
-   // ------ updating user's sub collection ------
-  const userJoinedSubredditsSubCollectionRef = collection(db, `users/${user?.uid as string}/userJoinedSubredditsSubCollection`);
-
-  const addingToUserJoinedSubredditsSubCollection = await addDoc(userJoinedSubredditsSubCollectionRef, {
-    subredditName : communityNameInput,
-    subredditID : subredditDoc.id,
-    isCurrentUserCreator : true
+  // ------ updating User ------
+  const userRef = doc(db, `users/${user?.uid}`)
+  const updatingUser = await updateDoc(userRef, {
+    subredditsOwnedID: arrayUnion(subredditDoc.id),
+    subredditsJoinedID: arrayUnion(subredditDoc.id),
   })
 
 
-  console.log(`addingToUserOwnedubredditsSubCollection ID : ${addingToUserJoinedSubredditsSubCollection.id}`)
+
+  
+  // ------ creating subreddit user's sub collection ------
+  // const subredditUsersSubCollection = collection(db, `subreddits/${subredditDoc?.id}/joinedUser`)
+  // const addingUserToSubredditUsersSubCollection = await addDoc(subredditUsersSubCollection , {
+  //   userName: user?.displayName
+  // })
+
+   // ------ updating user's sub collection ------
+  // const userJoinedSubredditsSubCollectionRef = collection(db, `users/${user?.uid as string}/userJoinedSubredditsSubCollection`);
+
+  // const addingToUserJoinedSubredditsSubCollection = await addDoc(userJoinedSubredditsSubCollectionRef, {
+  //   subredditName : communityNameInput,
+  //   subredditID : subredditDoc.id,
+  //   isCurrentUserCreator : true
+  // })
+
+
+
+
+
+
 
 
     // ------ Reseting states ------
