@@ -4,7 +4,7 @@ import {RiFileList2Line , RiImage2Fill } from "react-icons/ri"
 import { TfiLink } from "react-icons/tfi"
 import RichTextEditor from './RichTextEditor'
 import {auth, db, storage} from "../../firebaseConfig"
-import { ref , uploadBytes , getDownloadURL} from "firebase/storage"
+import { ref , uploadBytesResumable , getDownloadURL} from "firebase/storage"
 import { v4 as uuidv4 } from "uuid"
 import { addDoc, arrayUnion, collection, doc, setDoc, updateDoc } from 'firebase/firestore'
 import { useAuthState } from 'react-firebase-hooks/auth'
@@ -13,10 +13,18 @@ import { useSelector } from 'react-redux'
 interface IProps {
     selectedCommunityID : string
     setSelectedCommunityID : React.Dispatch<React.SetStateAction<string>>
-  }
+}
+
+ enum addPostStatuses {
+        SUCCESS,
+        LOADING,
+        ERROR,
+        IDLE ,
+    }
 
 
 const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) => {
+    let status = addPostStatuses.IDLE
     const [hydrated, setHydrated] = useState<boolean>(false);
     const [user] = useAuthState(auth)
     const {currentUserData} = useSelector((state:any) => state?.user)
@@ -26,7 +34,11 @@ const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) =>
     const [postCaptionInput, setPostCaptionInput ] = useState<string>("")
     const [postURLInput, setPostURLInput ] = useState<string>("")
     const [postMedia, setPostMedia] = useState<any>([])
-    const [mediaURL, setMediaURL] = useState<string>("")
+    const [mediaURLstate, setMediaURLstate] = useState<string>("")
+    const [image, setImage] = useState<any>([])
+
+   
+
 
     const [subbreditsJoined, setSubbreditsJoined] = useState<any>([])
     const postsCollectionRef = collection(db, "posts")
@@ -38,19 +50,84 @@ const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) =>
     
     
     const uploadMedia = async () => {
-        // console.log(postMedia[0].name);
-        if(postMedia == null) {
-            alert("Upload a file.....")
-            return;
-        }
-       
+        console.log(`uploadMedia Function is running`);
+            if(!postMedia[0]) {
+                console.log("============ > Upload a file.....")
+                console.log(postMedia[0]);
+            } else if (postMedia[0]) {
+                // status = addPostStatuses.LOADING
+                console.log(`===== else if is running ====`);
+                
+                const mediaRef = ref(storage, 'posts/' + uuidv4() + "--" + postMedia[0].name)
+                const uploadMedia = uploadBytesResumable(mediaRef, postMedia[0])
+        
+                uploadMedia.on("state_changed" , (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                        console.log(`upload is ${progress}% done`);
+                        
+                },
+                (error) => {
+                    alert(error)
+                    return
+                }, 
+                () => {
+                    getDownloadURL(uploadMedia.snapshot.ref).then((downloadURL) => {
+                        setMediaURLstate((prev) => {
+                            return prev = downloadURL
+                        })
+                        console.log('File available at', downloadURL);
+                        // status = addPostStatuses.IDLE
+                    });
+                })
+
+            
+            }
+            
+            
+            
+                
+
+    }
+
+    
+
+    const addPost = async () => {
+        console.log(`--------------- addPost is running ------------------`);
+        
         try {
-            const mediaRef = ref(storage, uuidv4() + "--" + postMedia[0].name)
+            // status = addPostStatuses.LOADING
+            // ---- adding post to post collection ----
+            setTimeout(async() => {
+                const postDoc = await addDoc(postsCollectionRef, {
+                    postTitle : postTitleInput,
+                    postedAtSubbredditID : selectedCommunityID,
+                    creatorUserID : user?.uid,
+                    mediaURL: mediaURLstate,
+                })
+    
+                // ---- adding post to subreddit posts sub-collection ----
+                const subredditPostsSubCollectionRef = collection(db, `subreddits/${selectedCommunityID}/subredditPosts`); 
+                const addPostToSubreddit = await addDoc(subredditPostsSubCollectionRef, {
+                    postID: postDoc.id,
+                    postTitle : postTitleInput,
+                    creatorUserID : user?.uid,
+                    mediaURL: mediaURLstate,
+                })
+    
+                // Upadating User
+                const userRef = doc(db, "users" , user?.uid as string)
+                const updateUser = await updateDoc(userRef, {
+                    createdPostsID: arrayUnion(postDoc.id)
+                })
+    
+    
+                // ---- Reseting States ----
+                setPostTitleInput("")
+                setSelectedCommunityID('')
+                setPostMedia([])
+                // status = addPostStatuses.IDLE
+            }, 3000);
 
-
-
-            // ---- Resetting States ----- 
-            setPostMedia([])
         } catch (error) {
             console.log(error);
             
@@ -59,40 +136,11 @@ const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) =>
 
     
 
-    const addPost = async () => {
-        // ---- adding post to post collection ----
-        const postDoc = await addDoc(postsCollectionRef, {
-            postTitle : postTitleInput,
-            postedAtSubbredditID : selectedCommunityID,
-            creatorUserID : user?.uid
-        })
-
-        // ---- adding post to subreddit posts sub-collection ----
-        const subredditPostsSubCollectionRef = collection(db, `subreddits/${selectedCommunityID}/subredditPosts`); 
-        const addPostToSubreddit = await addDoc(subredditPostsSubCollectionRef, {
-            postID: postDoc.id,
-            postTitle : postTitleInput,
-            creatorUserID : user?.uid
-        })
-
-        // Upadating User
-        const userRef = doc(db, "users" , user?.uid as string)
-        const updateUser = await updateDoc(userRef, {
-            createdPostsID: arrayUnion(postDoc.id)
-        })
-
-
-        // ---- Reseting States ----
-        setPostTitleInput("")
-        setSelectedCommunityID('')
-    }
-
-    
-
 
 
     useEffect(() => {
         setHydrated(true)
+        // status = addPostStatuses.IDLE
         currentUserData?.subredditsJoinedID?.map((subreddit:any) => (
             setSubbreditsJoined([...subbreditsJoined , subreddit])
         ))
@@ -103,41 +151,156 @@ const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) =>
 
   return (
     <div className='w-full bg-white h-full rounded-xl shadow-lg py-0  '>
+        {/* <h1 className='text-4xl'> {status} </h1> */}
+        {status === addPostStatuses.IDLE && <div className='w-auto h-auto' >
+            <div className='flex justify-between items-center rounded-xl border-b border-b-gray-400'>
+                <button 
+                    type='button' 
+                    onClick={() => setUploadType('post')}
+                    className="w-full h-full flex justify-center items-center space-x-3 border-r border-r-gray-400  rounded-sm py-3 hover:cursor-pointer"    
+                    
+                > 
+                    <RiFileList2Line className='text-gray-700 w-5 h-5'/>
+                    <span className='font-medium text-gray-700 text-base'> Post </span>
+                </button>
+    
+                <button 
+                    type='button' 
+                    onClick={() => setUploadType('imagesAndVideo')}
+                    className="w-full h-full flex justify-center items-center space-x-3 border-r border-r-gray-400  rounded-sm py-3 hover:cursor-pointer"    
+                >
+                    <RiImage2Fill className='text-gray-700 w-5 h-5'/>
+                    <span className='font-medium text-gray-700 text-base'> Images & Video  </span> 
+                </button>
 
-        <div className='flex justify-between items-center rounded-xl border-b border-b-gray-400'>
-            <button 
-                type='button' 
-                onClick={() => setUploadType('post')}
-                className="w-full h-full flex justify-center items-center space-x-3 border-r border-r-gray-400  rounded-sm py-3 hover:cursor-pointer"    
-                
-            > 
-                <RiFileList2Line className='text-gray-700 w-5 h-5'/>
-                <span className='font-medium text-gray-700 text-base'> Post </span>
-            </button>
- 
-            <button 
-                type='button' 
-                onClick={() => setUploadType('imagesAndVideo')}
-                className="w-full h-full flex justify-center items-center space-x-3 border-r border-r-gray-400  rounded-sm py-3 hover:cursor-pointer"    
-            >
-                <RiImage2Fill className='text-gray-700 w-5 h-5'/>
-                <span className='font-medium text-gray-700 text-base'> Images & Video  </span> 
-            </button>
-
-            <button 
-                type='button' 
-                onClick={() => setUploadType('link')}
-                className="w-full h-full flex justify-center items-center space-x-3 rounded-sm py-3 hover:cursor-pointer"    
-            > 
-                <TfiLink className='text-gray-700 w-5 h-5'/>
-                <span className='font-medium text-gray-700 text-base'> Link  </span>
-            </button>
-        </div>
+                <button 
+                    type='button' 
+                    onClick={() => setUploadType('link')}
+                    className="w-full h-full flex justify-center items-center space-x-3 rounded-sm py-3 hover:cursor-pointer"    
+                > 
+                    <TfiLink className='text-gray-700 w-5 h-5'/>
+                    <span className='font-medium text-gray-700 text-base'> Link  </span>
+                </button>
+            </div>
 
 
-        {uploadType === "post" &&  (
-            <div
-                className='w-full h-full  flex flex-col items-center justify-between space-y-2 bg-red-100 rounded-xl py-5'
+            {uploadType === "post" &&  (
+                <div
+                    className='w-full h-full  flex flex-col items-center justify-between space-y-2 bg-red-100 rounded-xl py-5'
+                > 
+                    <div className='w-full flex flex-col justify-center items-center space-y-2'>
+                        <input
+                            type="text" 
+                            placeholder='Title'    
+                            className='w-[90%] h-12 outline-none border border-gray-200 rounded-md px-3 placeholder:text-gray-600 focus:border focus:border-gray-400'
+                            value={postTitleInput}
+                            onChange={(e) => setPostTitleInput(e.target.value)}
+                        />
+                        <textarea 
+                            placeholder='Caption'
+                            className='w-[90%] h-24 outline-none border border-gray-200 rounded-md px-3 placeholder:text-gray-600 focus:border focus:border-gray-400'
+                        />
+                    </div>
+
+                    <div className='w-full flex justify-end items-center px-5 py-1'>
+                        <button
+                            type='button'
+                            onClick={() => {
+                                status = addPostStatuses.LOADING
+                                uploadMedia()
+                                addPost()
+                                status = addPostStatuses.IDLE
+                            }}
+                            className='px-4 py-1 border-none outline-none bg-[#0079D3] rounded-full text-white font-medium text-base'
+                        > Post </button>
+                    </div>
+
+                            
+                </div>
+            )}
+
+            {uploadType === "imagesAndVideo" &&  (
+                <div
+                className='w-full h-full  flex flex-col items-center justify-between space-y-2 bg-red-400 rounded-xl py-5'
+
+                > 
+                <div className='w-full flex flex-col justify-center items-center space-y-2'>
+                    <input
+                        type="text" 
+                        placeholder='Title'    
+                        className='w-[90%] h-12 outline-none border border-gray-200 rounded-md px-3 placeholder:text-gray-600 focus:border focus:border-gray-400'
+                        value={postTitleInput}
+                        onChange={(e) => setPostTitleInput(e.target.value)}
+                    />
+                    
+                    <div className='w-[90%] h-full p-2 bg-gray-100 flex justify-center items-center outline-none border border-gray-200 rounded-md'>
+
+                        {/* <div onClick={() => console.log(1)}> LOG --- addPostStatuses : {addPostStatuses} </div> */}
+                        
+                        <div className="flex items-center justify-center w-full bg-purple-500" >   
+                            <label 
+                                htmlFor="dropzone-file" 
+                                className="flex flex-col items-center justify-center w-full h-64 border-2 rounded-lg cursor-pointer bg-transparent ">
+                                {!mediaURLstate && <div className="flex flex-col items-center justify-center pt-5 pb-6 bg-transparent">
+                                    <svg aria-hidden="true" className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                                </div>}
+
+                                {mediaURLstate && (
+                                    <img src={mediaURLstate} alt="" className='h-20 w-20 rounded-md aspect-square' />
+                                )}
+
+                                <h1 onClick={() => console.log(mediaURLstate)}> Log mediaURLstate = {mediaURLstate} </h1>
+                                {/* { image && <img src={image} alt="imageState" className='w-20 h-20 aspect-square' />} */}
+
+                                <input 
+                                    id="dropzone-file" 
+                                    type="file" 
+                                    accept='image/png , image/jpeg'
+                                    className="hidden" 
+                                    onChange={(e) => {
+                                        setPostMedia((prev:any) => {
+                                            return prev = e.target.files
+                                        })
+
+                                        // let binaryData = [];
+                                        // binaryData.push(postMedia[0]);
+                                        // setImage(window.URL.createObjectURL(new Blob(binaryData)))
+                                        // setImage(URL.createObjectURL(postMedia[0]))
+                                    }}
+
+                                    />
+                            </label>
+                        </div> 
+
+
+                    </div>
+                    
+                </div>
+
+                <div className='w-full flex justify-end items-center px-5 py-1'>
+                    <button
+                        type='button'
+                        className='px-4 py-1 border-none outline-none bg-[#0079D3] rounded-full text-white font-medium text-base'
+                        onClick={() => {
+                            uploadMedia()
+                            setTimeout(() => {
+                                if(mediaURLstate) {
+                                    addPost()
+                            }}, 2000);
+                            
+                            
+                        }}
+                    > Post </button>
+                </div>
+
+                        
+                </div>
+            )}
+
+            {uploadType === "link" &&  (
+                <div
+                className='w-full h-full  flex flex-col items-center justify-between space-y-2 bg-red-500 rounded-xl py-5'
             > 
                 <div className='w-full flex flex-col justify-center items-center space-y-2'>
                     <input
@@ -147,95 +310,32 @@ const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) =>
                         value={postTitleInput}
                         onChange={(e) => setPostTitleInput(e.target.value)}
                     />
-                    <textarea 
-                        placeholder='Caption'
-                        className='w-[90%] h-24 outline-none border border-gray-200 rounded-md px-3 placeholder:text-gray-600 focus:border focus:border-gray-400'
+                    <input
+                        type="text" 
+                        placeholder='Url'    
+                        className='w-[90%] h-12 outline-none border border-gray-200 rounded-md px-3 placeholder:text-gray-600 focus:border focus:border-gray-400'
+                        value={postURLInput}
+                        onChange={(e) => setPostURLInput(e.target.value)}
                     />
                 </div>
 
                 <div className='w-full flex justify-end items-center px-5 py-1'>
                     <button
                         type='button'
-                        onClick={addPost}
+                        onClick={() => {
+                            // uploadMedia()
+                            // addPost()
+                            console.log(status);
+                            
+                        }}
                         className='px-4 py-1 border-none outline-none bg-[#0079D3] rounded-full text-white font-medium text-base'
-                    > Post </button>
+                    > status </button>
                 </div>
 
-                           
+                        
             </div>
-        )}
-
-        {uploadType === "imagesAndVideo" &&  (
-            <div
-            className='w-full h-full  flex flex-col items-center justify-between space-y-2 bg-red-100 rounded-xl py-5'
-            > 
-            <div className='w-full flex flex-col justify-center items-center space-y-2'>
-                <input
-                    type="text" 
-                    placeholder='Title'    
-                    className='w-[90%] h-12 outline-none border border-gray-200 rounded-md px-3 placeholder:text-gray-600 focus:border focus:border-gray-400'
-                    value={postTitleInput}
-                    onChange={(e) => setPostTitleInput(e.target.value)}
-                />
-                
-                <div className='w-[90%] h-40 bg-red-200 flex justify-center items-center outline-none border border-gray-200 rounded-md'>
-                    <input 
-                        placeholder='upload'
-                        type="file"
-                        className='px-3 py-1 border-none outline-none bg-[#0079D3] rounded-full text-white font-medium text-base'
-                        onChange={(e) => setPostMedia(e?.target?.files)}
-                    />
-                    <button
-                        type='button'
-                        onClick={uploadMedia}
-                    > Upload </button>
-                </div>
-                
-            </div>
-
-            <div className='w-full flex justify-end items-center px-5 py-1'>
-                <button
-                    type='button'
-                    className='px-4 py-1 border-none outline-none bg-[#0079D3] rounded-full text-white font-medium text-base'
-                    onClick={() => console.log(subbreditsJoined)}
-                > Post </button>
-            </div>
-
-                       
-        </div>
-        )}
-
-        {uploadType === "link" &&  (
-            <div
-            className='w-full h-full  flex flex-col items-center justify-between space-y-2 bg-red-500 rounded-xl py-5'
-        > 
-            <div className='w-full flex flex-col justify-center items-center space-y-2'>
-                <input
-                    type="text" 
-                    placeholder='Title'    
-                    className='w-[90%] h-12 outline-none border border-gray-200 rounded-md px-3 placeholder:text-gray-600 focus:border focus:border-gray-400'
-                    value={postTitleInput}
-                    onChange={(e) => setPostTitleInput(e.target.value)}
-                />
-                <input
-                    type="text" 
-                    placeholder='Url'    
-                    className='w-[90%] h-12 outline-none border border-gray-200 rounded-md px-3 placeholder:text-gray-600 focus:border focus:border-gray-400'
-                    value={postURLInput}
-                    onChange={(e) => setPostURLInput(e.target.value)}
-                />
-            </div>
-
-            <div className='w-full flex justify-end items-center px-5 py-1'>
-                <button
-                    
-                    className='px-4 py-1 border-none outline-none bg-[#0079D3] rounded-full text-white font-medium text-base'
-                > Post </button>
-            </div>
-
-                       
-        </div>
-        )}
+            )}
+        </div>}
     </div>
   )
 }
