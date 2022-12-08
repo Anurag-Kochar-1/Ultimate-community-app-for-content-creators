@@ -7,11 +7,12 @@ import { useSelector } from "react-redux"
 import { arrayUnion, doc, updateDoc } from 'firebase/firestore'
 import { auth, db } from '../../../../firebaseConfig'
 import { useAuthState } from 'react-firebase-hooks/auth'
+
+
 const TopSection = () => {
     const [user, loading] = useAuthState(auth)
     const {subredditData} = useSelector((state:any) => state.subreddit)
 
-    
     
     const addMember = async () => {
         const subredditRef = doc(db, "subreddits" , subredditData?.subredditID)

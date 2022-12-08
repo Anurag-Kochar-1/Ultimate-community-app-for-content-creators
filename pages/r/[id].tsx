@@ -70,7 +70,7 @@ const SubredditHomePage = () => {
         className='w-full h-[92vh] mt-[7vh] bg-[#EDEFF1] flex flex-col justify-start items-center overflow-x-hidden overflow-y-scroll '
       >
        <TopSection />
-       {/* <h1 className='text-4xl' onClick={() => console.log(subredditStateRedux?.subredditData?.members)}> LOG members  </h1> */}
+       <h1 className='text-4xl' onClick={() => console.log(docs)}> LOG docs  </h1>
        <Tabs />
     
       
@@ -81,8 +81,10 @@ const SubredditHomePage = () => {
       )}
 
       {docs && docs.map((post) => (
-        <Post key={post.postTile} at={"subbredditPage"} post={post} />
+        <Post key={post.postID} at={"subbredditPage"} post={post} />
       ))}
+
+
 
 
 

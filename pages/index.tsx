@@ -85,7 +85,7 @@ const Home: NextPage = () => {
   return (
     
     <HomePageLayout>
-      <h1 className='mt-20 text-xl font-semibold' onClick={() => {
+      {/* <h1 className='mt-20 text-xl font-semibold' onClick={() => {
         // console.log(currentUser[0]?.subredditsOwnedID[0])
         console.log(currentUser)
 
@@ -97,7 +97,7 @@ const Home: NextPage = () => {
 
       <h1 className='mt-20 text-xl font-semibold' onClick={() => {
         console.log(1)
-      }} > LOG docs </h1>
+      }} > LOG docs </h1> */}
 
       {/* {docs && docs.map((doc) => (
         <p> {doc.subredditID} </p>

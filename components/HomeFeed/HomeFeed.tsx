@@ -25,12 +25,16 @@ const HomeFeed = () => {
 
   const fetchingPosts = async() => {
     const allPostsData = await getDocs(postCollectionRef)
-    allPostsData.docs.forEach((post) => (
-      // setAllPosts([...allPosts , post.data()])
-      console.log(post.data())
-    ))
+    allPostsData.docs.forEach((post) => {
+      // console.log(post.data());
+      // console.log(post.id);
+    })
+
+    setAllPosts(allPostsData?.docs.map((doc) => ({ ...doc.data(), postID: doc.id })));
     
   }
+
+  
 
   
   useEffect(() => {
@@ -40,10 +44,10 @@ const HomeFeed = () => {
 
   return (
     <div 
-    className='w-[100%] lg:w-[70%] h-[90vh] bg-red-900'
+    className='w-[100%] lg:w-[70%] h-[90vh] flex flex-col justify-start items-center bg-[#EDEFF1] overflow-x-hidden overflow-y-scroll'
     >
       <HomeFeedHeader />
-      {/* <h1 className='text-xl text-center' onClick={() => console.log(currentUserData)}> LOG userRedux : subredditsOwnedID : {currentUserData?.subredditsOwnedID} </h1> */}
+      {/* <h1 className='text-xl text-center' onClick={() => console.log(allPosts)}> LOG allPosts </h1> */}
 
 
       {allSubreddits && allSubreddits.map((subreddit) => {
@@ -53,7 +57,7 @@ const HomeFeed = () => {
       })}
 
       {allPosts && allPosts.map((post:any) => (
-        <Post key={post.postTile} at='homepage' post={post} />
+        <Post key={post.postTitle} at='homepage' post={post} />
       ))}
 
 

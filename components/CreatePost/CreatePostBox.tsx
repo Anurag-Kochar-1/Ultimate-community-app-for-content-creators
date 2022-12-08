@@ -9,11 +9,15 @@ import { v4 as uuidv4 } from "uuid"
 import { addDoc, arrayUnion, collection, doc, setDoc, updateDoc } from 'firebase/firestore'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { useSelector } from 'react-redux'
+import {useRouter} from "next/router"
+
 
 interface IProps {
-    selectedCommunityID : string
-    setSelectedCommunityID : React.Dispatch<React.SetStateAction<string>>
-}
+    selectedCommunity : any[]
+    setSelectedCommunity : React.Dispatch<React.SetStateAction<any[]>>
+    selectedCommunity2 : any[]
+    setSelectedCommunity2 : React.Dispatch<React.SetStateAction<any[]>>
+  }
 
  enum addPostStatuses {
         SUCCESS,
@@ -23,21 +27,23 @@ interface IProps {
     }
 
 
-const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) => {
+const CreatePostBox =  ({selectedCommunity, setSelectedCommunity, selectedCommunity2 , setSelectedCommunity2}:IProps) => {
     let status = addPostStatuses.IDLE
     const [hydrated, setHydrated] = useState<boolean>(false);
     const [user] = useAuthState(auth)
     const {currentUserData} = useSelector((state:any) => state?.user)
     const [ uploadType, setUploadType ] = useState<string>('post')
 
-    const [selectedSubredditID, setSelectedSubredditID] = useState<string>("")
+    // const [selectedSubredditID, setSelectedSubredditID] = useState<string>("")
     const [postTitleInput, setPostTitleInput ] = useState<string>("")
     const [postCaptionInput, setPostCaptionInput ] = useState<string>("")
     const [postURLInput, setPostURLInput ] = useState<string>("")
-    const [postMedia, setPostMedia] = useState<any>([])
-    const [mediaURLstate, setMediaURLstate] = useState<string>("")
-    const [image, setImage] = useState<any>([])
 
+    const [postMedia, setPostMedia] = useState<any>(null)
+    const [mediaURLstate, setMediaURLstate] = useState<string>("")
+    const [postingStatus, setPostingStatus] = useState<string>("IDLE")
+
+    const router = useRouter()
    
 
 
@@ -51,81 +57,113 @@ const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) =>
     
     
     const uploadMedia = async () => {
-        console.log(`uploadMedia Function is running`);
-            if(!postMedia[0]) {
-                console.log("============ > Upload a file.....")
-                console.log(postMedia[0]);
-            } else if (postMedia[0]) {
-                // status = addPostStatuses.LOADING
-                console.log(`===== else if is running ====`);
-                
-                const mediaRef = ref(storage, 'posts/' + uuidv4() + "--" + postMedia[0].name)
-                const uploadMedia = uploadBytesResumable(mediaRef, postMedia[0])
+        console.log(`---------------- uploadMedia is running ------------------`)
+        if( postMedia ) {
+            setPostingStatus("LOADING")
+            console.log(`---- post media founded -----`)
+            const mediaRef = ref(storage, 'posts/' + uuidv4() + "--" + postMedia[0].name)
+            const uploadMedia = uploadBytesResumable(mediaRef, postMedia[0])
         
-                uploadMedia.on("state_changed" , (snapshot) => {
+            uploadMedia.on("state_changed" , (snapshot) => {
                         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
                         console.log(`upload is ${progress}% done`);
                         
-                },
-                (error) => {
-                    alert(error)
-                    return
-                }, 
-                () => {
-                    getDownloadURL(uploadMedia.snapshot.ref).then((downloadURL) => {
-                        setMediaURLstate((prev) => {
-                            return prev = downloadURL
-                        })
-                        console.log('File available at', downloadURL);
-                        // status = addPostStatuses.IDLE
-                    });
-                }) 
-            }         
+            },
+            (error) => {
+                alert(error)
+            }, 
+            () => {
+                getDownloadURL(uploadMedia.snapshot.ref).then((downloadURL) => {
+                    // setMediaURLstate((prev) => {
+                    //         return prev = downloadURL
+                    // })
+                    // console.log('File available at', mediaURLstate);
+                    setTimeout(() => {
+                        console.log(`====== setTimeout ======`);
+                        
+                        addPost(downloadURL)
+                        
+                    }, 3000);
+                });
+                
+                
+            }) 
+
+
+            
+        }
+        else if (postMedia == null) {
+            console.log(`---- NO post media -----`)
+            addPost()
+        }
+                    
     }
 
     
 
-    const addPost = async () => {
+    const addPost = async (downloadURL?:string) => {
         console.log(`--------------- addPost is running ------------------`);
         
         try {
-            setTimeout(async() => {
+                setPostingStatus("LOADING")
                 const postDoc = await addDoc(postsCollectionRef, {
+                    postID: "",
                     postTitle : postTitleInput,
                     postCaption : postCaptionInput,
-                    postedAtSubbredditID : selectedCommunityID,
+                    postedAtSubbredditID : selectedCommunity2[0].subredditID,
+                    postedAtSubbredditName : selectedCommunity2[0].subredditName,
+                    postedAtSubbredditLogo : selectedCommunity2[0].logo,
                     postURL : postURLInput,
                     creatorUserID : user?.uid,
-                    mediaURL: mediaURLstate,
+
+                    mediaURL: downloadURL,
+                    // mediaURL: mediaURLstate ? mediaURLstate : null,
+
+                    creatorUsername : user?.displayName,
+                    upvotedBy: [],
+                    downvotedBy: [],
+                    comments: []
                 })
     
                 // ---- adding post to subreddit posts sub-collection ----
-                const subredditPostsSubCollectionRef = collection(db, `subreddits/${selectedCommunityID}/subredditPosts`); 
-                const addPostToSubreddit = await addDoc(subredditPostsSubCollectionRef, {
-                    postID: postDoc.id,
+                const subredditPostsSubCollectionRef = collection(db, `subreddits/${selectedCommunity2[0].subredditID as string}/subredditPosts`); 
+                await addDoc(subredditPostsSubCollectionRef, {
+                    postID: "",
                     postTitle : postTitleInput,
                     postCaption : postCaptionInput,
-                    postedAtSubbredditID : selectedCommunityID,
+                    postedAtSubbredditID : selectedCommunity2[0].subredditID,
+                    postedAtSubbredditName : selectedCommunity2[0].subredditName,
+                    postedAtSubbredditLogo : selectedCommunity2[0].logo,
                     postURL : postURLInput,
                     creatorUserID : user?.uid,
-                    mediaURL: mediaURLstate,
+
+                    mediaURL: downloadURL,
+
+                    creatorUsername : user?.displayName,
+                    upvotedBy: [],
+                    downvotedBy: [],
+                    comments: []
                 })
     
                 // ---- Upadating User ----
                 const userRef = doc(db, "users" , user?.uid as string)
-                const updateUser = await updateDoc(userRef, {
+                await updateDoc(userRef, {
                     createdPostsID: arrayUnion(postDoc.id)
                 })
     
     
                 // ---- Reseting States ----
+
+                router.push("/")
+
                 setPostTitleInput("")
                 setPostCaptionInput("")
-                setSelectedCommunityID('')
+                setSelectedCommunity2([])
                 setPostURLInput("")
-                setPostMedia([])
-                // status = addPostStatuses.IDLE
-            }, 3000);
+                setPostMedia(null)
+                setMediaURLstate("")
+
+                setPostingStatus("IDLE")
 
         } catch (error) {
             console.log(error);
@@ -150,8 +188,8 @@ const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) =>
 
   return (
     <div className='w-full bg-white h-full rounded-xl shadow-lg py-0  '>
-        {/* <h1 className='text-4xl'> {status} </h1> */}
-        {status === addPostStatuses.IDLE && <div className='w-auto h-auto' >
+        {/* <h1 className='text-xl' onClick={() => console.log(postMedia)}> postMedia </h1> */}
+        {postingStatus === "IDLE" && <div className='w-auto h-auto' >
             <div className='flex justify-between items-center rounded-xl border-b border-b-gray-400'>
                 <button 
                     type='button' 
@@ -205,10 +243,7 @@ const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) =>
                         <button
                             type='button'
                             onClick={() => {
-                                status = addPostStatuses.LOADING
                                 uploadMedia()
-                                addPost()
-                                status = addPostStatuses.IDLE
                             }}
                             className='px-4 py-1 border-none outline-none bg-[#0079D3] rounded-full text-white font-medium text-base'
                         > Post </button>
@@ -245,11 +280,11 @@ const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) =>
                                     <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
                                 </div>}
 
-                                {mediaURLstate && (
+                                {/* {mediaURLstate && (
                                     <img src={mediaURLstate} alt="" className='h-20 w-20 rounded-md aspect-square' />
-                                )}
+                                )} */}
 
-                                <h1 onClick={() => console.log(mediaURLstate)}> Log mediaURLstate = {mediaURLstate} </h1>
+                                {/* <h1 onClick={() => console.log(mediaURLstate)}> Log mediaURLstate = {mediaURLstate} </h1> */}
                                 {/* { image && <img src={image} alt="imageState" className='w-20 h-20 aspect-square' />} */}
 
                                 <input 
@@ -283,12 +318,6 @@ const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) =>
                         className='px-4 py-1 border-none outline-none bg-[#0079D3] rounded-full text-white font-medium text-base'
                         onClick={() => {
                             uploadMedia()
-                            setTimeout(() => {
-                                if(mediaURLstate) {
-                                    addPost()
-                            }}, 2000);
-                            
-                            
                         }}
                     > Post </button>
                 </div>
@@ -322,19 +351,23 @@ const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) =>
                     <button
                         type='button'
                         onClick={() => {
-                            // uploadMedia()
-                            // addPost()
-                            console.log(status);
-                            
+                            uploadMedia()
                         }}
                         className='px-4 py-1 border-none outline-none bg-[#0079D3] rounded-full text-white font-medium text-base'
-                    > status </button>
+                    > Post </button>
                 </div>
 
                         
             </div>
             )}
         </div>}
+
+
+        {postingStatus == "LOADING" && (
+            <div>
+                <h1 className='text-5xl'> POSTING..... </h1>
+            </div>
+        )}
     </div>
   )
 }
