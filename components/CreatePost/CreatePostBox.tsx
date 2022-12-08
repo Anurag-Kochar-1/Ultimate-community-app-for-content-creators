@@ -29,6 +29,7 @@ const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) =>
     const [user] = useAuthState(auth)
     const {currentUserData} = useSelector((state:any) => state?.user)
     const [ uploadType, setUploadType ] = useState<string>('post')
+
     const [selectedSubredditID, setSelectedSubredditID] = useState<string>("")
     const [postTitleInput, setPostTitleInput ] = useState<string>("")
     const [postCaptionInput, setPostCaptionInput ] = useState<string>("")
@@ -78,15 +79,8 @@ const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) =>
                         console.log('File available at', downloadURL);
                         // status = addPostStatuses.IDLE
                     });
-                })
-
-            
-            }
-            
-            
-            
-                
-
+                }) 
+            }         
     }
 
     
@@ -95,12 +89,12 @@ const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) =>
         console.log(`--------------- addPost is running ------------------`);
         
         try {
-            // status = addPostStatuses.LOADING
-            // ---- adding post to post collection ----
             setTimeout(async() => {
                 const postDoc = await addDoc(postsCollectionRef, {
                     postTitle : postTitleInput,
+                    postCaption : postCaptionInput,
                     postedAtSubbredditID : selectedCommunityID,
+                    postURL : postURLInput,
                     creatorUserID : user?.uid,
                     mediaURL: mediaURLstate,
                 })
@@ -110,11 +104,14 @@ const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) =>
                 const addPostToSubreddit = await addDoc(subredditPostsSubCollectionRef, {
                     postID: postDoc.id,
                     postTitle : postTitleInput,
+                    postCaption : postCaptionInput,
+                    postedAtSubbredditID : selectedCommunityID,
+                    postURL : postURLInput,
                     creatorUserID : user?.uid,
                     mediaURL: mediaURLstate,
                 })
     
-                // Upadating User
+                // ---- Upadating User ----
                 const userRef = doc(db, "users" , user?.uid as string)
                 const updateUser = await updateDoc(userRef, {
                     createdPostsID: arrayUnion(postDoc.id)
@@ -123,7 +120,9 @@ const CreatePostBox =  ({selectedCommunityID, setSelectedCommunityID}:IProps) =>
     
                 // ---- Reseting States ----
                 setPostTitleInput("")
+                setPostCaptionInput("")
                 setSelectedCommunityID('')
+                setPostURLInput("")
                 setPostMedia([])
                 // status = addPostStatuses.IDLE
             }, 3000);

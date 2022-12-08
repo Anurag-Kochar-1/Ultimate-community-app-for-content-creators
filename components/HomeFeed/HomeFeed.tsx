@@ -6,13 +6,16 @@ import { auth, db } from '../../firebaseConfig'
 import Link from 'next/link'
 import { useSelector } from 'react-redux'
 import { useAuthState } from 'react-firebase-hooks/auth'
+import Post from '../Post/Post'
 
 const HomeFeed = () => {
   const [user] = useAuthState(auth)
+  const [allSubreddits, setAllSubdreddits] = useState<any[]>([])
+  const [allPosts, setAllPosts] = useState<any>([])
   const { currentUserData } = useSelector((state:any) => state.user)
 
-  const [allSubreddits, setAllSubdreddits] = useState<any[]>([])
   const subredditCollectionRef = collection(db, "subreddits")
+  const postCollectionRef = collection(db, 'posts')
   
   const fetchingSubreddits = async () => {
     const subredditsCollection = await getDocs(subredditCollectionRef)
@@ -20,10 +23,19 @@ const HomeFeed = () => {
     
   }
 
+  const fetchingPosts = async() => {
+    const allPostsData = await getDocs(postCollectionRef)
+    allPostsData.docs.forEach((post) => (
+      // setAllPosts([...allPosts , post.data()])
+      console.log(post.data())
+    ))
+    
+  }
 
   
   useEffect(() => {
     fetchingSubreddits()
+    fetchingPosts()
   },[])
 
   return (
@@ -31,7 +43,7 @@ const HomeFeed = () => {
     className='w-[100%] lg:w-[70%] h-[90vh] bg-red-900'
     >
       <HomeFeedHeader />
-      <h1 className='text-xl text-center' onClick={() => console.log(currentUserData)}> LOG userRedux : subredditsOwnedID : {currentUserData?.subredditsOwnedID} </h1>
+      {/* <h1 className='text-xl text-center' onClick={() => console.log(currentUserData)}> LOG userRedux : subredditsOwnedID : {currentUserData?.subredditsOwnedID} </h1> */}
 
 
       {allSubreddits && allSubreddits.map((subreddit) => {
@@ -39,6 +51,12 @@ const HomeFeed = () => {
                     <h1 className='text-xl text-white' > {subreddit.subredditName} </h1>
                 </Link> )
       })}
+
+      {allPosts && allPosts.map((post:any) => (
+        <Post key={post.postTile} at='homepage' post={post} />
+      ))}
+
+
 
     </div>
   )

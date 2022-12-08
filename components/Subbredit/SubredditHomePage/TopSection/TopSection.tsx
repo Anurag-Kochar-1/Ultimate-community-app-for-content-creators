@@ -13,8 +13,6 @@ const TopSection = () => {
 
     
     
-    
-    
     const addMember = async () => {
         const subredditRef = doc(db, "subreddits" , subredditData?.subredditID)
         console.log(`adding to ${subredditData?.subredditID}`);

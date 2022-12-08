@@ -13,3 +13,9 @@
 1. creating Post to posts collection
 2. Adding posts ID to user's createdPostID array
 3. Adding posts  to subreddit's posts sub collection
+
+
+============ Todos =================
+Post UI
+
+learn snapshot
