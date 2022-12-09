@@ -12,7 +12,7 @@ const HomeFeed = () => {
   const [user] = useAuthState(auth)
   const [allSubreddits, setAllSubdreddits] = useState<any[]>([])
   const [allPosts, setAllPosts] = useState<any>([])
-  const { currentUserData } = useSelector((state:any) => state.user)
+  const { currentUserData, joinedSubredditsData, ownedSubredditsData } = useSelector((state:any) => state.user)
 
   const subredditCollectionRef = collection(db, "subreddits")
   const postCollectionRef = collection(db, 'posts')
@@ -47,7 +47,9 @@ const HomeFeed = () => {
     className='w-[100%] lg:w-[70%] h-[90vh] flex flex-col justify-start items-center bg-[#EDEFF1] overflow-x-hidden overflow-y-scroll'
     >
       <HomeFeedHeader />
-      {/* <h1 className='text-xl text-center' onClick={() => console.log(allPosts)}> LOG allPosts </h1> */}
+      <h1 className='text-xl text-center' onClick={() => console.log(currentUserData)}> LOG currentUserData Redux </h1>
+      <h1 className='text-xl text-center' onClick={() => console.log(joinedSubredditsData)}> LOG joinedSubredditData Redux </h1>
+      <h1 className='text-xl text-center' onClick={() => console.log(ownedSubredditsData)}> LOG ownedSubredditsData Redux </h1>
 
 
       {allSubreddits && allSubreddits.map((subreddit) => {
