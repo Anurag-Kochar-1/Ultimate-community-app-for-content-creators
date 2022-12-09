@@ -94,14 +94,14 @@ const CreatePostBox =  ({selectedCommunity, setSelectedCommunity, selectedCommun
         }
         else if (postMedia == null) {
             console.log(`---- NO post media -----`)
-            addPost()
+            addPost(null)
         }
                     
     }
 
     
 
-    const addPost = async (downloadURL?:string) => {
+    const addPost = async (downloadURL:any) => {
         console.log(`--------------- addPost is running ------------------`);
         
         try {
@@ -126,8 +126,8 @@ const CreatePostBox =  ({selectedCommunity, setSelectedCommunity, selectedCommun
                 })
     
                 // ---- adding post to subreddit posts sub-collection ----
-                const subredditPostsSubCollectionRef = collection(db, `subreddits/${selectedCommunity2[0].subredditID as string}/subredditPosts`); 
-                await addDoc(subredditPostsSubCollectionRef, {
+                const subredditPostsSubCollectionRef = doc(db, `subreddits/${selectedCommunity2[0].subredditID as string}/subredditPosts/${postDoc.id}`); 
+                await setDoc(subredditPostsSubCollectionRef, {
                     postID: "",
                     postTitle : postTitleInput,
                     postCaption : postCaptionInput,
@@ -149,6 +149,13 @@ const CreatePostBox =  ({selectedCommunity, setSelectedCommunity, selectedCommun
                 const userRef = doc(db, "users" , user?.uid as string)
                 await updateDoc(userRef, {
                     createdPostsID: arrayUnion(postDoc.id)
+                })
+
+
+                // ---- Changing ID ---- 
+                const currentPostRef = doc(db, "posts", postDoc.id)
+                await updateDoc(currentPostRef, {
+                    postID: postDoc.id
                 })
     
     

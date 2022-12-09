@@ -1,7 +1,7 @@
 import React, {useEffect , useState} from 'react'
 import { useRouter } from "next/router"
 import SubredditPageLayout from '../../components/Layouts/SubredditPageLayout'
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore'
 import { auth, db } from '../../firebaseConfig'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSubreddit } from '../../redux/subredditSlice'
@@ -9,7 +9,7 @@ import RightBar from '../../components/Sidebars/RightBar/RightBar'
 import TopSection from '../../components/Subbredit/SubredditHomePage/TopSection/TopSection'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import Tabs from '../../components/Subbredit/SubredditHomePage/TopSection/Tabs'
-import { useCollectionData } from "react-firebase-hooks/firestore"
+import { useCollectionData, useCollectionDataOnce, useDocumentData } from "react-firebase-hooks/firestore"
 import Post from '../../components/Post/Post'
 
 const SubredditHomePage = () => {
@@ -31,7 +31,6 @@ const SubredditHomePage = () => {
     dispatch(setSubreddit( subredditDocSnap.data() ))
   }
 
-
   // ---- Fetching current subreddit's members ---- 
   const fetchSubredditMembers = () => {
     subredditStateRedux?.subredditData?.members?.forEach((userID:any) => {
@@ -46,19 +45,36 @@ const SubredditHomePage = () => {
     // console.log(`member ID : ${memberData.id}`);
   }
 
+  const gettingRealTimeSubreddit = () => {
+    const realTimeSub = onSnapshot(doc(db, "subreddits", id as string), (doc) => {
+      console.log(doc.data());
+    })
+  }
+
 
 
   // ----- Getting Current Subreddit's Posts -----
-  const getSubredditPostsQuery = collection(db, `subreddits/${id}/subredditPosts`)
-  const [docs, loading] = useCollectionData(getSubredditPostsQuery) 
+ 
+    // const getSubredditPostsQuery = collection(db, `subreddits/${id as string}/subredditPosts`)
+    // const [docs, loading, error] = useCollectionData(getSubredditPostsQuery) 
+    
+    const fetchAllPosts = async () => {
+      const postsCubCollection = collection(db, `subreddits/${id as string}/subredditPosts`)
+      const data = await getDocs(postsCubCollection)
+      setAllSubredditPosts(data?.docs.map((doc) => ({ ...doc.data(), postID: doc.id })));
+      
+    }
   
-  
+
+
 
 
   useEffect(() => {
     if(router.isReady) {
       fetchSubreddit()
+      fetchAllPosts()
     }
+    // gettingRealTimeSubreddit()
 
     fetchSubredditMembers()
     
@@ -70,19 +86,25 @@ const SubredditHomePage = () => {
         className='w-full h-[92vh] mt-[7vh] bg-[#EDEFF1] flex flex-col justify-start items-center overflow-x-hidden overflow-y-scroll '
       >
        <TopSection />
-       <h1 className='text-4xl' onClick={() => console.log(docs)}> LOG docs  </h1>
+       <h1 className='text-4xl' onClick={() => console.log(allSubredditPosts)}> LOG allSubredditPosts  </h1>
+       {/* <h1 className='text-4xl' onClick={() => gettingRealTimeSubreddit()}> LOG gettingRealTimeSubreddit  </h1> */}
        <Tabs />
     
       
 
 
-      {loading && (
+      {/* {loading && (
         <h1 className='text-5xl'> Loading All Posts................ </h1>
-      )}
+      )} */}
 
-      {docs && docs.map((post) => (
-        <Post key={post.postID} at={"subbredditPage"} post={post} />
-      ))}
+      {allSubredditPosts && allSubredditPosts.map((post:any, index:number) => {
+        return <Post key={index} at={"subbredditPage"} post={post} />
+        // return <h1 className='text-5xl mt-3' onClick={() => console.log(post)} key={index}> {post.postTitle} </h1>
+      })}
+        
+      
+
+   
 
 
 

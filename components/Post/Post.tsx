@@ -60,7 +60,7 @@ const Post = ({at , post}:IProps) => {
 
 
   return (
-    <div className='w-full sm:w-[70%] md:w-[70%] lg:w-[50%] xl:w-[50%] 2xl:w-[40%] h-auto bg-white flex flex-col md:flex-row lg:flex-row md:justify-start md:items-start rounded-sm my-5 md:space-x-2 hover:cursor-pointer' onClick={() => checkVoteStatus()}>
+    <div className='w-full sm:w-[70%] md:w-[70%] lg:w-[50%] xl:w-[50%] 2xl:w-[40%] h-auto bg-white flex flex-col md:flex-row lg:flex-row md:justify-start md:items-start rounded-sm my-5 md:space-x-2 hover:cursor-pointer' onClick={() => console.log(post)}>
 
         <div className='hidden h-full md:inline-flex flex-col items-center space-y-2 py-3 px-2 bg-[#F7F9FA] rounded-sm'>
             <BiUpvote 

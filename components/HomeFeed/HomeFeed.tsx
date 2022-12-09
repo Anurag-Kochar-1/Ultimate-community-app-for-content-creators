@@ -56,8 +56,8 @@ const HomeFeed = () => {
                 </Link> )
       })}
 
-      {allPosts && allPosts.map((post:any) => (
-        <Post key={post.postTitle} at='homepage' post={post} />
+      {allPosts && allPosts.map((post:any, index:number) => (
+        <Post key={index} at='homepage' post={post} />
       ))}
 
 
