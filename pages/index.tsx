@@ -5,13 +5,14 @@ import Header from '../components/Header/Header'
 import HomePageLayout from '../components/Layouts/HomePageLayout'
 import { useDispatch, useSelector } from "react-redux"
 import { setUser, setUserJoinedSubbreditData, setUserOwnedSubbreditData, setUserCreatedPostsData } from "../redux/slices/userSlice"
+import {setAllPosts} from "../redux/slices/postsSlice"
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { useCollectionData, useDocument } from "react-firebase-hooks/firestore"
 import { auth, db } from '../firebaseConfig'
 import { collection, doc, getDoc, getDocs , onSnapshot, where , query, Query } from 'firebase/firestore'
 import { useRouter } from "next/router"
 
-const Home: NextPage = () => {
+const Home: NextPage = ( {allPostsData}:any ) => {
   const [user, loading, error ] = useAuthState(auth)
   const dispatch = useDispatch()
   // ------ States ------
@@ -84,21 +85,31 @@ const Home: NextPage = () => {
     
     <HomePageLayout>
        <h1 className='mt-12 text-xl font-semibold' onClick={() => {
-        console.log(auth.currentUser)
-      }} > LOG auth
-      </h1>
-
-      <h1 className='mt-12 text-xl font-semibold' onClick={() => {
-        console.log(21)
-      }} > LOG 21
+        console.log(allPostsData)
+      }} > LOG allPostsData 
       </h1>
 
 
         
-      {!loading && <HomePage />}
-      {loading && <h1 className='text-6xl font-bold'> LOADING.............................. </h1>}
+      {true && <HomePage />}
+      {/* {loading && <h1 className='text-6xl font-bold'> LOADING.............................. </h1>} */}
     </HomePageLayout>
   )
 }
 
 export default Home
+
+export const getServerSideProps = async () => {
+  // const dispatch = useDispatch()
+  let allPostsData:any = []
+  const postsCollectionRef = collection(db, "posts")
+  const res = await getDocs(postsCollectionRef)
+  res.forEach((doc) => allPostsData.push(doc.data()))
+  // dispatch(setAllPosts( res.forEach((doc) => allPostsData.push(doc.data())) ))
+ 
+
+  
+  return {
+    props : {allPostsData}
+  }
+}
