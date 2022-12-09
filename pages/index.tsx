@@ -4,7 +4,7 @@ import HomePage from '../components/Full pages/HomePage/HomePage'
 import Header from '../components/Header/Header'
 import HomePageLayout from '../components/Layouts/HomePageLayout'
 import { useDispatch, useSelector } from "react-redux"
-import { setUser, setUserJoinedSubbreditData, setUserOwnedSubbreditData } from "../redux/slices/userSlice"
+import { setUser, setUserJoinedSubbreditData, setUserOwnedSubbreditData, setUserCreatedPostsData } from "../redux/slices/userSlice"
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { useCollectionData, useDocument } from "react-firebase-hooks/firestore"
 import { auth, db } from '../firebaseConfig'
@@ -29,18 +29,18 @@ const Home: NextPage = () => {
       const userDocData = await getDoc(userRef)
       dispatch(setUser(userDocData.data()))
 
-      fetchUserJoinedSubbredits()
-      fetchUserOwnedSubreddits()
+      getUserJoinedSubbredits()
+      getUserOwnedSubreddits()
+      getUserCreatedPosts()
     } else if (loading) {
       console.log(`fetchUserDetails ====> loading`);
     } else if (error) {
       console.log(`error occured while running fetchUserDetails`);
-      
     }
   }
 
   // -------- User's Joined Subreddit Details --------  
-  const fetchUserJoinedSubbredits = async () => {
+  const getUserJoinedSubbredits = async () => {
     if(!loading && user) {
       const queryUser = query(subbreditCollectionRef, where("members" , "array-contains", user?.uid as string))
       
@@ -51,11 +51,20 @@ const Home: NextPage = () => {
   }
 
   // -------- User's Owned Subreddit Details -------- 
-  const fetchUserOwnedSubreddits = async () => {
+  const getUserOwnedSubreddits = async () => {
     if(!loading && user) {
       const ownedSubredditsQuery = query(subbreditCollectionRef, where("createrUserID" , "==", user?.uid as string))
       const ownedSubredditsData = await getDocs(ownedSubredditsQuery)
       dispatch(setUserOwnedSubbreditData( ownedSubredditsData?.docs.map((doc) => ({...doc.data(), subredditID: doc.id})) ))
+    }
+  }
+
+  // -------- User's Createad Posted Details -------- 
+  const getUserCreatedPosts = async () => {
+    if(!loading && user) {
+      const createdPostsQuery = query(postsCollectionRef, where("creatorUserID", "==", user.uid as string))
+      const createdPostsData = await getDocs(createdPostsQuery)
+      dispatch(setUserCreatedPostsData(createdPostsData.docs.map((doc) => ({...doc.data(), postID: doc.id}) )))
     }
   }
   
@@ -63,11 +72,10 @@ const Home: NextPage = () => {
   useEffect(() => {
     setHydrated(true)
     
-    if(user) {
+    if(user && !loading && !error) {
       fetchUserDetails()
     }
 
-    // fetchUserJoinedSubbredit()
 
   },[user ])
 
@@ -75,12 +83,12 @@ const Home: NextPage = () => {
   return (
     
     <HomePageLayout>
-       <h1 className='mt-20 text-xl font-semibold' onClick={() => {
-        console.log(1)
-      }} > LOG 1
+       <h1 className='mt-12 text-xl font-semibold' onClick={() => {
+        console.log(auth.currentUser)
+      }} > LOG auth
       </h1>
 
-      <h1 className='mt-20 text-xl font-semibold' onClick={() => {
+      <h1 className='mt-12 text-xl font-semibold' onClick={() => {
         console.log(21)
       }} > LOG 21
       </h1>

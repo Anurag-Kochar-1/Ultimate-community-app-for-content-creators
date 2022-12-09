@@ -85,7 +85,7 @@ const Post = ({at , post}:IProps) => {
 
                             <div className='flex flex-col md:flex-row md:space-x-2 pl-2'>
                                 <p> r/{post.postedAtSubbredditName} </p>
-                                <p> u/anuragg <span> • hours ago </span> </p>
+                                <p> u/{post.creatorUsername} <span> • hours ago </span> </p>
                             </div>
                         </div>
 

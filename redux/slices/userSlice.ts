@@ -3,7 +3,8 @@ import { createSlice } from "@reduxjs/toolkit"
 const initialState = {
     currentUserData: [],
     joinedSubredditsData: [],
-    ownedSubredditsData: []
+    ownedSubredditsData: [],
+    createdPostsData: []
     
 };
 
@@ -18,6 +19,7 @@ const userSlice = createSlice ({
             state.currentUserData = initialState.currentUserData
         },
 
+
         setUserJoinedSubbreditData: (state,action) => {
             state.joinedSubredditsData = action.payload
         },
@@ -26,13 +28,23 @@ const userSlice = createSlice ({
             state.joinedSubredditsData = initialState.joinedSubredditsData
         },
 
+
+
         setUserOwnedSubbreditData: (state,action) => {
             state.ownedSubredditsData = action.payload
         },
 
         removeUserOwnedSubbreditData: (state) => {
             state.ownedSubredditsData = initialState.ownedSubredditsData
-        }
+        },
+
+
+        setUserCreatedPostsData: (state,action) => {
+            state.createdPostsData = action.payload
+        },
+        removeUserCreatedPostsData: (state,action) => {
+            state.createdPostsData = initialState.createdPostsData
+        },
 
 
 
@@ -45,7 +57,9 @@ export const {setUser,
     setUserJoinedSubbreditData,
     removeUserJoinedSubbreditData,
     setUserOwnedSubbreditData,
-    removeUserOwnedSubbreditData
+    removeUserOwnedSubbreditData,
+    setUserCreatedPostsData,
+    removeUserCreatedPostsData
 
 } = userSlice.actions
 export default userSlice.reducer
