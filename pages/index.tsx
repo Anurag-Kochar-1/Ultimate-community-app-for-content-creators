@@ -12,7 +12,7 @@ import { auth, db } from '../firebaseConfig'
 import { collection, doc, getDoc, getDocs , onSnapshot, where , query, Query } from 'firebase/firestore'
 import { useRouter } from "next/router"
 
-const Home: NextPage = ( {allPostsData}:any ) => {
+const Home: NextPage = (  ) => {
   const [user, loading, error ] = useAuthState(auth)
   const dispatch = useDispatch()
   // ------ States ------
@@ -85,7 +85,7 @@ const Home: NextPage = ( {allPostsData}:any ) => {
     
     <HomePageLayout>
        <h1 className='mt-12 text-xl font-semibold' onClick={() => {
-        console.log(allPostsData)
+        console.log(0)
       }} > LOG allPostsData 
       </h1>
 
@@ -99,17 +99,3 @@ const Home: NextPage = ( {allPostsData}:any ) => {
 
 export default Home
 
-export const getServerSideProps = async () => {
-  // const dispatch = useDispatch()
-  let allPostsData:any = []
-  const postsCollectionRef = collection(db, "posts")
-  const res = await getDocs(postsCollectionRef)
-  res.forEach((doc) => allPostsData.push(doc.data()))
-  // dispatch(setAllPosts( res.forEach((doc) => allPostsData.push(doc.data())) ))
- 
-
-  
-  return {
-    props : {allPostsData}
-  }
-}

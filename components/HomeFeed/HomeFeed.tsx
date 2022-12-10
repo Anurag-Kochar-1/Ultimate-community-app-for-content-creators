@@ -7,8 +7,9 @@ import Link from 'next/link'
 import { useSelector } from 'react-redux'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import Post from '../Post/Post'
+import { RootState } from '../../redux/store'
 
-const HomeFeed = () => {
+const HomeFeed = (  ) => {
   const [user] = useAuthState(auth)
   const [allSubreddits, setAllSubdreddits] = useState<any[]>([])
   const [allPosts, setAllPosts] = useState<any>([])
@@ -17,6 +18,8 @@ const HomeFeed = () => {
 
   const subredditCollectionRef = collection(db, "subreddits")
   const postCollectionRef = collection(db, 'posts')
+
+  // const { allPostsData } = useSelector((state:RootState) => state.posts)
   
   const fetchingSubreddits = async () => {
     const subredditsCollection = await getDocs(subredditCollectionRef)
@@ -27,8 +30,6 @@ const HomeFeed = () => {
   const fetchingPosts = async() => {
     const allPostsData = await getDocs(postCollectionRef)
     allPostsData.docs.forEach((post) => {
-      // console.log(post.data());
-      // console.log(post.id);
     })
 
     setAllPosts(allPostsData?.docs.map((doc) => ({ ...doc.data(), postID: doc.id })));
@@ -48,14 +49,14 @@ const HomeFeed = () => {
     className='w-[100%] lg:w-[70%] h-[90vh] flex flex-col justify-start items-center bg-[#EDEFF1] overflow-x-hidden overflow-y-scroll'
     >
       <HomeFeedHeader />
-      <h1 className='text-xl text-center' onClick={() => console.log(allPostsDataRedux)}> LOG allPostsDataRedux Redux </h1>
+      <h1 className='text-xl text-center' onClick={() => console.log(allPosts)}> LOG allPosts  </h1>
 
 
-      {allSubreddits && allSubreddits.map((subreddit) => {
+      {/* {allSubreddits && allSubreddits.map((subreddit) => {
         return (<Link href={`/r/${subreddit.id}`} key={subreddit.id}>
                     <h1 className='text-xl text-white' > {subreddit.subredditName} </h1>
                 </Link> )
-      })}
+      })} */}
 
       {allPosts && allPosts.map((post:any, index:number) => (
         <Post key={index} at='homepage' post={post} />
@@ -68,3 +69,4 @@ const HomeFeed = () => {
 }
 
 export default HomeFeed
+
