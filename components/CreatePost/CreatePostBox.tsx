@@ -184,7 +184,6 @@ const CreatePostBox =  ({selectedCommunity, setSelectedCommunity, selectedCommun
 
     useEffect(() => {
         setHydrated(true)
-        // status = addPostStatuses.IDLE
         currentUserData?.subredditsJoinedID?.map((subreddit:any) => (
             setSubbreditsJoined([...subbreditsJoined , subreddit])
         ))
