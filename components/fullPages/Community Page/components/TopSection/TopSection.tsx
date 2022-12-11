@@ -11,12 +11,12 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 
 const TopSection = () => {
     const [user, loading] = useAuthState(auth)
-    const {subredditData} = useSelector((state:any) => state.subreddit)
+    const {communityData} = useSelector((state:any) => state.community)
 
     
     const addMember = async () => {
-        const subredditRef = doc(db, "subreddits" , subredditData?.subredditID)
-        console.log(`adding to ${subredditData?.subredditID}`);
+        const subredditRef = doc(db, "subreddits" , communityData?.subredditID)
+        console.log(`adding to ${communityData?.subredditID}`);
         if(!loading && user) {
             // console.log(user);
             try {
@@ -36,7 +36,7 @@ const TopSection = () => {
             const userRef = doc(db, "users" , user?.uid)
             try {
                 await updateDoc(userRef, {
-                    subredditsJoinedID: arrayUnion(subredditData?.subredditID)
+                    subredditsJoinedID: arrayUnion(communityData?.subredditID)
                 })
             } catch (error) {
                 console.log(error);
@@ -58,7 +58,7 @@ const TopSection = () => {
             <div className='flex flex-col md:flex-row justify-start items-start md:items-center bg-transparent space-y-1 md:space-x-1'>
 
                 <Image src={subredditDefaultLogo} width={12} height={12} alt="logo" className='h-12 w-12 rounded-full aspect-square box-border border-2 border-white' />
-                <h1 onClick={() => console.log(subredditData)} className='text-sm font-bold'> r/{subredditData?.subredditName} </h1>
+                <h1 onClick={() => console.log(communityData)} className='text-sm font-bold'> r/{communityData?.subredditName} </h1>
 
             </div>
 

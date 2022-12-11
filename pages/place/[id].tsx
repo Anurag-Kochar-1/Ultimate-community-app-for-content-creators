@@ -3,7 +3,7 @@ import { useRouter } from "next/router"
 import { collection, doc, getDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore'
 import { auth, db } from '../../firebaseConfig'
 import { useDispatch, useSelector } from 'react-redux'
-import { setSubreddit } from '../../redux/slices/subredditSlice'
+import { setCommunity } from '../../redux/slices/communitySlice'
 import RightBar from '../../components/fullPages/Home/components/Sidebars/Right-Sidebar/RightSideBar'
 import TopSection from '../../components/fullPages/Community Page/components/TopSection/TopSection'
 import { useAuthState } from 'react-firebase-hooks/auth'
@@ -22,61 +22,57 @@ const SubredditHomePage = () => {
   const router = useRouter()
   const { id } = router.query
   
-  const subredditStateRedux = useSelector((state:any) => state.subreddit)
+  // const subredditStateRedux = useSelector((state:any) => state.subreddit)
   
   
   const fetchSubreddit = async () => {
     const subredditRef = doc(db, "subreddits", id as string)
     const subredditDocSnap = await getDoc(subredditRef)
-    // console.log(`subredditDocSnap.id : ${subredditDocSnap.id}`);
     setSubredditState([subredditDocSnap.data()])
-    dispatch(setSubreddit( subredditDocSnap.data() ))
+    dispatch(setCommunity( subredditDocSnap.data() ))
   }
 
   // ---- Fetching current subreddit's members ---- 
-  const fetchSubredditMembers = () => {
-    subredditStateRedux?.subredditData?.members?.forEach((userID:any) => {
-      const memberRef = doc(db, "users", userID)
-      getMember(memberRef)
-    })
+  // const fetchSubredditMembers = () => {
+  //   subredditStateRedux?.communityData?.members?.forEach((userID:any) => {
+  //     const memberRef = doc(db, "users", userID)
+  //     getMember(memberRef)
+  //   })
     
-  }
-  const getMember = async(ref: any) => {
-    const memberData = await getDoc(ref)
-    // console.log(memberData.data());
-    // console.log(`member ID : ${memberData.id}`);
-  }
+  // }
+  // const getMember = async(ref: any) => {
+  //   const memberData = await getDoc(ref)
+  //   // console.log(memberData.data());
+  //   // console.log(`member ID : ${memberData.id}`);
+  // }
 
-  const gettingRealTimeSubreddit = () => {
-    const realTimeSub = onSnapshot(doc(db, "subreddits", id as string), (doc) => {
-      console.log(doc.data());
-    })
-  }
+  // const gettingRealTimeSubreddit = () => {
+  //   const realTimeSub = onSnapshot(doc(db, "subreddits", id as string), (doc) => {
+  //     console.log(doc.data());
+  //   })
+  // }
 
 
 
   // ----- Getting Current Subreddit's Posts -----
- 
-    // const getSubredditPostsQuery = collection(db, `subreddits/${id as string}/subredditPosts`)
-    // const [docs, loading, error] = useCollectionData(getSubredditPostsQuery) 
     
-    const fetchAllPosts = async () => {
-      const postsCubCollection = collection(db, `subreddits/${id as string}/subredditPosts`)
-      const data = await getDocs(postsCubCollection)
-      setAllSubredditPosts(data?.docs.map((doc) => ({ ...doc.data(), postID: doc.id })));
+    // const fetchAllPosts = async () => {
+    //   const postsCubCollection = collection(db, `subreddits/${id as string}/subredditPosts`)
+    //   const data = await getDocs(postsCubCollection)
+    //   setAllSubredditPosts(data?.docs.map((doc) => ({ ...doc.data(), postID: doc.id })));
       
-    }
+    // }
   
 
 
   useEffect(() => {
     if(router.isReady) {
       fetchSubreddit()
-      fetchAllPosts()
+      // fetchAllPosts()
     }
     // gettingRealTimeSubreddit()
 
-    fetchSubredditMembers()
+    // fetchSubredditMembers()
     
   }, [router.isReady])
     

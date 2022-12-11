@@ -1,15 +1,15 @@
 import type { NextPage } from 'next'
 import { use, useEffect, useState } from "react"
-import HomePage from '../components/fullPages/Home/full page/HomePage'
+import HomePage from "../components/fullPages/Home/full page/HomePage"
 import Header from '../components/globalComponents/Header/Header'
 import HomePageLayout from '../components/fullPages/Home/layouts/HomePageLayout'
 import { useDispatch, useSelector } from "react-redux"
-import { setUser, setUserJoinedSubbreditData, setUserOwnedSubbreditData, setUserCreatedPostsData } from "../redux/slices/userSlice"
+import { setUser, setUserJoinedCommunitiesData, setUserOwnedCommunitiesData, setUserCreatedPostsData } from "../redux/slices/userSlice"
 import {setAllPosts} from "../redux/slices/postsSlice"
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { useCollectionData, useDocument } from "react-firebase-hooks/firestore"
 import { auth, db } from '../firebaseConfig'
-import { collection, doc, getDoc, getDocs , onSnapshot, where , query, Query } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs , onSnapshot, where , query } from 'firebase/firestore'
 import { useRouter } from "next/router"
 
 const Home: NextPage = (  ) => {
@@ -46,7 +46,7 @@ const Home: NextPage = (  ) => {
       const queryUser = query(subbreditCollectionRef, where("members" , "array-contains", user?.uid as string))
       
       const queryUserJoinedSubreddits = await getDocs(queryUser)
-      dispatch(setUserJoinedSubbreditData( queryUserJoinedSubreddits?.docs.map((doc) => ({...doc.data(), subredditID: doc.id})) ))
+      dispatch(setUserJoinedCommunitiesData( queryUserJoinedSubreddits?.docs.map((doc) => ({...doc.data(), subredditID: doc.id})) ))
 
     }
   }
@@ -56,7 +56,7 @@ const Home: NextPage = (  ) => {
     if(!loading && user) {
       const ownedSubredditsQuery = query(subbreditCollectionRef, where("createrUserID" , "==", user?.uid as string))
       const ownedSubredditsData = await getDocs(ownedSubredditsQuery)
-      dispatch(setUserOwnedSubbreditData( ownedSubredditsData?.docs.map((doc) => ({...doc.data(), subredditID: doc.id})) ))
+      dispatch(setUserOwnedCommunitiesData( ownedSubredditsData?.docs.map((doc) => ({...doc.data(), subredditID: doc.id})) ))
     }
   }
 

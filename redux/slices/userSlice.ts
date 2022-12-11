@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit"
 
 const initialState = {
     currentUserData: [],
-    joinedSubredditsData: [],
-    ownedSubredditsData: [],
+    joinedCommunitiesData: [],
+    ownedCommunitiesData: [],
     createdPostsData: []
     
 };
@@ -20,22 +20,22 @@ const userSlice = createSlice ({
         },
 
 
-        setUserJoinedSubbreditData: (state,action) => {
-            state.joinedSubredditsData = action.payload
+        setUserJoinedCommunitiesData: (state,action) => {
+            state.joinedCommunitiesData = action.payload
         },
 
-        removeUserJoinedSubbreditData: (state) => {
-            state.joinedSubredditsData = initialState.joinedSubredditsData
+        removeUserJoinedCommunitiesData: (state) => {
+            state.joinedCommunitiesData = initialState.joinedCommunitiesData
         },
 
 
 
-        setUserOwnedSubbreditData: (state,action) => {
-            state.ownedSubredditsData = action.payload
+        setUserOwnedCommunitiesData: (state,action) => {
+            state.ownedCommunitiesData = action.payload
         },
 
-        removeUserOwnedSubbreditData: (state) => {
-            state.ownedSubredditsData = initialState.ownedSubredditsData
+        removeUserOwnedCommunitiesData: (state) => {
+            state.ownedCommunitiesData = initialState.ownedCommunitiesData
         },
 
 
@@ -54,10 +54,10 @@ const userSlice = createSlice ({
 
 export const {setUser, 
     removerUser,
-    setUserJoinedSubbreditData,
-    removeUserJoinedSubbreditData,
-    setUserOwnedSubbreditData,
-    removeUserOwnedSubbreditData,
+    setUserJoinedCommunitiesData,
+    removeUserJoinedCommunitiesData,
+    setUserOwnedCommunitiesData,
+    removeUserOwnedCommunitiesData,
     setUserCreatedPostsData,
     removeUserCreatedPostsData
 
