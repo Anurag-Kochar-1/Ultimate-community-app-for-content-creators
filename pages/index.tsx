@@ -1,8 +1,8 @@
 import type { NextPage } from 'next'
 import { use, useEffect, useState } from "react"
-import HomePage from '../components/Full pages/HomePage/HomePage'
-import Header from '../components/Header/Header'
-import HomePageLayout from '../components/Layouts/HomePageLayout'
+import HomePage from '../components/fullPages/Home/full page/HomePage'
+import Header from '../components/globalComponents/Header/Header'
+import HomePageLayout from '../components/fullPages/Home/layouts/HomePageLayout'
 import { useDispatch, useSelector } from "react-redux"
 import { setUser, setUserJoinedSubbreditData, setUserOwnedSubbreditData, setUserCreatedPostsData } from "../redux/slices/userSlice"
 import {setAllPosts} from "../redux/slices/postsSlice"
@@ -77,22 +77,13 @@ const Home: NextPage = (  ) => {
       fetchUserDetails()
     }
 
-
   },[user ])
 
   if(!hydrated) return null
   return (
     
     <HomePageLayout>
-       <h1 className='mt-12 text-xl font-semibold' onClick={() => {
-        console.log(0)
-      }} > LOG allPostsData 
-      </h1>
-
-
-        
-      {true && <HomePage />}
-      {/* {loading && <h1 className='text-6xl font-bold'> LOADING.............................. </h1>} */}
+      <HomePage />
     </HomePageLayout>
   )
 }

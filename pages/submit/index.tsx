@@ -1,7 +1,7 @@
 import React from 'react'
-import CreatePostContainer from '../../components/CreatePost/CreatePostContainer'
-import Header from '../../components/Header/Header'
-import HomePageLayout from '../../components/Layouts/HomePageLayout'
+import CreatePostContainer from '../../components/fullPages/Submit Page/components/createPostContainer.tsx/CreatePostContainer'
+import Header from "../../components/globalComponents/Header/Header"
+import HomePageLayout from '../../components/fullPages/Home/layouts/HomePageLayout'
 import { useSelector } from 'react-redux'
 
 const index = () => {
