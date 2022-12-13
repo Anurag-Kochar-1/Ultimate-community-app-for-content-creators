@@ -39,7 +39,7 @@ const Header = () => {
         <CreateOptionsDropdown />
         <AiOutlineSearch className='md:hidden w-6 h-6 text-darkColor hover:cursor-pointer '/>
         <AiOutlineBell className='w-6 h-6 text-darkColor hover:cursor-pointer'/>
-        <AiOutlineMessage className='w-6 h-6 text-darkColor hover:cursor-pointer'/>
+        <AiOutlineMessage className='hidden lg:inline-block w-6 h-6 text-darkColor hover:cursor-pointer'/>
       </div>
       
 
