@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import React from 'react'
 import Header from '../../../globalComponents/Header/Header'
+import BottomBar from '../../../globalComponents/Mobile/BottomBar/BottomBar'
 
 interface Props {
     children: React.ReactNode
@@ -17,6 +18,7 @@ const HomePageLayout = ({children}:Props) => {
 
         <Header />
         {children}
+        <BottomBar />
     </div>
   )
 }

@@ -82,9 +82,9 @@ const Home: NextPage = (  ) => {
   if(!hydrated) return null
   return (
     
-    <HomePageLayout>
+    // <HomePageLayout>
       <HomePage />
-    </HomePageLayout>
+    // </HomePageLayout>
   )
 }
 

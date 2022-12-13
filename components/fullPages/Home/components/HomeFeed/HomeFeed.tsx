@@ -45,7 +45,7 @@ const HomeFeed = (  ) => {
 
   return (
     <div 
-    className='w-[100%] xl:w-[70%] h-[90vh] flex flex-col justify-start items-center bg-[#EDEFF1] overflow-x-hidden overflow-y-scroll'
+    className='w-[100%] xl:w-[70%] h-[90vh] mb-[10vh] lg:mb-0 flex flex-col justify-start items-center bg-[#EDEFF1] overflow-x-hidden overflow-y-scroll '
     >
       <h1 className='text-xl text-center' onClick={() => console.log(userDetailsRedux)}> LOG userDetailsRedux  </h1>
 
