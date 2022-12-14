@@ -1,4 +1,5 @@
 import { Menu, Transition } from '@headlessui/react'
+import Link from 'next/link'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { RiAddFill } from 'react-icons/ri'
 
@@ -23,11 +24,13 @@ const CreateOptionsDropdown = () => {
               <Menu.Items className="absolute right-0 mt-2 w-52 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <div className="px-3 py-1 my-1">
                   <Menu.Item as={Fragment}>
-                        <button
-                        type='button'
-                        >
-                          Create Community
-                        </button>
+                        <Link href={"/CreateCommunity"}>
+                          <button
+                          type='button'
+                          >
+                            Create Community
+                          </button>
+                        </Link>
                   </Menu.Item>
                 </div>
 

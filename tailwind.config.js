@@ -8,12 +8,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        brandColor: "#FACC15",
-        darkColor: "#18181B",
-        midColor: "#E4E4E7",
+        brandColor: "#E4295D",
+        darkColor: "#060910",
+        midColor: "#C8CFDF",
         lightColor: "#F8FAFC"
       }
     },
+    fontFamily : {
+      poppins : ['Poppins', 'sans-serif']
+    }
   },
   safelist: [
   {
@@ -29,5 +32,7 @@ module.exports = {
     pattern: /(bg|text|border)-lightColor/,
   }
 ],
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
 }
