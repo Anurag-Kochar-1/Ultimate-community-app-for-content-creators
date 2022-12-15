@@ -1,58 +1,72 @@
 export const contentTypesArray =  [
     {
       value: "choose",
-      lable: "Choose"
+      lable: "Choose",
+      id: 0
     },
     {
       value: "gaming",
-      label: "Gaming"
+      label: "Gaming",
+      id: 1
     },
     {
       value: "roasting",
-      label: "Roasting"
+      label: "Roasting",
+      id: 2
     },
     {
       value: "commentary",
-      label: "Commentary"
+      label: "Commentary",
+      id: 3
     },
     {
       value: "education",
-      label: "Education"
+      label: "Education",
+      id: 4
     },
     {
       value: "vlogging",
-      label: "Vlogging"
+      label: "Vlogging",
+      id: 5
     },
     {
       value: "sports",
-      label: "Sports"
+      label: "Sports",
+      id: 6
     },
     {
       value: "Comedy",
-      label: "Comedy"
+      label: "Comedy",
+      id: 7
     },
     {
       value: "coding",
-      label: "Coding"
+      label: "Coding",
+      id: 8
     },
     {
       value: "travel",
-      label: "Travel"
+      label: "Travel",
+      id: 9
     },
     {
       value: "selfHelp",
-      label: "Self Help"
+      label: "Self Help",
+      id: 10
     },
     {
       value: "motivational",
-      label: "Motivational"
+      label: "Motivational",
+      id: 11
     },
     {
       value: "finance",
-      label: "Finance"
+      label: "Finance",
+      id: 12
     },
     {
       value: "other",
-      label: "other"
+      label: "other",
+      id: 13
     },
   ]

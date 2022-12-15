@@ -45,20 +45,20 @@ const HomeFeed = (  ) => {
 
   return (
     <div 
-    className='w-[100%] xl:w-[70%] h-[90vh] mb-[10vh] lg:mb-0 flex flex-col justify-start items-center bg-[#EDEFF1] overflow-x-hidden overflow-y-scroll '
+    className='w-[100%] xl:w-[70%] h-[90vh] mt-[7vh] mb-[10vh] lg:mb-0 flex flex-col justify-start items-center bg-lightColor overflow-x-hidden overflow-y-scroll '
     >
-      <h1 className='text-xl text-center' onClick={() => console.log(userDetailsRedux)}> LOG userDetailsRedux  </h1>
+      <h1 className='text-xl text-center text-darkColor' onClick={() => console.log(user)}> LOG user  </h1>
 
 
-      {allSubreddits && allSubreddits.map((subreddit) => {
+      {/* {allSubreddits && allSubreddits.map((subreddit) => {
         return (<Link href={`/place/${subreddit.id}`} key={subreddit.id}>
-                    <h1 className='text-xl text-white' > {subreddit.subredditName} </h1>
+                    <h1 className='text-xl text-darkColor' > {subreddit.subredditName} </h1>
                 </Link> )
       })}
 
       {allPosts && allPosts.map((post:any, index:number) => (
         <Post key={index} at='homepage' post={post} />
-      ))}
+      ))} */}
 
 
 

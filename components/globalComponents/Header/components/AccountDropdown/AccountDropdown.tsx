@@ -13,23 +13,24 @@ import { signOut } from "firebase/auth"
 export default function AccountDropdown() {
   const [user] = useAuthState(auth);
   return (
-    <div className="px-0 text-right w-[20%] md:w-[10%] lg:w-[15%] bg-red-300 ">
-      <Menu as="div" className="relative w-full bg-green-300 inline-block text-left ">
+    // <div className="px-0 text-right w-[20%] md:w-[10%] lg:w-[15%] bg-red-300 ">
+    <div className="px-0 text-right w-auto h-auto ">
+      <Menu as="div" className="relative w-full inline-block ">
         <div>
-          <Menu.Button className="inline-flex w-full justify-center items-center rounded-md border  border-gray-200 px-3 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
-            {!user && <AiOutlineUser className='w-5 h-5 text-gray-200'/>}
+          <Menu.Button className="inline-flex w-full justify-center items-center">
+            {!user && <AiOutlineUser className='w-6 h-6 text-darkColor'/>}
 
             {user && (
-              <div className='flex items-center justify-between space-x-2'>
-                <img  src={user?.photoURL as string} alt="dp" className='w-7 h-7 rounded-full aspect-auto'/>
-                <p className='hidden lg:inline-block text-black font-normal text-sm'> {user.displayName} </p>
+              <div className='flex items-center justify-center space-x-0'>
+                <img  src={user?.photoURL as string} alt="dp" className='w-6 h-6 rounded-full aspect-square my-2'/>
+                {/* <p className='hidden lg:inline-block text-black font-normal text-sm'> {user.displayName} </p> */}
               </div>
             )}
 
-            <ChevronDownIcon
+            {/* <ChevronDownIcon
               className="ml-2 -mr-1 h-5 w-5  text-gray-400 hidden lg:inline-block"
               aria-hidden="true"
-            />
+            /> */}
           </Menu.Button>
         </div>
         <Transition
@@ -47,7 +48,7 @@ export default function AccountDropdown() {
                 {({ active }) => (
                   <button
                     className={`${
-                      active ? 'bg-[#FF4500] text-white' : 'text-gray-900'
+                      active ? 'bg-brandColor text-white' : 'text-gray-900'
                     } group flex w-full justify-between items-center rounded-md px-2 py-2 text-sm`}
                   >
                     <div className='w-full flex'>
@@ -72,7 +73,7 @@ export default function AccountDropdown() {
                 {({ active }) => (
                   <button
                     className={`${
-                      active ? 'bg-[#FF4500] text-white' : 'text-gray-900'
+                      active ? 'bg-brandColor text-white' : 'text-gray-900'
                     } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                   >
                     {active ? (
@@ -96,7 +97,7 @@ export default function AccountDropdown() {
                 {({ active }) => (
                   <button
                     className={`${
-                      active ? 'bg-[#FF4500] text-white' : 'text-gray-900'
+                      active ? 'bg-brandColor text-white' : 'text-gray-900'
                     } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                   >
                     {active ? (
@@ -118,7 +119,7 @@ export default function AccountDropdown() {
                 {({ active }) => (
                   <button
                     className={`${
-                      active ? 'bg-[#FF4500] text-white' : 'text-gray-900'
+                      active ? 'bg-brandColor text-white' : 'text-gray-900'
                     } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                   >
                     {active ? (
@@ -132,7 +133,7 @@ export default function AccountDropdown() {
                         aria-hidden="true"
                       />
                     )}
-                    Advertise on Reddit
+                    Advertise
                   </button>
                 )}
               </Menu.Item>
@@ -141,9 +142,15 @@ export default function AccountDropdown() {
               <Menu.Item>
                 {({ active }) => (
                   <button
-                    onClick={() => signOut(auth)}
+                    onClick={() => {
+                      if(user) {
+                        signOut(auth)
+                      } else {
+                        alert("khud kar")
+                      }
+                    }}
                     className={`${
-                      active ? 'bg-[#FF4500] text-white' : 'text-gray-900'
+                      active ? 'bg-brandColor text-white' : 'text-gray-900'
                     } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                   >
                     {active ? (
@@ -157,7 +164,7 @@ export default function AccountDropdown() {
                         aria-hidden="true"
                       />
                     )}
-                    Log In / Sign Up
+                    {user ? "Log out" : "Log in"}
                   </button>
                 )}
               </Menu.Item>

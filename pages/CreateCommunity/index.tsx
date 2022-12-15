@@ -6,8 +6,12 @@ import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { addDoc, arrayUnion, collection, doc, updateDoc } from 'firebase/firestore'
+import { auth, db } from '../../firebaseConfig'
+import { useAuthState } from 'react-firebase-hooks/auth'
 
 const CreateCommunity = () => {
+  const [user] = useAuthState(auth)
   const router = useRouter()
   const [communityNameInputValue, setCommunityNameInputValue] = useState<string>("")
   const [youtubeChannelIDvalue, setYoutubeChannelIDvalue] = useState<string>("")
@@ -15,35 +19,84 @@ const CreateCommunity = () => {
   const [channelData, setChannelData] = useState<any[]>([])
   const [isdataFetching, setIsdataFetching] = useState<boolean>(false)
 
+  const communityCollectionRef = collection(db, "communities")
+  
   const notify = () => toast("Wow so easy!");
 
   const getChannelDetails = async () => {
     setIsdataFetching(true)
     try {
       const {data: {items} } = await axios.get(`https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${youtubeChannelIDvalue}&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`)
-      // const items = await axios.get(`https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest/channels?part=snippet%2CcontentDetails%2Cstatistics&forUsername=${youtubeChannelIDvalue}&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`)
       setChannelData(items)
-      console.log(items);
-      
-      setTimeout(() => {
-        setIsdataFetching(false)
-      }, 2500);
-      
+      setTimeout(async() => {
+        createCommunity()
+        // setIsdataFetching(false)
+      }, 3000);
     } catch (error) {
       console.log(error);
       setTimeout(() => {
         setIsdataFetching(false)
-        
       }, 2500);
       
     }    
   }
 
-  // curl \
-  // 'https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&forUsername=GoogleDevelopers&key=[YOUR_API_KEY]' \
-  // --header 'Authorization: Bearer [YOUR_ACCESS_TOKEN]' \
-  // --header 'Accept: application/json' \
-  // --compressed
+
+  const createCommunity = async () => {
+    try {
+      if(communityNameInputValue && youtubeChannelIDvalue && contentTypeValue) {
+        // ------ creating subreddit ------
+        const communityDoc = await addDoc(communityCollectionRef, {
+          communityID: null,
+          communityName: communityNameInputValue,
+          communityContentType: contentTypeValue,
+          communityLogo: channelData[0]?.snippet?.thumbnails?.default?.url || null,
+          communityBanner: "",
+          communityDescription: "",
+          creatorName : user?.displayName,
+          creatorEmail : user?.email,
+          creatorPhotoURL : user?.photoURL,
+          createrUserID: user?.uid,
+          members: [user?.uid]
+        })
+        const communityRef = doc(db, "communities", communityDoc.id)
+
+        // ---- Adding ID Manually ----
+        const addingID = await updateDoc(communityRef, {
+          communityID: communityDoc.id
+        })
+
+        //  ---- Adding current user to members array ---- 
+        const addingUser = await updateDoc(communityRef, {
+          members: arrayUnion(user?.uid)
+        })
+
+        // ------ updating User ------
+        const userRef = doc(db, `users/${user?.uid}`)
+        const updateUser = await updateDoc(userRef, {
+          communitiesJoinedID: arrayUnion(communityRef.id),
+          communitiesOwnedID: arrayUnion(communityRef.id),
+        })
+
+
+        router.push(`place/${communityDoc.id}`)
+        // ------ Reseting states ------
+        setIsdataFetching(false)
+        setCommunityNameInputValue("")
+        setChannelData([])
+        setContentTypeValue("")
+        setYoutubeChannelIDvalue("")
+
+        
+        
+      }
+    } catch (error) {
+      console.log(error)
+      setIsdataFetching(false)
+    }
+  }
+
+
 
 
   return (
@@ -99,6 +152,7 @@ const CreateCommunity = () => {
             >
               {contentTypesArray.map((contentType) => {
                 return <option 
+                  key={contentType.id}
                   value={contentType.value} 
                   className='form-select bg-lightColor px-2 py-3 text-darkColor text-base'
                   > {contentType.label} </option>

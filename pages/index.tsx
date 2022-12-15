@@ -17,6 +17,7 @@ const Home: NextPage = (  ) => {
   const dispatch = useDispatch()
   // ------ States ------
   const [hydrated, setHydrated] = useState<boolean>(false);
+  const [isSignInOrOutReminderVisible, setIsSignInOrOutReminderVisible] = useState<boolean>(false)
 
  // ----- Refs ------
   const postsCollectionRef = collection(db, "posts")
@@ -71,20 +72,36 @@ const Home: NextPage = (  ) => {
   
   
   useEffect(() => {
-    setHydrated(true)
+    // setHydrated(true)
     
     if(user && !loading && !error) {
       fetchUserDetails()
     }
 
-  },[user ])
-
-  if(!hydrated) return null
-  return (
     
-    // <HomePageLayout>
+    // if(user && isSignInOrOutReminderVisible === false) {
+    //   setInterval(() => {
+    //     console.log(`setInterval is running`);
+        
+    //     setIsSignInOrOutReminderVisible(true)
+    //   }, 4000)
+    // }
+
+  },[user])
+
+  // if(!hydrated) return null
+  return (
+    <>
+    {/* <HomePageLayout> */}
       <HomePage />
-    // </HomePageLayout>
+      {isSignInOrOutReminderVisible && <div className='fixed bottom-0 left-0 w-full h-[40vh] bg-brandColor z-30'>
+        <button> Sign in </button>
+        <button> Sign up </button>
+        <button onClick={() => setIsSignInOrOutReminderVisible(false)}> No thanks </button>
+      </div>}
+      
+    {/*  </HomePageLayout> */}
+    </>
   )
 }
 
