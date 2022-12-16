@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux'
 const index = () => {
   const userRedux = useSelector((state:any) => state.user)
   return (
-    <HomePageLayout>
         <main
         className='w-full h-[93vh] mt-[7vh] bg-[#DAE0E6] flex justify-center items-start  px-3 space-x-3'
         >
@@ -15,7 +14,6 @@ const index = () => {
             <CreatePostContainer />
         
         </main>       
-    </HomePageLayout>
   )
 }
 

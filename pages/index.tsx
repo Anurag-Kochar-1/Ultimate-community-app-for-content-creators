@@ -1,4 +1,4 @@
-import type { NextPage } from 'next'
+import type { GetServerSideProps, NextPage } from 'next'
 import { use, useEffect, useState } from "react"
 import HomePage from "../components/fullPages/Home/full page/HomePage"
 import Header from '../components/globalComponents/Header/Header'
@@ -9,10 +9,15 @@ import {setAllPosts} from "../redux/slices/postsSlice"
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { useCollectionData, useDocument } from "react-firebase-hooks/firestore"
 import { auth, db } from '../firebaseConfig'
-import { collection, doc, getDoc, getDocs , onSnapshot, where , query } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs , onSnapshot, where , query, QueryDocumentSnapshot, DocumentData } from 'firebase/firestore'
 import { useRouter } from "next/router"
+import { ICommunity } from '../customTypesAndInterfaces/communityInterfaces'
+import Link from 'next/link'
 
-const Home: NextPage = (  ) => {
+const Home: NextPage = ( props:any ) => {
+  console.log(props);
+  
+
   const [user, loading, error ] = useAuthState(auth)
   const dispatch = useDispatch()
   // ------ States ------
@@ -78,7 +83,7 @@ const Home: NextPage = (  ) => {
       fetchUserDetails()
     }
 
-    
+
     // if(user && isSignInOrOutReminderVisible === false) {
     //   setInterval(() => {
     //     console.log(`setInterval is running`);
@@ -92,18 +97,31 @@ const Home: NextPage = (  ) => {
   // if(!hydrated) return null
   return (
     <>
-    {/* <HomePageLayout> */}
       <HomePage />
-      {isSignInOrOutReminderVisible && <div className='fixed bottom-0 left-0 w-full h-[40vh] bg-brandColor z-30'>
+
+
+
+      {/* {isSignInOrOutReminderVisible && <div className='fixed bottom-0 left-0 w-full h-[40vh] bg-brandColor z-30'>
         <button> Sign in </button>
         <button> Sign up </button>
         <button onClick={() => setIsSignInOrOutReminderVisible(false)}> No thanks </button>
-      </div>}
-      
-    {/*  </HomePageLayout> */}
+      </div>} */}
+
     </>
   )
 }
 
 export default Home
 
+export const getServerSideProps:GetServerSideProps = async () => {
+  let allCommunitiesDataArr:ICommunity[] = []
+  const communityCollectionRef = collection(db, 'communities')
+  const res = await getDocs(communityCollectionRef)
+  res.forEach(doc => allCommunitiesDataArr.push(doc.data() as ICommunity))
+
+  return {
+    props: {
+      allCommunitiesData : allCommunitiesDataArr
+    }
+  }
+}

@@ -10,6 +10,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <Provider store={store}>
       <HomePageLayout>
         <Component {...pageProps} />
+        
       </HomePageLayout>
     </Provider>
   )

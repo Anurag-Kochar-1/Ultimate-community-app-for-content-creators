@@ -7,8 +7,10 @@ import { useSelector } from 'react-redux'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import Post from '../../../../globalComponents/Post/Post'
 import { RootState } from '../../../../../redux/store'
+import { GetServerSideProps } from 'next'
 
-const HomeFeed = (  ) => {
+const HomeFeed = ( ) => {
+
   const [user] = useAuthState(auth)
   const [allSubreddits, setAllSubdreddits] = useState<any[]>([])
   const [allPosts, setAllPosts] = useState<any>([])
@@ -60,6 +62,8 @@ const HomeFeed = (  ) => {
         <Post key={index} at='homepage' post={post} />
       ))} */}
 
+    <h1 className='mt-[10vh]'> HELLO </h1>
+
 
 
     </div>
@@ -68,3 +72,16 @@ const HomeFeed = (  ) => {
 
 export default HomeFeed
 
+
+// export const getServerSideProps:GetServerSideProps = async (context) => {
+//   let allCommunityDataArr = {name: "Anurag"}
+//   const communityCollectionRef = collection(db, 'communities')
+//   // const res = await getDocs(communityCollectionRef)
+//   // res.forEach(doc => allCommunityDataArr.push(doc.data()))
+  
+//   return {
+//     props: {
+//       data : allCommunityDataArr
+//     }
+//   }
+// }

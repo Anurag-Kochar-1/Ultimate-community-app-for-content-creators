@@ -20,16 +20,20 @@ import LoginButton from '../LoginButton/LoginButton'
 import LogOutButton from '../LogOutButton/LogOutButton'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../../../firebaseConfig'
-import SideBarMenu from "../Mobile/SideBarMenu/SideBarMenu"
+import SideBarMenu from "../Mobile/Sidebars/MobileLeftSideBar/MobileLeftSideBar"
 
 
  
+interface IProps {
+  isLeftSidebarOpen: boolean
+  setIsLeftSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>
+  isRightSidebarOpen: boolean
+  setIsRightSidebarOpen : React.Dispatch<React.SetStateAction<boolean>> 
+}
 
 
-
-const Header = () => {
+const Header =  ({isLeftSidebarOpen, setIsLeftSidebarOpen, isRightSidebarOpen, setIsRightSidebarOpen}:IProps) => {
   const [user] = useAuthState(auth)
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false)
 
 
   return (
@@ -37,11 +41,9 @@ const Header = () => {
       <div className='flex justify-center items-center space-x-2'>
         <AiOutlineMenu 
           className='lg:hidden w-6 h-6 text-darkColor hover:cursor-pointer' 
-          onClick={() => { isSidebarOpen ? setIsSidebarOpen(false) : setIsSidebarOpen(true) }}
-          />
+          onClick={() => { isLeftSidebarOpen ? setIsLeftSidebarOpen(false) : setIsLeftSidebarOpen(true) }}
+        />
 
-
-       {isSidebarOpen &&  <SideBarMenu isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} /> }
 
         <Link href={'/'}>
           <Image src={offstaLogo} alt="logo" className='hidden lg:inline-block w-12 h-12 border border-gray-200 rounded-full md:inline-block' />
@@ -52,21 +54,22 @@ const Header = () => {
       <NavTabs />
 
       <div className='flex justify-center items-center space-x-4 md:space-x-3 lg:space-x-4 xl:space-x-6 2xl:space-x-6 lg:pr-7'>
-        {!user && <LoginButton />}
+        {/* {!user && <LoginButton />} */}
         {/* <LogOutButton /> */}
         <CreateOptionsDropdown />
         <AiOutlineSearch className='md:hidden w-6 h-6 text-darkColor hover:cursor-pointer '/>
         <AiOutlineBell className='w-6 h-6 text-darkColor hover:cursor-pointer'/>
-        {/* {!user && <AiOutlineUser className='lg:hidden w-6 h-6 text-darkColor hover:cursor-pointer'/>} */}
-        {/* {user && (
+        {!user && <AiOutlineUser className='lg:hidden w-6 h-6 text-darkColor hover:cursor-pointer' onClick={() => isRightSidebarOpen ? setIsRightSidebarOpen(false) : setIsRightSidebarOpen(true)}/>}
+        {user && (
           <img
           className='w-6 h-6 rounded-full aspect-square'
           src={user.photoURL as string}
           alt="DP"
+          onClick={() => isRightSidebarOpen ? setIsRightSidebarOpen(false) : setIsRightSidebarOpen(true)}
           />
-        )} */}
+        )}
 
-        {user && <AccountDropdown />}
+        {/* {user && <AccountDropdown />} */}
         <AiOutlineMessage className='hidden lg:inline-block w-6 h-6 text-darkColor hover:cursor-pointer'/>
       </div>
       

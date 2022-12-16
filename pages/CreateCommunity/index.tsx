@@ -56,7 +56,7 @@ const CreateCommunity = () => {
           creatorName : user?.displayName,
           creatorEmail : user?.email,
           creatorPhotoURL : user?.photoURL,
-          createrUserID: user?.uid,
+          creatorUserID: user?.uid,
           members: [user?.uid]
         })
         const communityRef = doc(db, "communities", communityDoc.id)

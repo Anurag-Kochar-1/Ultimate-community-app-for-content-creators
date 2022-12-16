@@ -10,11 +10,21 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import Tabs from '../../components/fullPages/Community Page/components/Tabs/Tabs'
 import { useCollectionData, useCollectionDataOnce, useDocumentData } from "react-firebase-hooks/firestore"
 import Post from '../../components/globalComponents/Post/Post'
-import CommunityLayout from '../../components/fullPages/Community Page/layout/CommunityLayout'
+// import CommunityLayout from '../../components/fullPages/Community Page/layout/CommunityLayout'
 import CommunityHomePage from '../../components/fullPages/Community Page/community home page/components/CommunityHomeFeed/CommunityHomeFeed'
 import LeftSidebar from '../../components/fullPages/Home/components/Sidebars/Left-Sidebar/LeftSidebar'
+import { GetServerSideProps } from 'next'
+import { ICommunity } from '../../customTypesAndInterfaces/communityInterfaces'
 
-const SubredditHomePage = () => {
+
+interface IProps {
+  communityData: ICommunity
+}
+
+const SubredditHomePage = ( props:IProps ) => {
+  // console.log(props);
+  
+  
   const dispatch = useDispatch();
   const [user] = useAuthState(auth)
   const [subredditState, setSubredditState] = useState<any[]>([])  
@@ -22,15 +32,9 @@ const SubredditHomePage = () => {
   const router = useRouter()
   const { id } = router.query
   
-  // const subredditStateRedux = useSelector((state:any) => state.subreddit)
   
   
-  const fetchSubreddit = async () => {
-    const subredditRef = doc(db, "subreddits", id as string)
-    const subredditDocSnap = await getDoc(subredditRef)
-    setSubredditState([subredditDocSnap.data()])
-    dispatch(setCommunity( subredditDocSnap.data() ))
-  }
+
 
   // ---- Fetching current subreddit's members ---- 
   // const fetchSubredditMembers = () => {
@@ -65,27 +69,28 @@ const SubredditHomePage = () => {
   
 
 
-  useEffect(() => {
-    if(router.isReady) {
-      fetchSubreddit()
-      // fetchAllPosts()
-    }
-    // gettingRealTimeSubreddit()
+  // useEffect(() => {
+  //   if(router.isReady) {
+  //     // fetchSubreddit()
+  //     // getCommunity()
+  //     // fetchAllPosts()
+  //   }
+  //   // gettingRealTimeSubreddit()
 
-    // fetchSubredditMembers()
+  //   // fetchSubredditMembers()
     
-  }, [router.isReady])
+  // }, [router.isReady])
     
   return (
-    <CommunityLayout> 
+    // <CommunityLayout> 
       <main
         className='w-full h-[92vh] mt-[7vh] bg-red-300 flex flex-row justify-start items-center overflow-x-hidden overflow-y-scroll '
       >
         <LeftSidebar />
-        <CommunityHomePage />
+        <CommunityHomePage communityData={props.communityData} />
         <RightBar /> 
       </main>
-    </CommunityLayout>
+    // </CommunityLayout>
   )
 }
 
@@ -93,8 +98,15 @@ export default SubredditHomePage
 
 
 
-      {/* {allSubredditPosts && allSubredditPosts.map((post:any, index:number) => {
-        return <Post key={index} at={"subbredditPage"} post={post} />
-        // return <h1 className='text-5xl mt-3' onClick={() => console.log(post)} key={index}> {post.postTitle} </h1>
-      })}
-         */}
+export const getServerSideProps:GetServerSideProps = async (context) => {
+  const {params} = context
+  const {id}:string|any = params
+  const communityRef = doc(db, "communities", id as string)
+  const response = await getDoc(communityRef)
+  
+  return {
+    props: {
+      communityData : response.data()
+    }
+  }
+}
