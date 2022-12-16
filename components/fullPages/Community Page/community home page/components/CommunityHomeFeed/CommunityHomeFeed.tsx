@@ -10,12 +10,13 @@ interface IProps {
 const CommunityHomePage = ({communityData}:IProps) => {
   return (
     <main
-        className='w-[100%] xl:w-[70%] h-[90vh] px-5 bg-red-300 flex flex-col justify-start items-center overflow-x-hidden overflow-y-scroll '
+        className='w-[100%] xl:w-[70%] h-[93vh] bg-lightColor flex flex-col justify-start items-center overflow-x-hidden overflow-y-scroll '
     >
       <TopSection /> 
       <Tabs />
 
       <h1> {communityData.communityName} </h1>
+
 
     </main>
   )

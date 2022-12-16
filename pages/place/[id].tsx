@@ -84,7 +84,7 @@ const SubredditHomePage = ( props:IProps ) => {
   return (
     // <CommunityLayout> 
       <main
-        className='w-full h-[92vh] mt-[7vh] bg-red-300 flex flex-row justify-start items-center overflow-x-hidden overflow-y-scroll '
+        className='w-full h-[93vh] mt-[7vh] bg-red-300 flex flex-row justify-start items-center overflow-x-hidden overflow-y-scroll '
       >
         <LeftSidebar />
         <CommunityHomePage communityData={props.communityData} />

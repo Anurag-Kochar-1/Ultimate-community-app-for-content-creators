@@ -1,5 +1,27 @@
+
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.sidebarMenu {
+  position: fixed;
+  top: 7vh;
+  left: 0;
+  bottom: 0;
+  background: red;
+  width: 60vw;
+
+  animation: slideInFromLeft 0.3s ease-in-out;
+}
+
 .container {
   padding: 0 2rem;
+
 }
 
 .main {
