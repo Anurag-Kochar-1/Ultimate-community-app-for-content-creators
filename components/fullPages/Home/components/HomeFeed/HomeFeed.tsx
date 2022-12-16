@@ -3,23 +3,26 @@ import allSubreddits from 'next/link'
 import {doc, getDoc , collection, query , where, getDocs} from "firebase/firestore"
 import { auth, db } from '../../../../../firebaseConfig'
 import Link from 'next/link'
-import { useSelector } from 'react-redux'
+// import { useSelector } from 'react-redux'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import Post from '../../../../globalComponents/Post/Post'
-import { RootState } from '../../../../../redux/store'
+// import { RootState } from '../../../../../redux/store'
 import { GetServerSideProps } from 'next'
+import { useSelector } from 'react-redux'
+import { AppState } from '../../../../../redux/store'
 
 const HomeFeed = ( ) => {
+  const communityRedux = useSelector((state:AppState) => state.community)
 
   const [user] = useAuthState(auth)
   const [allSubreddits, setAllSubdreddits] = useState<any[]>([])
   const [allPosts, setAllPosts] = useState<any>([])
-  const userDetailsRedux = useSelector((state:any) => state.user)
-  const allPostsDataRedux = useSelector((state:any) => state.posts)
+  // const userDetailsRedux = useSelector((state:any) => state.user)
+  // const allPostsDataRedux = useSelector((state:any) => state.posts)
 
   const subredditCollectionRef = collection(db, "subreddits")
   const postCollectionRef = collection(db, 'posts')
-
+  
   // const { allPostsData } = useSelector((state:RootState) => state.posts)
   
   const fetchingSubreddits = async () => {
@@ -49,7 +52,7 @@ const HomeFeed = ( ) => {
     <div 
     className='w-[100%] xl:w-[70%] h-[90vh] mt-[7vh] mb-[10vh] lg:mb-0 flex flex-col justify-start items-center bg-lightColor overflow-x-hidden overflow-y-scroll '
     >
-      <h1 className='text-xl text-center text-darkColor' onClick={() => console.log(user)}> LOG user  </h1>
+      <h1 className='text-xl text-center text-darkColor' onClick={() => console.log(communityRedux)}> LOG communityRedux  </h1>
 
 
       {/* {allSubreddits && allSubreddits.map((subreddit) => {

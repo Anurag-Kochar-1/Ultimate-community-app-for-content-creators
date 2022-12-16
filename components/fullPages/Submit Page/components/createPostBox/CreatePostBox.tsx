@@ -7,7 +7,7 @@ import { ref , uploadBytesResumable , getDownloadURL} from "firebase/storage"
 import { v4 as uuidv4 } from "uuid"
 import { addDoc, arrayUnion, collection, doc, setDoc, updateDoc } from 'firebase/firestore'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { useSelector } from 'react-redux'
+// import { useSelector } from 'react-redux'
 import {useRouter} from "next/router"
 
 
@@ -30,7 +30,7 @@ const CreatePostBox =  ({selectedCommunity, setSelectedCommunity, selectedCommun
     let status = addPostStatuses.IDLE
     const [hydrated, setHydrated] = useState<boolean>(false);
     const [user] = useAuthState(auth)
-    const {currentUserData} = useSelector((state:any) => state?.user)
+    // const {currentUserData} = useSelector((state:any) => state?.user)
     const [ uploadType, setUploadType ] = useState<string>('post')
 
     // const [selectedSubredditID, setSelectedSubredditID] = useState<string>("")
@@ -183,9 +183,9 @@ const CreatePostBox =  ({selectedCommunity, setSelectedCommunity, selectedCommun
 
     useEffect(() => {
         setHydrated(true)
-        currentUserData?.subredditsJoinedID?.map((subreddit:any) => (
-            setSubbreditsJoined([...subbreditsJoined , subreddit])
-        ))
+        // currentUserData?.subredditsJoinedID?.map((subreddit:any) => (
+        //     setSubbreditsJoined([...subbreditsJoined , subreddit])
+        // ))
     },[])
 
 

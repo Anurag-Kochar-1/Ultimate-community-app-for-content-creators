@@ -14,9 +14,11 @@ import { useRouter } from "next/router"
 import { ICommunity } from '../customTypesAndInterfaces/communityInterfaces'
 import Link from 'next/link'
 
+
+import { AppState } from "../redux/store"
+
 const Home: NextPage = ( props:any ) => {
   console.log(props);
-  
 
   const [user, loading, error ] = useAuthState(auth)
   const dispatch = useDispatch()
