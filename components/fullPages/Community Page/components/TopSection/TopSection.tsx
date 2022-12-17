@@ -51,7 +51,7 @@ const TopSection = () => {
     
 
   return (
-    <div className='w-full flex flex-col items-center justify-start bg-black'>
+    <div className='w-full flex flex-col items-center justify-start bg-black mt-[5vh] lg:mt-0'>
       {/* Banner and Logo */}
         <div className='w-full bg-gray-500 relative'>
             <Image src={communityDefaultBanner} alt="banner" className='w-full h-[15vh]'/>
@@ -83,8 +83,9 @@ const TopSection = () => {
            <div
             className='w-full flex justify-start items-center space-x-2' 
             onClick={() => isFullCommunityDescriptionOpen ? setIsFullCommunityDescriptionOpen(false) : setIsFullCommunityDescriptionOpen(true)}>
-                {!isFullCommunityDescriptionOpen && <p className='text-dark opacity-70 font-normal font-poppins text-xs '> {communityData.communityDescription.slice(0,130)}... </p>}
-                {isFullCommunityDescriptionOpen && <p className='text-dark font-normal font-poppins text-xs '> {communityData.communityDescription} </p>}
+
+            {!isFullCommunityDescriptionOpen && <p className='text-dark opacity-70 font-normal font-poppins text-xs '> {communityData.communityDescription.slice(0,130)}... </p>}
+            {isFullCommunityDescriptionOpen && <p className='text-dark font-normal font-poppins text-xs pb-5'> {communityData.communityDescription} </p>}
 
                 
            </div>
