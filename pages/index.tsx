@@ -13,8 +13,9 @@ import { collection, doc, getDoc, getDocs , onSnapshot, where , query, QueryDocu
 import { useRouter } from "next/router"
 import { ICommunity } from '../customTypesAndInterfaces/communityInterfaces'
 import Link from 'next/link'
+import { wrapper } from '../redux/store'
 
-
+import { setAllCommunities } from "../redux/slices/AllDataSlice"
 // import { AppState } from "../redux/store"
 
 const Home: NextPage = ( props:any ) => {
@@ -115,15 +116,16 @@ const Home: NextPage = ( props:any ) => {
 
 export default Home
 
-export const getServerSideProps:GetServerSideProps = async () => {
+export const getServerSideProps:GetServerSideProps = wrapper.getServerSideProps(store => async({query}) =>  {
   let allCommunitiesDataArr:ICommunity[] = []
   const communityCollectionRef = collection(db, 'communities')
   const res = await getDocs(communityCollectionRef)
   res.forEach(doc => allCommunitiesDataArr.push(doc.data() as ICommunity))
 
+  store.dispatch(setAllCommunities( allCommunitiesDataArr ))
   return {
     props: {
       allCommunitiesData : allCommunitiesDataArr
     }
   }
-}
+})

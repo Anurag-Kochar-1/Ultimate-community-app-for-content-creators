@@ -31,7 +31,7 @@ const communitySlice = createSlice({
     extraReducers: {
         [HYDRATE]: (state, action) => {
             console.log(`----extraReducers is running - HYDRATE---`);
-            console.log(action.payload);
+            // console.log(action.payload);
 
             if(!action.payload.community.communityData) {
                 return state

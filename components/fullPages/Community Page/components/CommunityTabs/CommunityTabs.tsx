@@ -7,7 +7,7 @@ const CommunityTabs = () => {
   const { id } = router.query
 
   return (
-    <div className='w-full bg-midColor flex flex-row items-end justify-center space-x-2 px-4' onClick={() => console.log(router )}>
+    <div className='w-full bg-midColor flex flex-row items-end justify-center space-x-2 px-4 sticky top-0' onClick={() => console.log(router )}>
         
     
         <Link href={`/place/${id}/`} className='w-14 h-full flex flex-col justify-end items-center'>

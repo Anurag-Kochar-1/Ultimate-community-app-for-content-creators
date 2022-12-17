@@ -2,7 +2,7 @@ import { configureStore, combineReducers  } from '@reduxjs/toolkit';
 import communityReducer from "./slices/communitySlice"
 import userReducer from "./slices/userSlice"
 import postsReducer from "./slices/postsSlice"
-
+import allDataReducer from "./slices/AllDataSlice"
 import { createWrapper } from 'next-redux-wrapper';
 
 // export interface State {
@@ -32,7 +32,8 @@ const makeStore = () => configureStore({
     reducer: {
         user: userReducer,
         community: communityReducer,
-        posts: postsReducer
+        posts: postsReducer,
+        allData: allDataReducer
     },
     devTools: true,
 

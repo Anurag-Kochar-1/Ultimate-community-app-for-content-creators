@@ -55,7 +55,7 @@ const TopSection = () => {
       {/* Banner and Logo */}
         <div className='w-full bg-gray-500 relative'>
             <Image src={communityDefaultBanner} alt="banner" className='w-full h-[15vh]'/>
-            <Image src={communityDefaultLogo} alt="banner" className='w-12 h-12 border border-lightColor rounded-full aspect-square absolute left-2 -bottom-2'/>
+            <Image src={communityDefaultLogo}  alt="banner" className='w-12 h-12 border border-lightColor rounded-full aspect-square absolute left-2 -bottom-2'/>
 
         </div>
 
@@ -75,8 +75,8 @@ const TopSection = () => {
 
            {/* total Members and online members */}
            <div className='w-full flex justify-start items-center space-x-2'>
-                <p className='text-darkColor opacity-85 text-xs font-poppins font-light'> {communityData.members.length} members </p>
-                <p className='text-darkColor opacity-85 text-xs font-poppins font-light'> {communityData.members.length} online </p>
+                <p className='text-darkColor opacity-85 text-xs font-poppins font-light'> {communityData?.members?.length} members </p>
+                <p className='text-darkColor opacity-85 text-xs font-poppins font-light'> {communityData?.members?.length} online </p>
            </div>
 
            {/* Community Description */}
@@ -84,8 +84,8 @@ const TopSection = () => {
             className='w-full flex justify-start items-center space-x-2 hover:cursor-pointer' 
             onClick={() => isFullCommunityDescriptionOpen ? setIsFullCommunityDescriptionOpen(false) : setIsFullCommunityDescriptionOpen(true)}>
 
-            {!isFullCommunityDescriptionOpen && <p className='text-dark opacity-70 font-normal font-poppins text-xs '> {communityData.communityDescription.slice(0,130)}... </p>}
-            {isFullCommunityDescriptionOpen && <p className='text-dark font-normal font-poppins text-xs pb-5'> {communityData.communityDescription} </p>}
+            {!isFullCommunityDescriptionOpen && <p className='text-dark opacity-70 font-normal font-poppins text-xs '> {communityData?.communityDescription?.slice(0,130)}... </p>}
+            {isFullCommunityDescriptionOpen && <p className='text-dark font-normal font-poppins text-xs pb-5'> {communityData?.communityDescription} </p>}
 
                 
            </div>
