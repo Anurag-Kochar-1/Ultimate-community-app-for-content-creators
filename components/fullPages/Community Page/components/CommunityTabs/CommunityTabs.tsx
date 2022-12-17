@@ -4,16 +4,28 @@ import { useRouter } from 'next/router'
 
 const CommunityTabs = () => {
   const router = useRouter()
+  const { id } = router.query
 
   return (
-    <div
-        className='w-full bg-lightColor flex flex-row items-center justify-start space-x-5 px-4'
-       
-    >
-        <p className={ router.pathname === `/place/[id]` ? 'h-full py-2 text-center font-semibold text-sm hover:cursor-pointer border-b-2 border-b-[#0079D3]' : 'h-full py-2 text-center font-semibold text-sm hover:cursor-pointer' }  onClick={() => console.log(router)}> Posts </p>
-        <p className='h-full py-2 text-center font-semibold text-sm hover:cursor-pointer border-b-2'> Chat </p>
-        <p className='h-full py-2 text-center font-semibold text-sm hover:cursor-pointer border-b-2 '> Events </p>
-        <p className='h-full py-2 text-center font-semibold text-sm hover:cursor-pointer border-b-2'> About </p>
+    <div className='w-full bg-midColor flex flex-row items-end justify-center space-x-2 px-4' onClick={() => console.log(router )}>
+        
+    
+        <Link href={`/place/${id}/`} className='w-14 h-full flex flex-col justify-end items-center'>
+          <p className='h-full py-2 text-center font-semibold text-sm hover:cursor-pointer' > Posts  </p>
+          { router.asPath === `/place/${id}` && <div className='bg-brandColor h-1 w-full rounded-md' />}
+        </Link>
+
+
+        <Link href={`/place/${id}/textChannels/first`} className='w-14 h-full flex flex-col justify-end items-center'>
+          <p className='h-full py-2 text-center font-semibold text-sm hover:cursor-pointer' > Chat </p>
+          { router.asPath === `/place/${id}/textChannels/first` && <div className='bg-brandColor h-1 w-full rounded-md' />}
+        </Link>
+        
+        <Link href={`/place/${id}/about`} className='w-14 h-full flex flex-col justify-end items-center'>
+          <p className='h-full py-2 text-center font-semibold text-sm hover:cursor-pointer'> About </p>
+          { router.asPath === `/place/${id}/about` && <div className='bg-brandColor h-1 w-full rounded-md' />}
+        </Link>
+
     </div>
   )
 }

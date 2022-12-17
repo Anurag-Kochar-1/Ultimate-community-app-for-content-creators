@@ -21,6 +21,7 @@ import LogOutButton from '../LogOutButton/LogOutButton'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth } from '../../../firebaseConfig'
 import SideBarMenu from "../Mobile/Sidebars/MobileLeftSideBar/MobileLeftSideBar"
+import { useRouter } from "next/router"
 
 
  
@@ -34,11 +35,11 @@ interface IProps {
 
 const Header =  ({isLeftSidebarOpen, setIsLeftSidebarOpen, isRightSidebarOpen, setIsRightSidebarOpen}:IProps) => {
   const [user] = useAuthState(auth)
-
+  const router = useRouter()
 
   return (
     <div className='w-full h-[7vh] bg-lightColor py-4 px-3 flex justify-between items-center fixed top-0 shadow-sm shadow-midColor'>
-      <div className='flex justify-center items-center space-x-2'>
+      <div className='flex justify-center items-center space-x-2 z-50' onClick={() => console.log(router)}>
         <AiOutlineMenu 
           className='lg:hidden w-6 h-6 text-darkColor hover:cursor-pointer' 
           onClick={() => { isLeftSidebarOpen ? setIsLeftSidebarOpen(false) : setIsLeftSidebarOpen(true) }}
