@@ -3,7 +3,7 @@ import React from 'react'
 const LeftSidebar = () => {
   return (
     <div
-      className='hidden lg:inline-flex w-[15%] h-[90vh] bg-midColor'
+      className='hidden lg:inline-flex w-[15%] h-[93vh] mt-[7vh] bg-yellow-500'
       
     >
       LeftSidebar

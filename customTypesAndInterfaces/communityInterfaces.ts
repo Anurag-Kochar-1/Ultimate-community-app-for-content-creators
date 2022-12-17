@@ -1,4 +1,15 @@
+
 export interface ICommunity {
+    communityData: ICommunityData,
+    communityPosts:[],
+    communitySettings: [],
+    communityEvents: [],
+    communityTextChannels: [],
+}
+
+
+
+export interface ICommunityData {
     communityID: string
     communityBanner: string|null
     communityContentType: string

@@ -15,7 +15,7 @@ const HomePageLayout = ({children}:Props) => {
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState<boolean>(false)
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState<boolean>(false)
   return (
-    <div className='w-full max-h-screen overflow-hidden'>
+    <div className='w-full flex justify-between items-center max-h-screen overflow-hidden bg-black'>
         <Head>
             <title>Offsta</title>
             <meta name="description" content="the ultimate community app for content creators" />
@@ -30,13 +30,11 @@ const HomePageLayout = ({children}:Props) => {
         />
 
         {isLeftSidebarOpen &&  <MobileLeftSideBarMenu isLeftSidebarOpen={isLeftSidebarOpen} setIsLeftSidebarOpen={setIsLeftSidebarOpen} />}
-        {children}
-
         {isRightSidebarOpen &&  <MobileRightSideBar isRightSidebarOpen={isRightSidebarOpen} setIsRightSidebarOpen={setIsRightSidebarOpen} />}
 
-        {/* <LeftSidebar /> */}
+        <LeftSidebar />
         {children}
-        {/* <RightSideBar /> */}
+        <RightSideBar />
         <BottomBar />
     </div>
   )

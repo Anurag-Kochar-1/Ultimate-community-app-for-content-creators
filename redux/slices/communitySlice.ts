@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { HYDRATE } from 'next-redux-wrapper';
 import { useSelector } from "react-redux";
-import { AppState } from "../store";
+// import { AppState } from "../store";
 
 export const STATUSES = Object.freeze({
     IDLE: 'idle',

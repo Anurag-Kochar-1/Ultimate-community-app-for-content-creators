@@ -9,10 +9,11 @@ import Post from '../../../../globalComponents/Post/Post'
 // import { RootState } from '../../../../../redux/store'
 import { GetServerSideProps } from 'next'
 import { useSelector } from 'react-redux'
-import { AppState } from '../../../../../redux/store'
+import { IAllSlicesState } from '../../../../../customTypesAndInterfaces/allSlicesState'
+// import { AppState } from '../../../../../redux/store'
 
 const HomeFeed = ( ) => {
-  const communityRedux = useSelector((state:AppState) => state.community)
+  const communityRedux = useSelector((state:IAllSlicesState) => state.community)
 
   const [user] = useAuthState(auth)
   const [allSubreddits, setAllSubdreddits] = useState<any[]>([])
@@ -50,23 +51,9 @@ const HomeFeed = ( ) => {
 
   return (
     <div 
-    className='w-[100%] xl:w-[70%] h-[90vh] mt-[7vh] mb-[10vh] lg:mb-0 flex flex-col justify-start items-center bg-lightColor overflow-x-hidden overflow-y-scroll '
+    className='w-full lg:w-[70%] h-full  flex flex-col justify-start items-center bg-lightColor overflow-x-hidden overflow-y-scroll '
     >
       <h1 className='text-xl text-center text-darkColor' onClick={() => console.log(communityRedux)}> LOG communityRedux  </h1>
-
-
-      {/* {allSubreddits && allSubreddits.map((subreddit) => {
-        return (<Link href={`/place/${subreddit.id}`} key={subreddit.id}>
-                    <h1 className='text-xl text-darkColor' > {subreddit.subredditName} </h1>
-                </Link> )
-      })}
-
-      {allPosts && allPosts.map((post:any, index:number) => (
-        <Post key={index} at='homepage' post={post} />
-      ))} */}
-
-    <h1 className='mt-[10vh]'> HELLO </h1>
-
 
 
     </div>
@@ -74,17 +61,3 @@ const HomeFeed = ( ) => {
 }
 
 export default HomeFeed
-
-
-// export const getServerSideProps:GetServerSideProps = async (context) => {
-//   let allCommunityDataArr = {name: "Anurag"}
-//   const communityCollectionRef = collection(db, 'communities')
-//   // const res = await getDocs(communityCollectionRef)
-//   // res.forEach(doc => allCommunityDataArr.push(doc.data()))
-  
-//   return {
-//     props: {
-//       data : allCommunityDataArr
-//     }
-//   }
-// }

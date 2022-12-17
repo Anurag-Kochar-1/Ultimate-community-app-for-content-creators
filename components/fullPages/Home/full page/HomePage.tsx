@@ -6,11 +6,9 @@ import RightBar from '../components/Sidebars/Right-Sidebar/RightSideBar'
 const HomePage = () => {
   return (
     <main
-        className='w-full h-[42vh] mt-[7vh] bg-lightColor flex justify-between items-center space-x-2'
+        className='w-full lg:w-[70%] h-[93vh] mt-[7vh] mb-[10vh] lg:mb-0 bg-midColor flex flex-col justify-start items-center py-2'
     >
-        <LeftSidebar/>
         <HomeFeed />
-        <RightBar />
     </main>
   )
 }

@@ -15,6 +15,7 @@
   bottom: 0;
   background: red;
   width: 60vw;
+  z-index: 1000;
 
   animation: slideInFromLeft 0.3s ease-in-out;
 }

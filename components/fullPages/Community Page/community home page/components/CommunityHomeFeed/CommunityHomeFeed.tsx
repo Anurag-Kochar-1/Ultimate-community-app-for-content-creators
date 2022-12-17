@@ -1,24 +1,21 @@
 import React from 'react'
-import Tabs from '../../../components/Tabs/Tabs'
+import Tabs from '../../../components/CommunityTabs/CommunityTabs'
 import TopSection from '../../../components/TopSection/TopSection'
 import { ICommunity } from '../../../../../../customTypesAndInterfaces/communityInterfaces'
+import CommunityLayout from '../../../layout/CommunityLayout'
 
-interface IProps {
-  communityData: ICommunity
-}
 
-const CommunityHomePage = ({communityData}:IProps) => {
+const CommunityHomePage = () => {
   return (
-    <main
-        className='w-[100%] xl:w-[70%] h-[93vh] bg-lightColor flex flex-col justify-start items-center overflow-x-hidden overflow-y-scroll '
-    >
-      <TopSection /> 
-      <Tabs />
+    // <CommunityLayout>
+    //   <main className='w-[100%] h-[93vh] space-y-3 bg-lightColor flex flex-col justify-start items-center overflow-x-hidden overflow-y-scroll '>
+        
+      
+    //   </main>
+    // </CommunityLayout>
 
-      <h1> {communityData.communityName} </h1>
-
-
-    </main>
+    <>
+    </>
   )
 }
 

@@ -8,11 +8,9 @@ import { wrapper } from '../redux/store'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    // <Provider store={store}>
       <HomePageLayout>
         <Component {...pageProps} />
       </HomePageLayout>
-    //  </Provider>
   )
 }
 
