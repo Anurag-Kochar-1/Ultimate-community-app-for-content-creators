@@ -48,19 +48,21 @@ const TopSection = () => {
     //     }
     // }
 
-    
-
   return (
-    <div className='w-full flex flex-col items-center justify-start bg-orange-700  pb-2'>
+    <div className='w-full flex flex-col items-center justify-start bg-blue-700 '>
       {/* Banner and Logo */}
-        <div className='w-full bg-gray-500 relative'>
-            <Image src={communityDefaultBanner} alt="banner" className='w-full h-[15vh]'/>
-            <Image src={communityDefaultLogo}  alt="banner" className='w-12 h-12 border border-lightColor rounded-full aspect-square absolute left-2 -bottom-2'/>
-
+        <div className='w-full bg-black h-[20vh] flex justify-start items-end' 
+        style={{
+        backgroundImage: 'url('+`${communityData?.communityBanner}`+')',
+        backgroundSize: "cover",
+        }}> 
+            {/* <Image src={communityDefaultBanner} alt="banner" className='w-full h-[20vh]' /> */}
+            {/* <Image src={communityDefaultLogo}  alt="banner" className='w-12 h-12 border border-lightColor rounded-full aspect-square absolute left-2 -bottom-2'/> */}
+            <Image src={communityDefaultLogo}  alt="banner" className='w-12 h-12 border border-lightColor rounded-full aspect-square m-3'/>
         </div>
 
         {/* Detials */}
-        <section className='w-full bg-lightColor pt-3 px-2 flex flex-col justify-between items-center space-y-2'>
+        <section className='w-full bg-lightColor pt-3 px-2 flex flex-col justify-between items-center space-y-2 pb-3'>
             {/* Name and button */}
            <div className='w-full flex justify-between items-center '>
             <h1 className='text-base font-medium text-darkColor' onClick={() => console.log(communityData)}> {communityData?.communityName} </h1>
@@ -85,7 +87,7 @@ const TopSection = () => {
             onClick={() => isFullCommunityDescriptionOpen ? setIsFullCommunityDescriptionOpen(false) : setIsFullCommunityDescriptionOpen(true)}>
 
             {!isFullCommunityDescriptionOpen && <p className='text-dark opacity-70 font-normal font-poppins text-xs '> {communityData?.communityDescription?.slice(0,130)}... </p>}
-            {isFullCommunityDescriptionOpen && <p className='text-dark font-normal font-poppins text-xs pb-5'> {communityData?.communityDescription} </p>}
+            {isFullCommunityDescriptionOpen && <p className='text-dark font-normal font-poppins text-xs pb-6'> {communityData?.communityDescription} </p>}
 
                 
            </div>

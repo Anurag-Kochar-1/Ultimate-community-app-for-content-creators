@@ -21,17 +21,28 @@ const AllDataSlice = createSlice({
 
     extraReducers: {
         [HYDRATE]: (state, action) => {
-            console.log(`----extraReducers is running FROM AllDataSlice---`);
+            console.log(`----extraReducers AllCommunities is running FROM AllDataSlice---`);
             // console.log(action.payload);
 
             if(!action.payload.allData.AllCommunities) {
                 return state
             }
-
             state.AllCommunities = action.payload.allData.AllCommunities
             
             
-        }
+        },
+
+        // [HYDRATE]: (state, action) => {
+        //     console.log(`----extraReducers AllPosts is running FROM AllDataSlice---`);
+        //     // console.log(action.payload);
+
+        //     if(!action.payload.allData.AllPosts) {
+        //         return state
+        //     }
+        //     state.AllPosts = action.payload.allData.AllPosts
+            
+            
+        // }
     }
 })
 

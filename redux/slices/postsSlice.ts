@@ -14,5 +14,5 @@ const postsSlice = createSlice({
     }
 })
 
-export const {setAllPosts} = postsSlice.actions
+// export const {setAllPosts} = postsSlice.actions
 export default postsSlice.reducer

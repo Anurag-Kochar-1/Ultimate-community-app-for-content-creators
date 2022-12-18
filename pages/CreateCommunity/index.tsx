@@ -51,7 +51,7 @@ const CreateCommunity = () => {
           communityName: communityNameInputValue,
           communityContentType: contentTypeValue,
           communityLogo: channelData[0]?.snippet?.thumbnails?.default?.url || null,
-          communityBanner: "",
+          communityBanner: "https://www.teahub.io/photos/full/261-2617153_wallpaper-linear-brown-yellow-gradient-sandy-brown-light.jpg",
           communityDescription: "",
           creatorName : user?.displayName,
           creatorEmail : user?.email,

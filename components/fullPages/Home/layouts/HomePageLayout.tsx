@@ -15,7 +15,7 @@ const HomePageLayout = ({children}:Props) => {
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState<boolean>(false)
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState<boolean>(false)
   return (
-    <div className='w-full flex justify-between items-start max-h-screen overflow-hidden bg-emerald-500'>
+    <div className='w-full flex justify-between items-start max-h-screen overflow-hidden'>
         <Head>
             <title>Offsta</title>
             <meta name="description" content="the ultimate community app for content creators" />

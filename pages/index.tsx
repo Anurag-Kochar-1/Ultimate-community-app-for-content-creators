@@ -5,7 +5,7 @@ import Header from '../components/globalComponents/Header/Header'
 import HomePageLayout from '../components/fullPages/Home/layouts/HomePageLayout'
 import { useDispatch, useSelector } from "react-redux"
 import { setUser, setUserJoinedCommunitiesData, setUserOwnedCommunitiesData, setUserCreatedPostsData } from "../redux/slices/userSlice"
-import {setAllPosts} from "../redux/slices/postsSlice"
+// import {setAllPosts} from "../redux/slices/postsSlice"
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { useCollectionData, useDocument } from "react-firebase-hooks/firestore"
 import { auth, db } from '../firebaseConfig'
@@ -15,7 +15,7 @@ import { ICommunity } from '../customTypesAndInterfaces/communityInterfaces'
 import Link from 'next/link'
 import { wrapper } from '../redux/store'
 
-import { setAllCommunities } from "../redux/slices/AllDataSlice"
+import { setAllCommunities, setAllPosts } from "../redux/slices/AllDataSlice"
 // import { AppState } from "../redux/store"
 
 const Home: NextPage = ( props:any ) => {
@@ -86,6 +86,8 @@ const Home: NextPage = ( props:any ) => {
       fetchUserDetails()
     }
 
+    dispatch(setAllPosts(props.demoPostsArr))
+
 
     // if(user && isSignInOrOutReminderVisible === false) {
     //   setInterval(() => {
@@ -123,9 +125,12 @@ export const getServerSideProps:GetServerSideProps = wrapper.getServerSideProps(
   res.forEach(doc => allCommunitiesDataArr.push(doc.data() as ICommunity))
 
   store.dispatch(setAllCommunities( allCommunitiesDataArr ))
+
+  let demoPostsArr= [{postID: 1}, {postID: 2}]
+  // store.dispatch(setAllPosts(demoPostsArr))
   return {
     props: {
-      allCommunitiesData : allCommunitiesDataArr
+      demoPostsArr : demoPostsArr
     }
   }
 })

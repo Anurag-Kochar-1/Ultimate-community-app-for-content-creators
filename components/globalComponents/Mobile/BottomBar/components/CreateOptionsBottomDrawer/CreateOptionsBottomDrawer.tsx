@@ -14,14 +14,14 @@ const CreateOptionsBottomDrawer = ({isCreateOptionsDrawerOpen ,setIsCreateOption
 
               <div className='w-full flex flex-col justify-start items-center rounded-t-2xl mt-5'>
             
-                <div className='w-[80%] sm:w-[60%] md:w-[40%] flex justify-center items-center  px-3 py-3 text-center font-medium font-poppins bg-lightColor my-2 rounded-lg hover:cursor-pointer border-b-4 border-r-4 border-b-brandColor border-r-brandColor active:border-none'>
+                <div className='w-[80%] sm:w-[60%] md:w-[40%] flex justify-center items-center  px-3 py-3 text-center font-medium font-poppins bg-lightColor my-2 rounded-lg hover:cursor-pointer border-b-4 border-r-4 border-b-brandColor border-r-brandColor active:border-none hover:border-none '>
                   {/* <Image src={building} alt="community" className='w-14 h-14' /> */}
                   <Link href={'/CreateCommunity'} onClick={() => setIsCreateOptionsDrawerOpen(false)}>
                     <button type='button'> Create Community </button>
                   </Link>
                 </div>
 
-                <div className='w-[80%] sm:w-[60%] md:w-[40%] flex justify-center items-center  px-3 py-3 text-center font-medium font-poppins bg-lightColor my-2 rounded-lg hover:cursor-pointer border-b-4 border-r-4 border-b-brandColor border-r-brandColor active:border-none'>
+                <div className='w-[80%] sm:w-[60%] md:w-[40%] flex justify-center items-center  px-3 py-3 text-center font-medium font-poppins bg-lightColor my-2 rounded-lg hover:cursor-pointer border-b-4 border-r-4 border-b-brandColor border-r-brandColor active:border-none hover:border-none'>
                   {/* <Image src={upload} alt="community" className='w-14 h-14' /> */}
                   <button type='button'> Upload Post </button>
                 </div>
