@@ -103,15 +103,11 @@ const Home: NextPage = ( props:any ) => {
   return (
     <>
       <HomePage />
-
-
-
       {/* {isSignInOrOutReminderVisible && <div className='fixed bottom-0 left-0 w-full h-[40vh] bg-brandColor z-30'>
         <button> Sign in </button>
         <button> Sign up </button>
         <button onClick={() => setIsSignInOrOutReminderVisible(false)}> No thanks </button>
       </div>} */}
-
     </>
   )
 }

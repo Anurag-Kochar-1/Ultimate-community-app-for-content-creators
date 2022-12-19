@@ -9,15 +9,17 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth, db } from '../../../../../firebaseConfig'
+import { ICommunityData } from '../../../../../customTypesAndInterfaces/communityInterfaces'
 
 interface IProps {
   selectedCommunity : any[]
   setSelectedCommunity : React.Dispatch<React.SetStateAction<any[]>>
   selectedCommunity2 : any[]
   setSelectedCommunity2 : React.Dispatch<React.SetStateAction<any[]>>
+  userJoinedCommunitiesState: ICommunityData[]
 }
 
-export default function ChooseCommunityDropdown ({selectedCommunity, setSelectedCommunity , selectedCommunity2 ,setSelectedCommunity2}:IProps) {
+export default function ChooseCommunityDropdown ({selectedCommunity, setSelectedCommunity , selectedCommunity2 ,setSelectedCommunity2 , userJoinedCommunitiesState}:IProps) {
   const [user , loading, error] = useAuthState(auth)
   const [userJoinedSubredditsState , setUserJoinedSubredditsState] = useState<any[]>([])
   const subbreditCollectionRef = collection(db, "subreddits")
@@ -27,7 +29,7 @@ export default function ChooseCommunityDropdown ({selectedCommunity, setSelected
       const queryUser = query(subbreditCollectionRef, where("members" , "array-contains", user?.uid as string))
       
       const queryUserJoinedSubreddits = await getDocs(queryUser)
-      // queryUserJoinedSubreddits.forEach((doc) => {
+      // queryUserJoinedSubreddicts.forEach((doc) => {
       //   console.log(doc.data());
       //   setUserJoinedSubredditsState([])
       // })
@@ -99,13 +101,13 @@ export default function ChooseCommunityDropdown ({selectedCommunity, setSelected
               </Menu.Item> */}
               
 
-              {userJoinedSubredditsState && userJoinedSubredditsState.map((subreddit) => (
+              {userJoinedCommunitiesState && userJoinedCommunitiesState.map((community) => (
                 <div 
-                  key={subreddit.subredditID}
+                  key={community.id}
                   className='flex-1 h-full bg-emerald-200 hover:cursor-pointer my-3'
-                  onClick={() => setSelectedCommunity2([ subreddit ]) }
+                  onClick={() => setSelectedCommunity2([ community ]) }
                   > 
-                {subreddit.subredditName} 
+                {community.communityName} 
                 </div>
               ))}
 

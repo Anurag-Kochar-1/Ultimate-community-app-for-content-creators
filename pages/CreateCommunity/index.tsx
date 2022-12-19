@@ -146,6 +146,7 @@ const CreateCommunity = () => {
 
           <div className='w-full sm:w-[80%] md:w-[50%] lg:w-[45%] xl:w-[35%] 2xl:w-[30%] flex flex-col justify-start items-start space-y-1 py-1'>
             <label className='text-sm font-medium text-darkColor'> Your Content Type </label>
+            
             <select title='choose' className='outline-none border-none w-full px-2 py-2 rounded-md bg-midColor placeholder:text-darkColor placeholder:text-sm placeholder:text-opacity-50 text-darkColor'
             value={contentTypeValue}
             onChange={(e) => setContentTypeValue(e.target.value)}

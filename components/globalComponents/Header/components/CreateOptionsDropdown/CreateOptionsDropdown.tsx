@@ -21,7 +21,7 @@ const CreateOptionsDropdown = () => {
               leaveFrom="transform opacity-100 scale-100"
               leaveTo="transform opacity-0 scale-95"
             >
-              <Menu.Items className="absolute right-0 mt-2 w-52 origin-top-right divide-y divide-gray-100 rounded-md bg-red-300 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <Menu.Items className="absolute right-0 mt-2 w-52 origin-top-right divide-y divide-gray-100 rounded-md bg-lightColor shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <div className="px-3 py-1 my-1">
                   <Menu.Item as={Fragment}>
                         <Link href={"/CreateCommunity"}>
@@ -36,11 +36,13 @@ const CreateOptionsDropdown = () => {
 
                 <div className="px-3 py-1 my-1">
                   <Menu.Item as={Fragment}>
+                    <Link href={"/CreatePost"}>
                         <button
                         type='button'
                         >
                           Upload Post
                         </button>
+                    </Link>
                   </Menu.Item>
                 </div>
               </Menu.Items>

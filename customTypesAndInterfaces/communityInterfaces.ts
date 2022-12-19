@@ -21,4 +21,6 @@ export interface ICommunityData {
     creatorName: string
     creatorPhotoURL: string
     members: string[]
+
+    id?: string
 }

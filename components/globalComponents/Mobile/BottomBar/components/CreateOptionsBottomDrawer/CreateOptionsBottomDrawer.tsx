@@ -23,7 +23,9 @@ const CreateOptionsBottomDrawer = ({isCreateOptionsDrawerOpen ,setIsCreateOption
 
                 <div className='w-[80%] sm:w-[60%] md:w-[40%] flex justify-center items-center  px-3 py-3 text-center font-medium font-poppins bg-lightColor my-2 rounded-lg hover:cursor-pointer border-b-4 border-r-4 border-b-brandColor border-r-brandColor active:border-none hover:border-none'>
                   {/* <Image src={upload} alt="community" className='w-14 h-14' /> */}
-                  <button type='button'> Upload Post </button>
+                  <Link href={'/CreatePost'} onClick={() => setIsCreateOptionsDrawerOpen(false)}>
+                    <button type='button'> Create Post </button>
+                  </Link>
                 </div>
               </div>
 

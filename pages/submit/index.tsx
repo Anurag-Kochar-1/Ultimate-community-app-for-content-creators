@@ -11,7 +11,7 @@ const index = () => {
         className='w-full h-[93vh] mt-[7vh] bg-[#DAE0E6] flex justify-center items-start  px-3 space-x-3'
         >
           {/* <h1 onClick={() => console.log(userRedux)}> LOG userRedux </h1> */}
-            <CreatePostContainer />
+            {/* <CreatePostContainer /> */}
         
         </main>       
   )
