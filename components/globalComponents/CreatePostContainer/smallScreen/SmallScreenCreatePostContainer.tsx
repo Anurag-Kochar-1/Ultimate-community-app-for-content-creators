@@ -10,7 +10,7 @@ import { ICommunityData } from '../../../../customTypesAndInterfaces/communityIn
 
 
 interface IProps {
-  selectedCommunity: ICommunityData | undefined
+  selectedCommunity: ICommunityData | null
   setSelectedCommunity: any
   userJoinedCommunitiesState: ICommunityData[]
 
@@ -28,15 +28,15 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
   },[])
 
   return (
-    <div className='lg:hidden  w-full h-full mb-[9vh] lg:mb-0 flex flex-col justify-between items-center pt-5'>
+    <div className='md:hidden w-full h-full mb-[9vh] lg:mb-0 flex flex-col justify-between items-center pt-5'>
    
 
-    <div className='w-full flex space-x-2 justify-start items-center mb-4 bg-lightColor'>
+    <div className='w-full flex space-x-2 justify-start items-center mb-4 bg-lightColor px-3'>
       <p className='text-sm font-poppins font-normal' onClick={() => console.log(selectedCommunity)}>Posting to:</p>
 
       <select 
       title='select a community' 
-      className="border border-brandColor outline-none bg-lightColor rounded-full text-sm" 
+      className="border font-medium border-brandColor outline-none bg-lightColor rounded-full text-sm focus:ring-0 focus:border-brandColor" 
       value={selectedCommunity?.communityName} 
       onChange={(e) => setSelectedCommunity(e.target.value)}>
 
@@ -129,12 +129,12 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
     </div>}
 
     {true && (
-      <div className='fixed bottom-0 z-30 px-5 w-full h-[15vh] border-t border-t-midColor bg-lightColor flex justify-between items-center'>
+      <div className='md:hidden fixed bottom-0 z-30 px-5 w-full h-[15vh] border-t border-t-midColor bg-lightColor flex justify-between items-center'>
         <div className='w-full flex justify-start items-center space-x-2'>
           <button 
           type='button'
           onClick={() => setPostType("caption")}
-          className="px-3 py-3 rounded-md bg-lightColor flex justify-center items-center"
+          className="px-3 py-3 rounded-md bg-gray-200 flex justify-center items-center active:bg-midColor"
           > 
             <BsTextCenter className='text-darkColor opacity-70' />
           </button>
@@ -142,7 +142,7 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
           <button 
           type='button'
           onClick={() => setPostType("image")}
-          className="px-3 py-3 rounded-md bg-lightColorflex justify-center items-center"
+          className="px-3 py-3 rounded-md bg-gray-200 flex justify-center items-center active:bg-midColor"
           > 
             <BsImage className='text-darkColor opacity-70' />
           </button>
@@ -150,7 +150,7 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
           <button 
           type='button'
           onClick={() => setPostType("video")}
-          className="px-3 py-3 rounded-md bg-lightColor flex justify-center items-center"
+          className="px-3 py-3 rounded-md bg-gray-200 flex justify-center items-center active:bg-midColor"
           > 
             <BsCameraVideo className='text-darkColor opacity-70' /> 
           </button>

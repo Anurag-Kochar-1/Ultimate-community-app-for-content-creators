@@ -1,20 +1,22 @@
 import {useEffect, useState} from 'react'
 import { collection, doc, DocumentData, getDoc, getDocs, query, QueryDocumentSnapshot, where } from 'firebase/firestore'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import CreatePostContainer from '../../components/fullPages/Submit Page/components/createPostContainer.tsx/CreatePostContainer'
+import CreatePostContainer from '../../components/globalComponents/CreatePostContainer/largeScreen/LargeScreenCreatePostContainer'
 import SmallScreenCreatePostContainer from '../../components/globalComponents/CreatePostContainer/smallScreen/SmallScreenCreatePostContainer'
 import { auth, db } from '../../firebaseConfig'
 import { ICommunityData } from '../../customTypesAndInterfaces/communityInterfaces'
 // import useSWR from 'swr'
 import { useDispatch } from 'react-redux'
 import { setUserJoinedCommunitiesData } from "../../redux/slices/userSlice"
+import { useRouter } from 'next/router'
 
 const index = () => {
   const dispatch = useDispatch()
+  const router = useRouter()
   const [user, loading] = useAuthState(auth)
   const [userJoinedCommunitiesState, setUserJoinedCommunitiesState] = useState<ICommunityData[] | []>([])
   
-  const [selectedCommunity, setSelectedCommunity] = useState<ICommunityData>()
+  const [selectedCommunity, setSelectedCommunity] = useState<ICommunityData | null>(null)
   const communityCollectionRef = collection(db, "communities")
   
   // fetching user's joined and owned commninties 
@@ -32,7 +34,11 @@ const index = () => {
     if(!loading && user) {
       fetchUserJoinedAndOwnedCommunities()
     }
-   
+
+    // if( !auth.currentUser ) {
+    //   router.push('/')
+    // }
+
   },[user])
 
 
@@ -45,11 +51,11 @@ const index = () => {
 
 
 
-      {/* <CreatePostContainer  
+      <CreatePostContainer  
         selectedCommunity={selectedCommunity}
         setSelectedCommunity={setSelectedCommunity}
         userJoinedCommunitiesState={userJoinedCommunitiesState} 
-      /> */}
+      />
 
       <SmallScreenCreatePostContainer 
       selectedCommunity={selectedCommunity}

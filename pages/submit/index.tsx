@@ -1,5 +1,5 @@
 import React from 'react'
-import CreatePostContainer from '../../components/fullPages/Submit Page/components/createPostContainer.tsx/CreatePostContainer'
+import CreatePostContainer from '../../components/globalComponents/CreatePostContainer/largeScreen/LargeScreenCreatePostContainer'
 import Header from "../../components/globalComponents/Header/Header"
 import HomePageLayout from '../../components/fullPages/Home/layouts/HomePageLayout'
 // import { useSelector } from 'react-redux'
