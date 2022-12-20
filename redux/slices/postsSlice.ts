@@ -21,7 +21,7 @@ const postsSlice = createSlice({
             if(!action.payload.posts.allPostsData) {
                 return state
             }
-            state.allPostsData =  action.payload.posts
+            state.allPostsData =  action.payload.posts.allPostsData
             
             
         },

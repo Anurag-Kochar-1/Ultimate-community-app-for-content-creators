@@ -12,11 +12,12 @@ import { useSelector } from 'react-redux'
 import { IAllSlicesState } from '../../../../../customTypesAndInterfaces/allSlicesState'
 import { ICommunity, ICommunityData } from '../../../../../customTypesAndInterfaces/communityInterfaces'
 import { IAllData } from '../../../../../customTypesAndInterfaces/allData'
+import { IPost } from '../../../../../customTypesAndInterfaces/post'
 // import { AppState } from '../../../../../redux/store'
 
 const HomeFeed = ( ) => {
   const allCommunitiesData = useSelector((state:IAllSlicesState) => state.community.allCommunitiesData)
-  const allPostsRedux = useSelector((state:IAllSlicesState) => state.posts)
+  const allPostsRedux = useSelector((state: IAllSlicesState) => state.posts.allPostsData)
 
   const [user] = useAuthState(auth)
   const [allSubreddits, setAllSubdreddits] = useState<any[]>([])
@@ -57,12 +58,16 @@ const HomeFeed = ( ) => {
     className='w-full lg:w-[70%] h-full  flex flex-col justify-start items-center bg-lightColor overflow-x-hidden overflow-y-scroll '
     >
       <h1 className='text-xl text-center text-darkColor' onClick={() => console.log(allPostsRedux)}> LOG ALL POSTS  </h1>
-      <h1 className='text-xl text-center text-yellow-800' onClick={() => console.log(allCommunitiesData)}> LOG ALL Communities  </h1>
+      {/* <h1 className='text-xl text-center text-yellow-800' onClick={() => console.log(allCommunitiesData)}> LOG ALL Communities  </h1> */}
 
 
     {allCommunitiesData &&  allCommunitiesData.map((community:ICommunityData) => {
       return <Link key={community.communityID} className='px-5 py-1 rounded-md bg-gray-600 text-white my-2' href={`/place/${community.communityID}`}> {community.communityName} </Link>
-    }) }
+    })}
+
+    {allPostsRedux && allPostsRedux?.map((post: IPost) => {
+      return <Post at={"hompage"} postData={post} key={post.postID}/>
+    })}
 
     </div>
   )

@@ -7,16 +7,17 @@ import Image from 'next/image'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { auth, db } from '../../../firebaseConfig'
 import { arrayRemove, arrayUnion, doc, updateDoc } from 'firebase/firestore'
+import { IPost } from '../../../customTypesAndInterfaces/post'
 
 interface IProps {
     at: string
-    post: any
+    postData: IPost
 }
 
-const Post = ({at , post}:IProps) => {
+const Post = ({at , postData}:IProps) => {
     const [user] = useAuthState(auth)
     const [isPostUpVoted, setIsPostUpVoted] = useState<boolean>(false)
-    const postRef = doc(db, "posts", post.postID as string)
+    const postRef = doc(db, "posts", postData.postID as string)
     // const subredditRef = doc(db, "subreddits", post.)
     
     
@@ -24,7 +25,7 @@ const Post = ({at , post}:IProps) => {
         // ---- Updating user ---- 
         const userRef = doc(db, "users", user?.uid as string )
         await updateDoc(userRef, {
-            upvotedPosts: arrayUnion(post.postID)
+            upvotedPosts: arrayUnion(postData.postID)
         })
 
         // ---- Updating Post ----
@@ -40,7 +41,7 @@ const Post = ({at , post}:IProps) => {
         // ---- Updating user ---- 
         const userRef = doc(db, "users", user?.uid as string )
         await updateDoc(userRef, {
-            upvotedPosts: arrayRemove(post.postID)
+            upvotedPosts: arrayRemove(postData.postID)
         })
 
         // ---- Updating Post ----
@@ -51,23 +52,23 @@ const Post = ({at , post}:IProps) => {
     }
 
 
-    const checkVoteStatus = () => {
-        const up = post.upvotedBy.includes(user?.uid as string)
-        up ? setIsPostUpVoted(true) : setIsPostUpVoted(false)
-        console.log(isPostUpVoted);
+    // const checkVoteStatus = () => {
+    //     const up = postData.upvotedBy.includes(user?.uid as string)
+    //     up ? setIsPostUpVoted(true) : setIsPostUpVoted(false)
+    //     console.log(isPostUpVoted);
         
-    }
+    // }
 
 
   return (
-    <div className='w-full sm:w-[70%] md:w-[70%] lg:w-[50%] xl:w-[50%] 2xl:w-[40%] h-auto bg-white flex flex-col md:flex-row lg:flex-row md:justify-start md:items-start rounded-sm my-5 md:space-x-2 hover:cursor-pointer' onClick={() => console.log(post)}>
+    <div className='w-full sm:w-[70%] md:w-[70%] lg:w-[50%] xl:w-[50%] 2xl:w-[40%] h-auto bg-white flex flex-col md:flex-row lg:flex-row md:justify-start md:items-start rounded-sm my-5 md:space-x-2 hover:cursor-pointer' onClick={() => console.log(postData)}>
 
         <div className='hidden h-full md:inline-flex flex-col items-center space-y-2 py-3 px-2 bg-[#F7F9FA] rounded-sm'>
             <BiUpvote 
                 className='text-gray-600 text-base m-1 hover:text-orange-600 hover:cursor-pointer rounded-sm' 
                 onClick={upvoteThePost}
             />
-            <p className='text-gray-600 text-base'> {post.upvotedBy.length - post.downvotedBy.length} </p>
+            {/* <p className='text-gray-600 text-base'> {postData.upvotedBy.length - postData.downvotedBy.length} </p> */}
             <BiDownvote 
                 className='text-gray-600 text-base m-1 hover:text-orange-600 hover:cursor-pointer rounded-sm' 
                 onClick={downThePost}
@@ -81,11 +82,11 @@ const Post = ({at , post}:IProps) => {
                 {at == "homepage" && (
                     <div className='flex flex-row w-full justify-between items-center bg-red-200 text-sm px-1 md:px-2 py-1' >
                         <div className='flex flex-row items-center justify-start'>
-                            <Image src={post?.postedAtSubbredditLogo || subredditDefaultLogo} width={7} height={7} alt="logo" className='h-7 w-7 rounded-full aspect-square bg-red-600' />
+                            {/* <Image src={postData?.postedAtSubbredditLogo || subredditDefaultLogo} width={7} height={7} alt="logo" className='h-7 w-7 rounded-full aspect-square bg-red-600' /> */}
 
                             <div className='flex flex-col md:flex-row md:space-x-2 pl-2'>
-                                <p> r/{post.postedAtSubbredditName} </p>
-                                <p> u/{post.creatorUsername} <span> • hours ago </span> </p>
+                                {/* <p> r/{postData.postedAtSubbredditName} </p> */}
+                                <p> u/{postData?.postCreatorName} <span> • hours ago </span> </p>
                             </div>
                         </div>
 
@@ -95,11 +96,11 @@ const Post = ({at , post}:IProps) => {
                         > JOIN </button>
                     </div>
                 )}
-                <h2 className='text-base font-normal pt-1 pb-2 text-gray-900'> {post.postTitle}  </h2>
-                {post?.mediaURL && (
+                <h2 className='text-base font-normal pt-1 pb-2 text-gray-900'> {postData.postTitle}  </h2>
+                {postData?.postImageURL && (
                     <div className='flex justify-center items-center'>
                         <img 
-                        src={post.mediaURL} 
+                        src={postData?.postImageURL} 
                         alt="post-image" 
                         className='w-[90%]  my-1'
                         />
@@ -123,7 +124,7 @@ const Post = ({at , post}:IProps) => {
 
                 <div className='flex justify-between md:justify-center items-center space-x-2 py-1  px-2 hover:bg-gray-300 hover:cursor-pointer rounded-md'>
                     <MdOutlineModeComment />
-                    <p> {post.comments.length || null} <span className='hidden md:inline'> comments </span> </p>
+                    {/* <p> {postData.comments.length || null} <span className='hidden md:inline'> comments </span> </p> */}
                 </div>
 
                 <div className='flex justify-between items-center space-x-2 py-1 px-2 hover:bg-gray-300 hover:cursor-pointer rounded-md'>

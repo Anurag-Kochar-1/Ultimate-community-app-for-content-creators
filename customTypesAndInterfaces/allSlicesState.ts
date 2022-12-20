@@ -1,10 +1,10 @@
 import { IAllData } from "./allData"
 import { ICommunity } from "./communityInterfaces"
+import { IPost } from "./post"
 
 export interface IAllSlicesState {
-    allData: IAllData
     user: []
     community: ICommunity
-    posts: []
+    posts: any
 }
 
