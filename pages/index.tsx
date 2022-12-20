@@ -5,7 +5,6 @@ import Header from '../components/globalComponents/Header/Header'
 import HomePageLayout from '../components/fullPages/Home/layouts/HomePageLayout'
 import { useDispatch, useSelector } from "react-redux"
 import { setUser, setUserJoinedCommunitiesData, setUserOwnedCommunitiesData, setUserCreatedPostsData } from "../redux/slices/userSlice"
-// import {setAllPosts} from "../redux/slices/postsSlice"
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { useCollectionData, useDocument } from "react-firebase-hooks/firestore"
 import { auth, db } from '../firebaseConfig'
@@ -14,9 +13,10 @@ import { useRouter } from "next/router"
 import { ICommunity } from '../customTypesAndInterfaces/communityInterfaces'
 import Link from 'next/link'
 import { wrapper } from '../redux/store'
+import { IPost } from '../customTypesAndInterfaces/post'
+import {setAllPosts} from "../redux/slices/postsSlice"
+import { setAllCommunities } from "../redux/slices/communitySlice"
 
-import { setAllCommunities, setAllPosts } from "../redux/slices/AllDataSlice"
-// import { AppState } from "../redux/store"
 
 const Home: NextPage = ( props:any ) => {
   console.log(props);
@@ -86,7 +86,7 @@ const Home: NextPage = ( props:any ) => {
       fetchUserDetails()
     }
 
-    dispatch(setAllPosts(props.demoPostsArr))
+    dispatch(setAllCommunities(props.allCommunitiesDataArr))
 
 
     // if(user && isSignInOrOutReminderVisible === false) {
@@ -119,14 +119,20 @@ export const getServerSideProps:GetServerSideProps = wrapper.getServerSideProps(
   const communityCollectionRef = collection(db, 'communities')
   const res = await getDocs(communityCollectionRef)
   res.forEach(doc => allCommunitiesDataArr.push(doc.data() as ICommunity))
-
-  store.dispatch(setAllCommunities( allCommunitiesDataArr ))
-
-  let demoPostsArr= [{postID: 1}, {postID: 2}]
-  // store.dispatch(setAllPosts(demoPostsArr))
+  // store.dispatch(setAllCommunities( allCommunitiesDataArr ))
+  
+  
+  // fetching all posts
+  const allPostsDataArray:IPost[] = []
+  const postsCollectionRef = collection(db, "posts")
+  const postsData = await getDocs(postsCollectionRef)
+  postsData.forEach((doc) => allPostsDataArray.push(doc.data() as IPost))
+  
+  store.dispatch(setAllPosts( allPostsDataArray ))
+ 
   return {
     props: {
-      demoPostsArr : demoPostsArr
+      allCommunitiesDataArr: allCommunitiesDataArr
     }
   }
 })

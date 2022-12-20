@@ -10,6 +10,7 @@ export const STATUSES = Object.freeze({
 });
 
 const initialState = {
+    allCommunitiesData: [],
     communityData: [],
     communityPosts:[],
     communitySettings: [],
@@ -25,12 +26,16 @@ const communitySlice = createSlice({
     reducers: {
         setCommunity : (state, action) => {
             state.communityData = action?.payload
+        },
+
+        setAllCommunities : (state, action) => {
+            state.allCommunitiesData = action.payload
         }
     },
 
     extraReducers: {
         [HYDRATE]: (state, action) => {
-            console.log(`----extraReducers is running - HYDRATE---`);
+            // console.log(`----extraReducers is running - HYDRATE---`);
             // console.log(action.payload);
 
             if(!action.payload.community.communityData) {
@@ -45,6 +50,6 @@ const communitySlice = createSlice({
 
 })
 
-export const {setCommunity} = communitySlice.actions
+export const {setCommunity, setAllCommunities} = communitySlice.actions
 export default communitySlice.reducer
 

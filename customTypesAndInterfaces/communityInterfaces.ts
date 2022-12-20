@@ -1,5 +1,6 @@
 
 export interface ICommunity {
+    allCommunitiesData: [],
     communityData: ICommunityData,
     communityPosts:[],
     communitySettings: [],

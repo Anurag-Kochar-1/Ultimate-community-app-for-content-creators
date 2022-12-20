@@ -27,7 +27,7 @@ const LargeScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
       </div>
 
       <div className='w-full flex py-2 px-2 justify-start items-center space-x-3'>
-        <p className='text-base font-poppins font-medium' onClick={() => console.log(selectedCommunity)}> Posting to LOGIT : </p>
+        <p className='text-base font-poppins font-medium' onClick={() => console.log(1)}> Posting to : </p>
 
         <select 
         title='select a community' 

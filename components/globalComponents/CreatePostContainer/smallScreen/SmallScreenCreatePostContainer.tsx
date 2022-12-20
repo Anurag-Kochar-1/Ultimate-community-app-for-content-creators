@@ -146,7 +146,7 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
     <>
       {!isPostPosting && <div className='md:hidden w-full h-full mb-[9vh] lg:mb-0 flex flex-col justify-between items-center pt-5'>
         <div className='w-full flex space-x-2 justify-start items-center mb-4 bg-lightColor px-3'>
-          <p className='text-sm font-poppins font-normal' onClick={() => console.log( 1 )}>Posting to : 1 </p>
+          <p className='text-sm font-poppins font-normal' onClick={() => console.log( 1 )}>Posting to  </p>
           {/* <p className='text-sm font-poppins font-normal' onClick={() => console.log( selectedCommunity )}> LOG selectedCommunity  </p> */}
 
           <select 
