@@ -28,6 +28,7 @@ const index = () => {
         userJoinedCommunitiesArray.push(doc.data())
       })
       setUserJoinedCommunitiesState(queryData.docs.map((doc: any) => ({ ...doc.data(), id: doc.id })));  
+      
   }
 
   useEffect(() => {

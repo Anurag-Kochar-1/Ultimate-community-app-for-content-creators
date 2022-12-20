@@ -1,6 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { auth, storage } from '../../../../firebaseConfig'
+import { auth, db, storage } from '../../../../firebaseConfig'
 import { useSelector } from 'react-redux'
 
 import {BsTextCenter , BsImage, BsCameraVideo} from 'react-icons/bs'
@@ -9,25 +9,28 @@ import { IAllSlicesState } from '../../../../customTypesAndInterfaces/allSlicesS
 import { ICommunityData } from '../../../../customTypesAndInterfaces/communityInterfaces'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 import { v4 as uuidv4 } from "uuid"
+import { addDoc, arrayUnion, collection, doc, updateDoc } from 'firebase/firestore'
 
 
 interface IProps {
   selectedCommunity: ICommunityData | null
   setSelectedCommunity: any
   userJoinedCommunitiesState: ICommunityData[]
-
 }
 
 const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunity, userJoinedCommunitiesState}: IProps ) => {
   const [ user ] = useAuthState(auth)
   const titleInputRef = useRef<HTMLInputElement>(null)
+  const postsCollectionRef = collection(db, "posts")
 
   const [postType, setPostType] = useState<string>("caption")
   const [postTitleInputValue, setPostTitleInputValue ] = useState<string>("")
   const [postCaptionInputValue, setPostCaptionInputValue ] = useState<string>("")
-  const [selectedCommunityID, setSelectedCommunityID] = useState<string>("")
+  // const [selectedCommunityID, setSelectedCommunityID] = useState<string>("")
   const [image, setImage] = useState<any[]>([])
   const [video, setVideo] = useState<any[]>([])
+  const [imageURL, setImageURL] = useState<string>("")
+  const [videoURL, setVideoURL] = useState<string>("")
 
 
   const uploadImage = async () => {
@@ -73,23 +76,78 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
   }
 
 
+  const addPost = async () => {
+    if(postCaptionInputValue) {
+      try {
+        // --- Adding post to Posts's Collection
+        const postDoc = await addDoc(postsCollectionRef, {
+          postID: "",
+          postTitle: postTitleInputValue,
+          postCaption: postCaptionInputValue || null,
+          postImageURL: imageURL || null,
+          postVideoURL: videoURL || null,
+          postCreatorID: user?.uid,
+          postCreatorName: user?.displayName,
+          postCreateAtCommunityID: selectedCommunity,
+          upvotedByUserID: [],
+          downvotedByUserID: []
+        })
+
+
+        // Upading post to add ID manually
+        const postDocRef = doc(db, "posts", postDoc.id)
+        await updateDoc(postDocRef, {
+          postID: postDoc.id
+        })
+
+        // Adding postID to user's createdPostsID array
+        const userRef = doc(db, "users", user?.uid as string)
+        await updateDoc(userRef, {
+          createdPostsID: arrayUnion(postDoc.id)
+        })
+
+        // Adding postID to communiy's postsID
+          const communityDocRef = doc(db, "communities", selectedCommunity as any)
+          await updateDoc(communityDocRef, {
+            postsID: arrayUnion(postDoc.id)
+          })
+
+        
+        // ---- Resetting states ---- 
+        setPostTitleInputValue("")
+        setPostCaptionInputValue("")
+        setImage([])
+        setVideo([])
+        setImageURL("")
+        setVideoURL("")
+
+      } catch (error) {
+        console.log(error);
+        
+      }
+    }
+  }
+  
+
 
 
   useEffect(() => {
     titleInputRef?.current?.focus
-  },[])
+    setSelectedCommunity(userJoinedCommunitiesState[0]?.communityID)
+  },[userJoinedCommunitiesState])
 
   return (
     <div className='md:hidden w-full h-full mb-[9vh] lg:mb-0 flex flex-col justify-between items-center pt-5'>
    
 
     <div className='w-full flex space-x-2 justify-start items-center mb-4 bg-lightColor px-3'>
-      <p className='text-sm font-poppins font-normal' onClick={() => console.log(video[0][0]?.name)}>Posting to VIDEO :</p>
+      {/* <p className='text-sm font-poppins font-normal' onClick={() => console.log( userJoinedCommunitiesState )}>Posting to : </p> */}
+      <p className='text-sm font-poppins font-normal' onClick={() => console.log( selectedCommunity?.communityID )}> LOG selectedCommunity  </p>
 
       <select 
       title='select a community' 
-      className="border font-medium border-brandColor outline-none bg-lightColor rounded-full text-sm focus:ring-0 focus:border-brandColor" 
-      value={selectedCommunity?.communityName} 
+      className="w-[50%] border font-medium border-brandColor outline-none bg-lightColor rounded-full text-sm focus:ring-0 focus:border-brandColor" 
+      value={userJoinedCommunitiesState[0]?.communityID} 
       onChange={(e) => setSelectedCommunity(e.target.value)}>
 
         {userJoinedCommunitiesState && (
@@ -98,9 +156,9 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
               <option
               key={community.communityID} 
               className='text-sm bg-lightColor text-darkColor'
-              value={community.communityName}
+              value={community?.communityID}
               > 
-                {community.communityName} 
+                {community?.communityName} 
               </option>
             )
           })
@@ -123,6 +181,7 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
         typeof='text'
         placeholder='Add caption'
         className='w-full min-h-[75%] border-none outline-none font-poppins font-medium bg-lightColor focus:ring-0'
+        onChange={(e) => setPostCaptionInputValue(e.target.value)}
         />
       )}
 
@@ -199,7 +258,11 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
         <div className='w-full flex justify-start items-center space-x-2'>
           <button 
           type='button'
-          onClick={() => setPostType("caption")}
+          onClick={() => {
+            setPostType("caption")
+            setImage([])
+            setVideo([])
+          }}
           className={postType === "caption" ? "px-3 py-3 rounded-md bg-brandColor flex justify-center items-center active:bg-midColor space-x-2" : "px-3 py-3 rounded-md bg-gray-200 flex justify-center items-center active:bg-midColor space-x-2"}
           > 
             <BsTextCenter className={postType === "caption" ? 'text-lightColor opacity-70' : 'text-darkColor opacity-70' } />
@@ -208,7 +271,11 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
 
           <button 
           type='button'
-          onClick={() => setPostType("image")}
+          onClick={() => {
+            setPostType("image")
+            setPostCaptionInputValue("")
+            setVideo([])
+          }}
           className={postType === "image" ? "px-3 py-3 rounded-md bg-brandColor flex justify-center items-center active:bg-midColor space-x-2" : "px-3 py-3 rounded-md bg-gray-200 flex justify-center items-center active:bg-midColor space-x-2"}
           > 
             <BsImage className={postType === "image" ? 'text-lightColor opacity-70' : 'text-darkColor opacity-70' } />
@@ -217,7 +284,11 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
 
           <button 
           type='button'
-          onClick={() => setPostType("video")}
+          onClick={() => {
+            setPostType("video")
+            setPostCaptionInputValue("")
+            setImage([])
+          }}
           className={postType === "video" ? "px-3 py-3 rounded-md bg-brandColor flex justify-center items-center active:bg-midColor space-x-2" : "px-3 py-3 rounded-md bg-gray-200 flex justify-center items-center active:bg-midColor space-x-2"}
           > 
             <BsCameraVideo className={postType === "video" ? 'text-lightColor opacity-70' : 'text-darkColor opacity-70' } />
@@ -230,6 +301,7 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
         type='button'
         className='px-5 py-1 bg-brandColor text-lightColor font-poppins text-sm rounded-sm'
         onClick={() => {
+          addPost()
           // if(image[0][0]) {
           //   uploadImage()
           // }
