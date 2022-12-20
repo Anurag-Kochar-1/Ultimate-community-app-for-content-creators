@@ -42,10 +42,6 @@ const index = () => {
 
   },[user])
 
-
-
-  // const {data, error} = useSWR("userJoinedCommunities",  fetchUserJoinedAndOwnedCommunities )
-
   
   return (
     <div className='w-full h-[94vh] lg:h-[94vh] mt-[7vh] mb-[9vh] lg:mb-0 overflow-x-hidden overflow-y-scroll bg-lightColor flex flex-col justify-start md:justify-start items-center px-3 space-y-3 md:space-y-7 lg:space-y-10'>
