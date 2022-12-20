@@ -1,12 +1,14 @@
 import React, {useState, useRef, useEffect} from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { auth } from '../../../../firebaseConfig'
+import { auth, storage } from '../../../../firebaseConfig'
 import { useSelector } from 'react-redux'
 
 import {BsTextCenter , BsImage, BsCameraVideo} from 'react-icons/bs'
 import {GrAdd} from "react-icons/gr"
 import { IAllSlicesState } from '../../../../customTypesAndInterfaces/allSlicesState'
 import { ICommunityData } from '../../../../customTypesAndInterfaces/communityInterfaces'
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+import { v4 as uuidv4 } from "uuid"
 
 
 interface IProps {
@@ -17,9 +19,59 @@ interface IProps {
 }
 
 const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunity, userJoinedCommunitiesState}: IProps ) => {
-  const [postType, setPostType] = useState<string>("")
   const [ user ] = useAuthState(auth)
   const titleInputRef = useRef<HTMLInputElement>(null)
+
+  const [postType, setPostType] = useState<string>("caption")
+  const [postTitleInputValue, setPostTitleInputValue ] = useState<string>("")
+  const [postCaptionInputValue, setPostCaptionInputValue ] = useState<string>("")
+  const [selectedCommunityID, setSelectedCommunityID] = useState<string>("")
+  const [image, setImage] = useState<any[]>([])
+  const [video, setVideo] = useState<any[]>([])
+
+
+  const uploadImage = async () => {
+    if(image[0][0]) {
+      console.log(`---- Image found ----`)
+      const imageRef = ref(storage, "postImages/" + uuidv4() + "--" + image[0][0]?.name)
+      const uploadImageMedia = uploadBytesResumable(imageRef, image[0][0])
+
+      uploadImageMedia.on("state_changed", (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        console.log(`upload is ${progress}% done`);
+      }, (error) => {
+        alert(error)
+      }, () => {
+        getDownloadURL(uploadImageMedia.snapshot.ref).then((downloadURL) => {
+
+          console.log(`URL IS ${downloadURL}`);
+          
+        })
+      })
+    }
+  }
+
+  const uploadVideo = async () => {
+    if(video[0][0]) {
+      console.log("---- Video found ----")
+      const videoRef = ref(storage, "postVideos/" + uuidv4() + "---" + video[0][0].name )
+      const uploadVideoMedia = uploadBytesResumable(videoRef, video[0][0])
+
+      uploadVideoMedia.on("state_changed", (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        console.log(`upload is ${progress}% done`);
+      }, (error) => {
+        alert(error)
+      }, () => {
+        getDownloadURL(uploadVideoMedia.snapshot.ref).then((downloadURL) => {
+
+          console.log(`URL IS ${downloadURL}`);
+          
+        })
+      })
+    }
+  }
+
 
 
 
@@ -32,7 +84,7 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
    
 
     <div className='w-full flex space-x-2 justify-start items-center mb-4 bg-lightColor px-3'>
-      <p className='text-sm font-poppins font-normal' onClick={() => console.log(selectedCommunity)}>Posting to:</p>
+      <p className='text-sm font-poppins font-normal' onClick={() => console.log(video[0][0]?.name)}>Posting to VIDEO :</p>
 
       <select 
       title='select a community' 
@@ -78,8 +130,17 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
         <div className='w-full flex justify-start items-center'>
           <div className='w-32 h-32 rounded-sm border border-dashed bg-lightColor border-brandColor flex justify-center items-center '>
             <label className='w-full h-full flex justify-center items-center hover:cursor-pointer'>
-              <input type="file" placeholder='image' accept="image/*" hidden />
+              <input type="file" placeholder='image' accept="image/*" hidden
+              onChange={(e) => {
+                const imageFile = e.target.files
+                setImage([imageFile])
+                // setImage( URL.createObjectURL(imageFile[0]) )
+
+              }}
+              />
               <GrAdd className='text-xl' />
+
+
             </label>
           </div>
         </div>
@@ -89,7 +150,12 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
         <div className='w-full flex justify-start items-center'>
           <div className='w-32 h-32 rounded-sm border border-dashed bg-lightColor border-blue-300 flex justify-center items-center '>
               <label className='w-full h-full flex justify-center items-center hover:cursor-pointer'>
-                <input type="file" placeholder='image' accept="video/*" hidden />
+                <input type="file" placeholder='image' accept="video/*" hidden
+                onChange={(e) => {
+                  const videoFile = e.target.files
+                  setVideo([videoFile])
+                }}
+                />
               <GrAdd className='text-xl' />
             </label>
           </div>
@@ -160,8 +226,18 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
         </div>
 
         <button
+
         type='button'
         className='px-5 py-1 bg-brandColor text-lightColor font-poppins text-sm rounded-sm'
+        onClick={() => {
+          // if(image[0][0]) {
+          //   uploadImage()
+          // }
+
+          // if(video[0][0]) {
+          //   uploadVideo()
+          // }
+        }}
         > Post  </button>
       </div>
     )}

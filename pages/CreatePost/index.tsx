@@ -35,7 +35,7 @@ const index = () => {
       fetchUserJoinedAndOwnedCommunities()
     }
 
-    if( !auth.currentUser ) {
+    if(!auth.currentUser && !loading ) {
       router.push('/')
     }
 
