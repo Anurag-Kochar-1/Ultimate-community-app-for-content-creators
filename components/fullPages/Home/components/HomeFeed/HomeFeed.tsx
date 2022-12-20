@@ -18,6 +18,7 @@ import { IPost } from '../../../../../customTypesAndInterfaces/post'
 const HomeFeed = ( ) => {
   const allCommunitiesData = useSelector((state:IAllSlicesState) => state.community.allCommunitiesData)
   const allPostsRedux = useSelector((state: IAllSlicesState) => state.posts.allPostsData)
+  const userData = useSelector((state: IAllSlicesState) => state.user)
 
   const [user] = useAuthState(auth)
   const [allSubreddits, setAllSubdreddits] = useState<any[]>([])
@@ -55,9 +56,10 @@ const HomeFeed = ( ) => {
 
   return (
     <div 
-    className='w-full lg:w-[70%] h-full  flex flex-col justify-start items-center bg-lightColor overflow-x-hidden overflow-y-scroll '
+    className='w-full h-full  flex flex-col justify-start items-center bg-lightColor overflow-x-hidden overflow-y-scroll pb-96'
     >
       <h1 className='text-xl text-center text-darkColor' onClick={() => console.log(allPostsRedux)}> LOG ALL POSTS  </h1>
+      <h1 className='text-xl text-center text-darkColor' onClick={() => console.log(userData)}> LOG USER REDuX </h1>
       {/* <h1 className='text-xl text-center text-yellow-800' onClick={() => console.log(allCommunitiesData)}> LOG ALL Communities  </h1> */}
 
 
@@ -66,7 +68,7 @@ const HomeFeed = ( ) => {
     })}
 
     {allPostsRedux && allPostsRedux?.map((post: IPost) => {
-      return <Post at={"hompage"} postData={post} key={post.postID}/>
+      return <Post at={"homePage"} postData={post} key={post.postID}/>
     })}
 
     </div>
