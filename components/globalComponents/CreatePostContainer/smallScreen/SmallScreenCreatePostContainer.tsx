@@ -134,25 +134,28 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
           <button 
           type='button'
           onClick={() => setPostType("caption")}
-          className="px-3 py-3 rounded-md bg-gray-200 flex justify-center items-center active:bg-midColor"
+          className={postType === "caption" ? "px-3 py-3 rounded-md bg-brandColor flex justify-center items-center active:bg-midColor space-x-2" : "px-3 py-3 rounded-md bg-gray-200 flex justify-center items-center active:bg-midColor space-x-2"}
           > 
-            <BsTextCenter className='text-darkColor opacity-70' />
+            <BsTextCenter className={postType === "caption" ? 'text-lightColor opacity-70' : 'text-darkColor opacity-70' } />
+            <span className={ postType === "caption" ? 'hidden sm:inline-block text-lightColor  text-sm font-normal font-poppins' : 'hidden text-darkColor sm:inline-block text-sm font-normal font-poppins'}> Caption </span>
           </button>
 
           <button 
           type='button'
           onClick={() => setPostType("image")}
-          className="px-3 py-3 rounded-md bg-gray-200 flex justify-center items-center active:bg-midColor"
+          className={postType === "image" ? "px-3 py-3 rounded-md bg-brandColor flex justify-center items-center active:bg-midColor space-x-2" : "px-3 py-3 rounded-md bg-gray-200 flex justify-center items-center active:bg-midColor space-x-2"}
           > 
-            <BsImage className='text-darkColor opacity-70' />
+            <BsImage className={postType === "image" ? 'text-lightColor opacity-70' : 'text-darkColor opacity-70' } />
+            <span className={ postType === "image" ? 'hidden sm:inline-block text-lightColor  text-sm font-normal font-poppins' : 'hidden text-darkColor sm:inline-block text-sm font-normal font-poppins'}> Image </span>
           </button>
 
           <button 
           type='button'
           onClick={() => setPostType("video")}
-          className="px-3 py-3 rounded-md bg-gray-200 flex justify-center items-center active:bg-midColor"
+          className={postType === "video" ? "px-3 py-3 rounded-md bg-brandColor flex justify-center items-center active:bg-midColor space-x-2" : "px-3 py-3 rounded-md bg-gray-200 flex justify-center items-center active:bg-midColor space-x-2"}
           > 
-            <BsCameraVideo className='text-darkColor opacity-70' /> 
+            <BsCameraVideo className={postType === "video" ? 'text-lightColor opacity-70' : 'text-darkColor opacity-70' } />
+            <span className={ postType === "video" ? 'hidden sm:inline-block text-lightColor  text-sm font-normal font-poppins' : 'hidden text-darkColor sm:inline-block text-sm font-normal font-poppins'}> Video </span>
           </button>
         </div>
 

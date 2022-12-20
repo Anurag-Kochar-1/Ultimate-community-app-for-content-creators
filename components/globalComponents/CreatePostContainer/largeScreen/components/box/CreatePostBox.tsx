@@ -195,33 +195,32 @@ const CreatePostBox =  ({selectedCommunity, setSelectedCommunity}:IProps) => {
     <div className='w-full h-[40vh] bg-lightColor flex flex-col justify-start items-center rounded-md shadow-xl shadow-midColor'>
         {/* <h1 className='text-xl' onClick={() => console.log(postMedia)}> postMedia </h1> */}
         {postingStatus === "IDLE" && <div className='w-full' >
-            <div className='flex justify-between items-center border-b border-b-gray-400 rounded-md'>
+            <div className='flex justify-between items-center rounded-md '>
                 <button 
                     type='button' 
                     onClick={() => setUploadType('caption')}
-                    className="w-full h-full flex justify-center items-center space-x-3 border-r border-r-gray-400  rounded-sm py-3 hover:cursor-pointer"    
-                    
+                    className={uploadType === "caption" ? "w-full h-full flex justify-center items-center space-x-3 border-r border-b border-r-gray-300  border-brandColor py-3 hover:cursor-pointer" : "w-full h-full flex justify-center items-center space-x-3 border-r border-b border-r-gray-300  border-b-gray-400 py-3 hover:cursor-pointer"}    
                 > 
-                    <BsTextCenter className='text-gray-700 w-5 h-5'/>
-                    <span className='font-medium text-gray-700 text-base'> Caption </span>
+                    <BsTextCenter className={uploadType === "caption" ? 'text-brandColor w-5 h-5' : 'text-darkColor w-5 h-5'} />
+                    <span className={uploadType === "caption" ? 'font-medium text-brandColor text-base' : 'font-medium text-dakrColor text-base' }> Caption </span>
                 </button>
     
                 <button 
                     type='button' 
                     onClick={() => setUploadType('image')}
-                    className="w-full h-full flex justify-center items-center space-x-3 border-r border-r-gray-400  rounded-sm py-3 hover:cursor-pointer"    
+                    className={uploadType === "image" ? "w-full h-full flex justify-center items-center space-x-3 border-r border-b border-r-gray-300  border-brandColor py-3 hover:cursor-pointer" : "w-full h-full flex justify-center items-center space-x-3 border-r border-b border-r-gray-300  border-b-gray-400 py-3 hover:cursor-pointer"}   
                 >
-                    <BsImage className='text-gray-700 w-5 h-5'/>
-                    <span className='font-medium text-gray-700 text-base'> Image  </span> 
+                    <BsImage className={uploadType === "image" ? 'text-brandColor w-5 h-5' : 'text-darkColor w-5 h-5'} />
+                    <span className={uploadType === "image" ? 'font-medium text-brandColor text-base' : 'font-medium text-dakrColor text-base' }>  Image  </span> 
                 </button>
 
                 <button 
                     type='button' 
                     onClick={() => setUploadType('video')}
-                    className="w-full h-full flex justify-center items-center space-x-3 rounded-sm py-3 hover:cursor-pointer"    
+                    className={uploadType === "video" ? "w-full h-full flex justify-center items-center space-x-3  border-b border-brandColor py-3 hover:cursor-pointer" : "w-full h-full flex justify-center items-center space-x-3 border-b border-b-gray-400 py-3 hover:cursor-pointer"}
                 > 
-                    <BsCameraVideo className='text-gray-700 w-5 h-5'/>
-                    <span className='font-medium text-gray-700 text-base'> Video  </span>
+                    <BsCameraVideo className={uploadType === "video" ? 'text-brandColor w-5 h-5' : 'text-darkColor w-5 h-5'} />
+                    <span className={uploadType === "video" ? 'font-medium text-brandColor text-base' : 'font-medium text-dakrColor text-base' }>Video  </span>
                 </button>
             </div>
 
@@ -249,7 +248,7 @@ const CreatePostBox =  ({selectedCommunity, setSelectedCommunity}:IProps) => {
                             onClick={() => {
                                 // uploadMedia()
                             }}
-                            className='px-4 py-1 border-none outline-none bg-brandColor rounded-s text-white font-medium text-base'
+                            className='px-4 py-1 border-none outline-none bg-brandColor rounded-sm text-white font-medium text-base'
                         > Post </button>
                     </div>       
                 </div>
@@ -283,7 +282,7 @@ const CreatePostBox =  ({selectedCommunity, setSelectedCommunity}:IProps) => {
                             onClick={() => {
                                 // uploadMedia()
                             }}
-                            className='px-4 py-1 border-none outline-none bg-brandColor rounded-s text-white font-medium text-base'
+                            className='px-4 py-1 border-none outline-none bg-brandColor rounded-sm text-white font-medium text-base'
                         > Post </button>
                     </div> 
                 </div>
@@ -317,7 +316,7 @@ const CreatePostBox =  ({selectedCommunity, setSelectedCommunity}:IProps) => {
                       onClick={() => {
                           // uploadMedia()
                       }}
-                      className='px-4 py-1 border-none outline-none bg-brandColor rounded-s text-white font-medium text-base'
+                      className='px-4 py-1 border-none outline-none bg-brandColor rounded-sm text-white font-medium text-base'
                   > Post </button>
               </div> 
                 </div>
