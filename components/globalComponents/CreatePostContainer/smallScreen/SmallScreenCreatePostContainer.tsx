@@ -18,6 +18,11 @@ interface IProps {
   userJoinedCommunitiesState: ICommunityData[]
 }
 
+interface IAddPostProps {
+  imageURL: string | null
+  videoURL: string | null
+}
+
 const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunity, userJoinedCommunitiesState}: IProps ) => {
   const [ user ] = useAuthState(auth)
   const titleInputRef = useRef<HTMLInputElement>(null)
@@ -29,8 +34,8 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
   // const [selectedCommunityID, setSelectedCommunityID] = useState<string>("")
   const [image, setImage] = useState<any[]>([])
   const [video, setVideo] = useState<any[]>([])
-  const [imageURL, setImageURL] = useState<string>("")
-  const [videoURL, setVideoURL] = useState<string>("")
+  // const [imageURL, setImageURL] = useState<string>("")
+  // const [videoURL, setVideoURL] = useState<string>("")
 
 
   const uploadImage = async () => {
@@ -46,7 +51,7 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
         alert(error)
       }, () => {
         getDownloadURL(uploadImageMedia.snapshot.ref).then((downloadURL) => {
-
+          addPost(downloadURL, null)
           console.log(`URL IS ${downloadURL}`);
           
         })
@@ -67,7 +72,7 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
         alert(error)
       }, () => {
         getDownloadURL(uploadVideoMedia.snapshot.ref).then((downloadURL) => {
-
+          addPost(null, downloadURL)
           console.log(`URL IS ${downloadURL}`);
           
         })
@@ -76,56 +81,54 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
   }
 
 
-  const addPost = async () => {
-    if(postCaptionInputValue) {
-      try {
-        // --- Adding post to Posts's Collection
-        const postDoc = await addDoc(postsCollectionRef, {
-          postID: "",
-          postTitle: postTitleInputValue,
-          postCaption: postCaptionInputValue || null,
-          postImageURL: imageURL || null,
-          postVideoURL: videoURL || null,
-          postCreatorID: user?.uid,
-          postCreatorName: user?.displayName,
-          postCreateAtCommunityID: selectedCommunity,
-          upvotedByUserID: [],
-          downvotedByUserID: []
-        })
-
-
-        // Upading post to add ID manually
-        const postDocRef = doc(db, "posts", postDoc.id)
-        await updateDoc(postDocRef, {
-          postID: postDoc.id
-        })
-
-        // Adding postID to user's createdPostsID array
-        const userRef = doc(db, "users", user?.uid as string)
-        await updateDoc(userRef, {
-          createdPostsID: arrayUnion(postDoc.id)
-        })
-
-        // Adding postID to communiy's postsID
-          const communityDocRef = doc(db, "communities", selectedCommunity as any)
-          await updateDoc(communityDocRef, {
-            postsID: arrayUnion(postDoc.id)
+  const addPost = async ( imageURL:string|null, videoURL:string|null  ) => {
+        try {
+          // --- Adding post to Posts's Collection
+          const postDoc = await addDoc(postsCollectionRef, {
+            postID: "",
+            postTitle: postTitleInputValue,
+            postCaption: postCaptionInputValue || null,
+            postImageURL: imageURL || null,
+            postVideoURL: videoURL || null,
+            postCreatorID: user?.uid,
+            postCreatorName: user?.displayName,
+            postCreateAtCommunityID: selectedCommunity,
+            upvotedByUserID: [],
+            downvotedByUserID: []
           })
 
-        
-        // ---- Resetting states ---- 
-        setPostTitleInputValue("")
-        setPostCaptionInputValue("")
-        setImage([])
-        setVideo([])
-        setImageURL("")
-        setVideoURL("")
 
-      } catch (error) {
-        console.log(error);
-        
-      }
-    }
+          // Upading post to add ID manually
+          const postDocRef = doc(db, "posts", postDoc.id)
+          await updateDoc(postDocRef, {
+            postID: postDoc.id
+          })
+
+          // Adding postID to user's createdPostsID array
+          const userRef = doc(db, "users", user?.uid as string)
+          await updateDoc(userRef, {
+            createdPostsID: arrayUnion(postDoc.id)
+          })
+
+          // Adding postID to communiy's postsID
+            const communityDocRef = doc(db, "communities", selectedCommunity as any)
+            await updateDoc(communityDocRef, {
+              postsID: arrayUnion(postDoc.id)
+            })
+
+          
+          // ---- Resetting states ---- 
+          setPostTitleInputValue("")
+          setPostCaptionInputValue("")
+          setImage([])
+          setVideo([])
+          // setImageURL("")
+          // setVideoURL("")
+
+        } catch (error) {
+          console.log(error);
+        }
+    
   }
   
 
@@ -141,8 +144,8 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
    
 
     <div className='w-full flex space-x-2 justify-start items-center mb-4 bg-lightColor px-3'>
-      {/* <p className='text-sm font-poppins font-normal' onClick={() => console.log( userJoinedCommunitiesState )}>Posting to : </p> */}
-      <p className='text-sm font-poppins font-normal' onClick={() => console.log( selectedCommunity?.communityID )}> LOG selectedCommunity  </p>
+      <p className='text-sm font-poppins font-normal' onClick={() => console.log( 1 )}>Posting to : 1 </p>
+      {/* <p className='text-sm font-poppins font-normal' onClick={() => console.log( selectedCommunity )}> LOG selectedCommunity  </p> */}
 
       <select 
       title='select a community' 
@@ -174,6 +177,8 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
         className='w-full border-none outline-none text-lg font-poppins font-medium bg-lightColor focus:ring-0'
         ref={titleInputRef}
         autoFocus
+        onChange={(e) => setPostTitleInputValue(e.target.value) }
+        value={postTitleInputValue}
       />
 
       {postType === "caption" && (
@@ -182,6 +187,7 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
         placeholder='Add caption'
         className='w-full min-h-[75%] border-none outline-none font-poppins font-medium bg-lightColor focus:ring-0'
         onChange={(e) => setPostCaptionInputValue(e.target.value)}
+        value={postCaptionInputValue}
         />
       )}
 
@@ -301,14 +307,13 @@ const SmallScreenCreatePostContainer = ( {selectedCommunity, setSelectedCommunit
         type='button'
         className='px-5 py-1 bg-brandColor text-lightColor font-poppins text-sm rounded-sm'
         onClick={() => {
-          addPost()
-          // if(image[0][0]) {
-          //   uploadImage()
-          // }
-
-          // if(video[0][0]) {
-          //   uploadVideo()
-          // }
+          if(postType === "caption") {
+            addPost(null, null)
+          } else if (postType === "image") {
+            uploadImage()
+          } else if (postType === "video") {
+            uploadVideo()
+          }
         }}
         > Post  </button>
       </div>
