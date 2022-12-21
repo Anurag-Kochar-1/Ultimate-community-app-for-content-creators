@@ -2,6 +2,7 @@ import { configureStore, combineReducers  } from '@reduxjs/toolkit';
 import communityReducer from "./slices/communitySlice"
 import userReducer from "./slices/userSlice"
 import postsReducer from "./slices/postsSlice"
+import modalsReducer from "./slices/modalSlices"
 import { createWrapper } from 'next-redux-wrapper';
 
 // export interface State {
@@ -32,6 +33,7 @@ const makeStore = () => configureStore({
         user: userReducer,
         community: communityReducer,
         posts: postsReducer,
+        modals: modalsReducer
     },
     devTools: true,
 

@@ -16,6 +16,7 @@ import { wrapper } from '../redux/store'
 import { IPost } from '../customTypesAndInterfaces/post'
 import {setAllPosts} from "../redux/slices/postsSlice"
 import { setAllCommunities } from "../redux/slices/communitySlice"
+import LogInModal from '../components/globalComponents/Modals/LogInModal/LogInModal'
 
 
 const Home: NextPage = ( props:any ) => {
@@ -103,6 +104,7 @@ const Home: NextPage = ( props:any ) => {
   return (
     <>
       <HomePage />
+
       {/* {isSignInOrOutReminderVisible && <div className='fixed bottom-0 left-0 w-full h-[40vh] bg-brandColor z-30'>
         <button> Sign in </button>
         <button> Sign up </button>

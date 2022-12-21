@@ -9,9 +9,11 @@ import { IPost } from '../../../customTypesAndInterfaces/post'
 import { ICommunityData } from '../../../customTypesAndInterfaces/communityInterfaces'
 import offstaLogo from "../../../public/images/offstaLogo.png"
 import Link from 'next/link'
+import { setIsLoginModalOpen } from "../../../redux/slices/modalSlices"
+
 // Icons
 import {BiUpvote, BiDownvote, BiShareAlt, BiComment} from "react-icons/bi"
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { IAllSlicesState } from '../../../customTypesAndInterfaces/allSlicesState'
 import { ICurrentUserData } from '../../../customTypesAndInterfaces/user'
 
@@ -24,12 +26,16 @@ interface IProps {
 
 const Post = ({at , postData}:IProps) => {
     const [user] = useAuthState(auth)
+    const dispatch = useDispatch()
+    const { isLoginModalOpen } = useSelector((state:IAllSlicesState) => state.modals)
+
     const [postUpvotedDownvotedValue, setPostUpvotedDownvotedValue ] = useState<number>(postData.upvotedByUserID.length - postData.downvotedByUserID.length)
     const [isPostUpvoted, setIsPostUpvoted] = useState<boolean>(false)
     const { currentUserData }  = useSelector((state: IAllSlicesState) => state.user)
     const [postCommunityData, setPostCommunityData] = useState<ICommunityData[]>([])
     const [isPostUpVoted, setIsPostUpVoted] = useState<boolean>(false)
     const [isPostDownVoted, setIsPostDownVoted] = useState<boolean>(false)
+
     const postRef = doc(db, "posts", postData.postID as string)
     const communityRef = doc(db, "communities", postData?.postCreateAtCommunityID)
     
@@ -37,22 +43,25 @@ const Post = ({at , postData}:IProps) => {
     const upvoteThePost = async () => {
         const userRef = doc(db, "users", user?.uid as string )
         try {
-            // ---- Removing user from downvotedPostsID array ----
+            // ---- Updating User => Removing user from downvotedPostsID array ----
             await updateDoc(userRef, {
             downvotedPostsID: arrayRemove(postData?.postID)
-           })
-           
-           // ---- Removing user from Post's downvotedPostsID array ----
-           await updateDoc(postRef, {
-               downvotedByUserID: arrayRemove(postData?.postID)
-           })
-           
-           // ---- Adding ID to user from downvotedPostsID array ----
-           await updateDoc(userRef, {
-               upvotedPostsID: arrayUnion(postData?.postID)
             })
+
+            // ---- Updating User => Adding user to upvotedPostsID array ----
+            await updateDoc(userRef, {
+            upvotedPostsID: arrayUnion(postData?.postID)
+            })
+           
+
+           // ---- Updating Post =>  Removing from downvotedByUserID ----
+           await updateDoc(postRef, {
+                downvotedByUserID: arrayRemove(user?.uid)
+           })
+           
+           
             
-            // ---- Updating Post ----
+            // ---- Updating Post =>  Adding userID to upvotedByUserID ----
             await updateDoc(postRef, {
                 upvotedByUserID: arrayUnion(user?.uid)
             })
@@ -71,7 +80,7 @@ const Post = ({at , postData}:IProps) => {
         try {
             const userRef = doc(db, "users", user?.uid as string)
 
-            // ---- Removing user from upvotedPostsID array ---- 
+            // ---- Updating User => Adding user to upvotedPostsID array ----
             await updateDoc(userRef, {
                 upvotedPostsID: arrayRemove(postData.postID)
             })
@@ -122,7 +131,7 @@ const Post = ({at , postData}:IProps) => {
 
   return (
     <div className='w-full sm:w-[90%] md:w-[70%] lg:w-[60%] aspect-square bg-lightColor rounded-md m-3 flex flex-col justify-start items-center space-y-3 py-3 px-3 border-b border-b-midColor sm:border-0 sm:shadow-lg sm:shadow-midColor mb-4' onClick={() => {
-        console.log(currentUserData?.communitiesJoinedID)
+        console.log(` L `)
     } }>
 
         {/* Header */}
@@ -130,7 +139,7 @@ const Post = ({at , postData}:IProps) => {
             <div className='w-full flex justify-start items-center space-x-3 rounded-md'>
                 {at === "homePage" && (
                     <div className='hover:cursor-pointer'>
-                        <Link href={`place/${postData.postCreateAtCommunityID}`}> <Image src={postCommunityData[0]?.communityLogo || offstaLogo} alt="logo" className='w-10 h-10 rounded-full'/> </Link> 
+                        <Link href={`place/${postData.postCreateAtCommunityID}`}> <Image src={offstaLogo} width={10} height={10} alt="logo" className='w-10 h-10 rounded-full'/> </Link> 
                     </div>
                 )}
 
@@ -146,6 +155,13 @@ const Post = ({at , postData}:IProps) => {
                     <button
                     type='button'
                     className='bg-brandColor text-lightColor font-poppins text-sm px-4 py-1 rounded-sm'
+                    onClick={() => {
+                        if(!auth.currentUser) {
+                            dispatch(setIsLoginModalOpen(true))     
+                        } else {
+                            alert("JOINED !!!")
+                        }
+                    }}
                     >
                         Join
                     </button>

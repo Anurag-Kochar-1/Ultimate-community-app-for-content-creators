@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react'
 import { collection, doc, DocumentData, getDoc, getDocs, query, QueryDocumentSnapshot, where } from 'firebase/firestore'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import CreatePostContainer from '../../components/globalComponents/CreatePostContainer/largeScreen/LargeScreenCreatePostContainer'
+import LargeScreenCreatePostContainer from '../../components/globalComponents/CreatePostContainer/largeScreen/LargeScreenCreatePostContainer'
 import SmallScreenCreatePostContainer from '../../components/globalComponents/CreatePostContainer/smallScreen/SmallScreenCreatePostContainer'
 import { auth, db } from '../../firebaseConfig'
 import { ICommunityData } from '../../customTypesAndInterfaces/communityInterfaces'
@@ -48,7 +48,7 @@ const index = () => {
 
 
 
-      <CreatePostContainer  
+      <LargeScreenCreatePostContainer  
         selectedCommunity={selectedCommunity}
         setSelectedCommunity={setSelectedCommunity}
         userJoinedCommunitiesState={userJoinedCommunitiesState} 

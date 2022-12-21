@@ -1,2 +1,4 @@
-2. SSR with redux
-3. snapshot
+
+1. Modal popup 
+2. Post upvote and downvote functionality
+3. Mobile Sidebars

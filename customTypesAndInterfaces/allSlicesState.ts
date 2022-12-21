@@ -6,6 +6,7 @@ import { IUser } from "./user"
 export interface IAllSlicesState {
     user: IUser
     community: ICommunity
-    posts: any
+    posts: any,
+    modals: any
 }
 

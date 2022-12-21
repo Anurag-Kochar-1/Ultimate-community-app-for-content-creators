@@ -6,10 +6,14 @@ import HomePageLayout from '../components/fullPages/Home/layouts/HomePageLayout'
 import { wrapper } from '../redux/store'
 
 
+import LogInModal from '../components/globalComponents/Modals/LogInModal/LogInModal'
+
+
 function MyApp({ Component, pageProps }: AppProps) {
   return (
       <HomePageLayout>
         <Component {...pageProps} />
+        <LogInModal />
       </HomePageLayout>
   )
 }
