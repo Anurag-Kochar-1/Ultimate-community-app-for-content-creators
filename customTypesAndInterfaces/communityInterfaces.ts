@@ -11,6 +11,7 @@ export interface ICommunity {
 
 
 export interface ICommunityData {
+    youtubeChannelID: string
     communityID: string
     communityBanner: string|null
     communityContentType: string

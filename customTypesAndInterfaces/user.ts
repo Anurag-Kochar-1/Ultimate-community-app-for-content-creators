@@ -10,6 +10,6 @@ export interface ICurrentUserData {
     communitiesJoinedID: string[] 
     communitiesOwnedID: string[] 
     createdPostsID: string[] 
-    postsUpvoted: string[]
-    postsDownvoted: string[] 
+    upvotedPostsID: string[],
+    downvotedPostsID: string[]
 }

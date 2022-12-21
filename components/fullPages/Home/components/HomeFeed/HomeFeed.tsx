@@ -59,7 +59,7 @@ const HomeFeed = ( ) => {
     className='w-full h-full  flex flex-col justify-start items-center bg-lightColor overflow-x-hidden overflow-y-scroll pb-96'
     >
       <h1 className='text-xl text-center text-darkColor' onClick={() => console.log(allPostsRedux)}> LOG ALL POSTS  </h1>
-      <h1 className='text-xl text-center text-darkColor' onClick={() => console.log(userData)}> LOG USER REDuX </h1>
+      <h1 className='text-xl text-center text-darkColor' onClick={() => console.log(userData?.currentUserData)}> LOG USER REDuX </h1>
       {/* <h1 className='text-xl text-center text-yellow-800' onClick={() => console.log(allCommunitiesData)}> LOG ALL Communities  </h1> */}
 
 

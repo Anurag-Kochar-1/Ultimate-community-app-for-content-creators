@@ -28,10 +28,9 @@ const CreateCommunity = () => {
     try {
       const {data: {items} } = await axios.get(`https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${youtubeChannelIDvalue}&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`)
       setChannelData(items)
-      setTimeout(async() => {
-        createCommunity()
-        // setIsdataFetching(false)
-      }, 3000);
+      
+      createCommunity(items[0]?.snippet?.thumbnails?.default?.url)
+
     } catch (error) {
       console.log(error);
       setTimeout(() => {
@@ -42,15 +41,17 @@ const CreateCommunity = () => {
   }
 
 
-  const createCommunity = async () => {
+  const createCommunity = async (youtubeChannelogo: string) => {
     try {
       if(communityNameInputValue && youtubeChannelIDvalue && contentTypeValue) {
         // ------ creating subreddit ------
         const communityDoc = await addDoc(communityCollectionRef, {
           communityID: null,
+          youtubeChannelID: youtubeChannelIDvalue,
           communityName: communityNameInputValue,
           communityContentType: contentTypeValue,
-          communityLogo: channelData[0]?.snippet?.thumbnails?.default?.url || null,
+          // communityLogo: channelData[0]?.snippet?.thumbnails?.default?.url || null,
+          communityLogo: youtubeChannelogo || null,
           communityBanner: "https://www.teahub.io/photos/full/261-2617153_wallpaper-linear-brown-yellow-gradient-sandy-brown-light.jpg",
           communityDescription: "",
           creatorName : user?.displayName,
@@ -79,8 +80,8 @@ const CreateCommunity = () => {
           communitiesOwnedID: arrayUnion(communityRef.id),
         })
 
-
         router.push(`place/${communityDoc.id}`)
+
         // ------ Reseting states ------
         setIsdataFetching(false)
         setCommunityNameInputValue("")

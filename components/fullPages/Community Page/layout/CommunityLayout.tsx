@@ -9,7 +9,7 @@ interface IProps {
 
 const CommunityLayout = ({children}:IProps) => {
   return (
-    <div className='w-full lg:w-[60%] h-[93vh] mt-[7vh] mb-[10vh] lg:mb-[0vh] flex flex-col justify-start items-center overflow-x-hidden overflow-y-visible bg-green-900 '>
+    <div className='w-full lg:w-[60%] h-[84vh] lg:h-[93vh] mt-[7vh] mb-[10vh] lg:mb-[0vh] flex flex-col justify-start items-center overflow-x-hidden overflow-y-visible bg-green-900 '>
       <TopSection />
       <CommunityTabs />
       {children}

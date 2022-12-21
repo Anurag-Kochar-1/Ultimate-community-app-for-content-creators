@@ -24,11 +24,9 @@ const LogIn = () => {
         await setDoc(doc(db, "users", result.user.uid), {
           subredditsOwnedID: [],
           subredditsJoinedID: [],
-          postsUpvoted: [],
-          postsDownvoted: [], 
           createdPostsID: [],
-          upvotedPosts: [],
-          downvotedPosts: []
+          upvotedPostsID: [],
+          downvotedPostsID: []
         });  
       } 
 

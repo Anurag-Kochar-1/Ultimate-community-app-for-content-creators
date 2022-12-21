@@ -39,7 +39,7 @@ const Header =  ({isLeftSidebarOpen, setIsLeftSidebarOpen, isRightSidebarOpen, s
 
   return (
     <div className='w-full h-[7vh] bg-lightColor py-4 px-3 flex justify-between items-center fixed top-0 shadow-sm shadow-midColor'>
-      <div className='flex justify-center items-center space-x-2 z-50' onClick={() => console.log(router)}>
+      <div className='flex justify-center items-center space-x-2 z-50' onClick={() => console.log('')}>
         <AiOutlineMenu 
           className='lg:hidden w-6 h-6 text-darkColor hover:cursor-pointer' 
           onClick={() => { isLeftSidebarOpen ? setIsLeftSidebarOpen(false) : setIsLeftSidebarOpen(true) }}

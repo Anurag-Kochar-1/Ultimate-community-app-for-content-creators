@@ -8,7 +8,7 @@ import Tabs from '../../../components/fullPages/Community Page/components/Commun
 import { useCollectionData, useCollectionDataOnce, useDocumentData } from "react-firebase-hooks/firestore"
 import Post from '../../../components/globalComponents/Post/Post'
 // import CommunityLayout from '../../components/fullPages/Community Page/layout/CommunityLayout'
-import CommunityHomePage from '../../../components/fullPages/Community Page/community home page/components/CommunityHomeFeed/CommunityHomeFeed'
+import CommunityPostsFeed from '../../../components/fullPages/Community Page/community home page/components/CommunityPostsFeed/CommunityPostsFeed'
 import LeftSidebar from '../../../components/fullPages/Home/components/Sidebars/Left-Sidebar/LeftSidebar'
 import { GetServerSideProps } from 'next'
 import { ICommunity } from '../../../customTypesAndInterfaces/communityInterfaces'
@@ -16,18 +16,19 @@ import { ICommunity } from '../../../customTypesAndInterfaces/communityInterface
 import communitySlice, { setCommunity } from '../../../redux/slices/communitySlice'
 import {  wrapper } from '../../../redux/store'
 import CommunityLayout from '../../../components/fullPages/Community Page/layout/CommunityLayout'
+import { IPost } from '../../../customTypesAndInterfaces/post'
 
 // import {store} from "../../redux/store"
 
 interface IProps {
-  communityData: ICommunity
+  currentCommunityPosts: IPost[]
 }
 
 const SubredditHomePage = ( props:IProps ) => {
-  console.log(props);
-  
-  
+  // console.log(props);
   const dispatch = useDispatch();
+  const postsCollectionRef = collection(db, "posts")
+  
   const [user] = useAuthState(auth)
   const [subredditState, setSubredditState] = useState<any[]>([])  
   const [allSubredditPosts , setAllSubredditPosts] = useState<any>([])
@@ -36,6 +37,14 @@ const SubredditHomePage = ( props:IProps ) => {
   
   
   
+  // ---- fetch community's Posts ---- 
+  const fetchPosts = async () => {
+    console.log(`fetchPosts is runing`);
+    const postsQuery = query(collection(db, "posts"), where("postCreateAtCommunityID", "==", id as string))
+    const queryData = await getDocs(postsQuery)
+    queryData.forEach(doc =>console.log(doc.data()))
+
+  }
 
 
   // ---- Fetching current subreddit's members ---- 
@@ -52,22 +61,13 @@ const SubredditHomePage = ( props:IProps ) => {
   //   // console.log(`member ID : ${memberData.id}`);
   // }
 
-  // const gettingRealTimeSubreddit = () => {
-  //   const realTimeSub = onSnapshot(doc(db, "subreddits", id as string), (doc) => {
-  //     console.log(doc.data());
-  //   })
-  // }
+  const gettingRealTimeSubreddit = () => {
+    const realTimeSub = onSnapshot(doc(db, "communities", id as string), (doc) => {
+      console.log(doc.data());
+    })
+  }
 
 
-
-  // ----- Getting Current Subreddit's Posts -----
-    
-    // const fetchAllPosts = async () => {
-    //   const postsCubCollection = collection(db, `subreddits/${id as string}/subredditPosts`)
-    //   const data = await getDocs(postsCubCollection)
-    //   setAllSubredditPosts(data?.docs.map((doc) => ({ ...doc.data(), postID: doc.id })));
-      
-    // }
   
 
 
@@ -83,17 +83,20 @@ const SubredditHomePage = ( props:IProps ) => {
     
   // }, [router.isReady])
 
-  const REDUX = useSelector((state: any) => state);
+  
     
   return (
       <CommunityLayout>
-        <main className='w-[100%] bg-lightColor flex flex-col justify-start items-center space-y-10 p-5'>
-          {/* <h1 onClick={() => console.log(REDUX)}> LOG REDUX </h1> */}
-          
+        <main className='w-[100%] bg-lightColor flex flex-col justify-start items-center space-y-10 '>
+          <h1 onClick={() => console.log(props)}> LOG communityPosts </h1>
+          <CommunityPostsFeed communityPosts={props.currentCommunityPosts} />
 
-          <p>
+
+
+
+
+          {/* <p>
           Gradient refers to the gradual transition from one color to another color or multiple colors. It makes objects stand out by adding a new dimension to the design and adding realism to the object. In fact, real life is not made of flat objects with flat colors.
-
 We created this tool to help you give life to your UI/UX Designs. It is based on Tailwind CSS, one of the most popular frameworks nowadays. Our Tailwind CSS gradients can be used in typography, buttons, cards, headers, illustrations - on almost all UI elements.Gradient refers to the gradual transition from one color to another color or multiple colors. It makes objects stand out by adding a new dimension to the design and adding realism to the object. In fact, real life is not made of flat objects with flat colors.
 
 We created this tool to help you give life to your UI/UX Designs. It is based on Tailwind CSS, one of the most popular frameworks nowadays. Our Tailwind CSS gradients can be used in typography, buttons, cards, headers, illustrations - on almost all UI elements.Gradient refers to the gradual transition from one color to another color or multiple colors. It makes objects stand out by adding a new dimension to the design and adding realism to the object. In fact, real life is not made of flat objects with flat colors.
@@ -227,7 +230,7 @@ We created this tool to help you give life to your UI/UX Designs. It is based on
 We created this tool to help you give life to your UI/UX Designs. It is based on Tailwind CSS, one of the most popular frameworks nowadays. Our Tailwind CSS gradients can be used in typography, buttons, cards, headers, illustrations - on almost all UI elements.Gradient refers to the gradual transition from one color to another color or multiple colors. It makes objects stand out by adding a new dimension to the design and adding realism to the object. In fact, real life is not made of flat objects with flat colors.
 
 We created this tool to help you give life to your UI/UX Designs. It is based on Tailwind CSS, one of the most popular frameworks nowadays. Our Tailwind CSS gradients can be used in typography, buttons, cards, headers, illustrations - on almost all UI elements.
-          </p>
+          </p> */}
 
 
           
@@ -254,8 +257,25 @@ export const getServerSideProps = wrapper.getServerSideProps(store => async ({ q
   store.dispatch(setCommunity(response.data()))
   // console.log('store state on the server after dispatch', store.getState());
 
+  const allCommunityPosts:IPost[] = []
+  const currentCommunityPosts:IPost[] = []
+  const postCollectionRef = collection(db, "posts")
+  const allPostsData = await getDocs(postCollectionRef)
+
+  allPostsData?.forEach((post) => {
+    allCommunityPosts.push(post?.data() as IPost)
+  })
+
+  allCommunityPosts.filter((post) => {
+    if(post.postCreateAtCommunityID === id) {
+      currentCommunityPosts.push(post)
+    } else {
+      return;
+    }
+  })
+
   return {
-    props: {}
+    props: {currentCommunityPosts}
   };
 });
 

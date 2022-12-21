@@ -58,7 +58,8 @@ const TopSection = () => {
         }}> 
             {/* <Image src={communityDefaultBanner} alt="banner" className='w-full h-[20vh]' /> */}
             {/* <Image src={communityDefaultLogo}  alt="banner" className='w-12 h-12 border border-lightColor rounded-full aspect-square absolute left-2 -bottom-2'/> */}
-            <Image src={communityDefaultLogo}  alt="banner" className='w-12 h-12 border border-lightColor rounded-full aspect-square m-3'/>
+            {/* <Image src={communityData?.communityLogo  || communityDefaultLogo} width={12} height={12} alt="logo" className='w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 border border-lightColor rounded-full aspect-square m-3'/> */}
+            <Image src={communityDefaultLogo} width={12} height={12} alt="logo" className='w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 border border-lightColor rounded-full aspect-square m-3'/>
         </div>
 
         {/* Detials */}
