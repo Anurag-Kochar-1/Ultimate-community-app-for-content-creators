@@ -29,91 +29,141 @@ const Post = ({at , postData}:IProps) => {
     const dispatch = useDispatch()
     const { isLoginModalOpen } = useSelector((state:IAllSlicesState) => state.modals)
 
-    const [postUpvotedDownvotedValue, setPostUpvotedDownvotedValue ] = useState<number>(postData.upvotedByUserID.length - postData.downvotedByUserID.length)
     const [isPostUpvoted, setIsPostUpvoted] = useState<boolean>(false)
+    const [isPostDownVoted, setIsPostDownVoted] = useState<boolean>(false)
+    const [isPostFullyExtended, setIsPostFullyExtended] = useState<boolean>(false)
+
+    const [postUpvotedDownvotedValue, setPostUpvotedDownvotedValue ] = useState<number>(postData.upvotedByUserID.length - postData.downvotedByUserID.length)
     const { currentUserData }  = useSelector((state: IAllSlicesState) => state.user)
     const [postCommunityData, setPostCommunityData] = useState<ICommunityData[]>([])
     const [isPostUpVoted, setIsPostUpVoted] = useState<boolean>(false)
-    const [isPostDownVoted, setIsPostDownVoted] = useState<boolean>(false)
 
     const postRef = doc(db, "posts", postData.postID as string)
     const communityRef = doc(db, "communities", postData?.postCreateAtCommunityID)
     
     
     const upvoteThePost = async () => {
-        const userRef = doc(db, "users", user?.uid as string )
-        try {
-            // ---- Updating User => Removing user from downvotedPostsID array ----
-            await updateDoc(userRef, {
-            downvotedPostsID: arrayRemove(postData?.postID)
-            })
+        
+        if(!auth.currentUser){
+            dispatch(setIsLoginModalOpen(true))
+            return
+        } else if (auth.currentUser && isPostUpVoted === false && isPostDownVoted == false) {
+            const userRef = doc(db, "users", user?.uid as string )
+            console.log(`-- upvoteThePost is running ---`);
+            try {
+                // ---- Updating User => Removing user from downvotedPostsID array ----
+                await updateDoc(userRef, {
+                downvotedPostsID: arrayRemove(postData?.postID)
+                })
 
-            // ---- Updating User => Adding user to upvotedPostsID array ----
-            await updateDoc(userRef, {
-            upvotedPostsID: arrayUnion(postData?.postID)
-            })
-           
-
-           // ---- Updating Post =>  Removing from downvotedByUserID ----
-           await updateDoc(postRef, {
-                downvotedByUserID: arrayRemove(user?.uid)
-           })
-           
-           
+                // ---- Updating User => Adding user to upvotedPostsID array ----
+                await updateDoc(userRef, {
+                upvotedPostsID: arrayUnion(postData?.postID)
+                })
             
-            // ---- Updating Post =>  Adding userID to upvotedByUserID ----
-            await updateDoc(postRef, {
-                upvotedByUserID: arrayUnion(user?.uid)
-            })
 
-
+                // ---- Updating Post =>  Removing from downvotedByUserID ----
+                await updateDoc(postRef, {
+                        downvotedByUserID: arrayRemove(user?.uid)
+                })
             
-            setIsPostUpvoted(true)
-            setPostUpvotedDownvotedValue(postUpvotedDownvotedValue + 1)
-        } catch (error) {
-            console.log(error);
-            setIsPostUpvoted(false)
-        }
-    }
-    
-    const downvoteThePost = async () => {
-        try {
-            const userRef = doc(db, "users", user?.uid as string)
+            
+                
+                // ---- Updating Post =>  Adding userID to upvotedByUserID ----
+                await updateDoc(postRef, {
+                    upvotedByUserID: arrayUnion(user?.uid)
+                })
 
-            // ---- Updating User => Adding user to upvotedPostsID array ----
+
+                
+                setIsPostUpvoted(true)
+                setIsPostDownVoted(false)
+                setPostUpvotedDownvotedValue(postUpvotedDownvotedValue + 1)
+            } catch (error) {
+                console.log(error);
+                setIsPostUpvoted(false)
+            }
+        } else if (auth.currentUser && isPostUpVoted === true && isPostDownVoted == false ) {
+            const userRef = doc(db, "users", user?.uid as string )
+            console.log("un-UpVoted")
+
             await updateDoc(userRef, {
-                upvotedPostsID: arrayRemove(postData.postID)
+                upvotedPostsID: arrayRemove(postData?.postID)
             })
 
-            // ---- Removing user from Post's upvotedByUserID array ----
             await updateDoc(postRef, {
                 upvotedByUserID: arrayRemove(user?.uid)
             })
 
-            // ---- Adding ID to user from downvotedPostsID array ----
-            await updateDoc(userRef, {
-                downvotedPostsID: arrayUnion(postData?.postID)
-            })
+            setIsPostUpVoted(false)
+        }
+    }
+    
+    const downvoteThePost = async () => {
+        
+        if(!auth.currentUser) {
+            dispatch(setIsLoginModalOpen(true))
+            return
+        }else if (auth.currentUser && isPostDownVoted == false && isPostUpVoted === false) {
+            try {
+                const userRef = doc(db, "users", user?.uid as string)
+                console.log(`-- downvoteThePost is running ---`);
+    
+                // ---- Updating User => Adding user to upvotedPostsID array ----
+                await updateDoc(userRef, {
+                    upvotedPostsID: arrayRemove(postData.postID)
+                })
+    
+                // ---- Removing user from Post's upvotedByUserID array ----
+                await updateDoc(postRef, {
+                    upvotedByUserID: arrayRemove(user?.uid)
+                })
+    
+                // ---- Adding ID to user from downvotedPostsID array ----
+                await updateDoc(userRef, {
+                    downvotedPostsID: arrayUnion(postData?.postID)
+                })
+    
+                // ---- Updating Post ----
+                await updateDoc(postRef, {
+                    downvotedByUserID: arrayUnion(user?.uid)
+                })
+    
+                setIsPostDownVoted(true)
+                setIsPostUpvoted(false)
+                setPostUpvotedDownvotedValue(postUpvotedDownvotedValue - 1)
+            } catch (error) {
+                console.log(error);
+                setIsPostUpvoted(false)
+            }
 
-            // ---- Updating Post ----
+        } else if (auth.currentUser && isPostDownVoted == true && isPostUpVoted === false) {
+            const userRef = doc(db, "users", user?.uid as string)
+            console.log("un-downvoted")
             await updateDoc(postRef, {
-                downvotedByUserID: arrayUnion(user?.uid)
+                downvotedByUserID: arrayRemove(user?.uid)
             })
 
-            setIsPostUpvoted(false)
-            setPostUpvotedDownvotedValue(postUpvotedDownvotedValue - 1)
-        } catch (error) {
-            console.log(error);
-            setIsPostUpvoted(false)
+            await updateDoc(userRef, {
+                downvotedPostsID: arrayRemove(postData.postID)
+            })
+
+            setIsPostDownVoted(false)
         }
     }
 
 
     const checkVoteStatus = () => {
+        // console.log(`checkVoteStatus is running`);
+        
         const upvotedArray = postData?.upvotedByUserID?.includes(user?.uid as string)
+        console.log(`upvotedArray -> ` + upvotedArray);
+        
         upvotedArray ? setIsPostUpVoted(true) : setIsPostUpVoted(false)
         
+        
         const downvotedArray = postData.downvotedByUserID?.includes(user?.uid as string)
+        console.log(`downvotedArray -> ` + downvotedArray);
         downvotedArray ? setIsPostDownVoted(true) : setIsPostDownVoted(false)
     }
 
@@ -127,11 +177,11 @@ const Post = ({at , postData}:IProps) => {
     useEffect(() => {
         getPostCommunity()
         checkVoteStatus()
-    },[])
+    },[isPostDownVoted, isPostUpVoted])
 
   return (
     <div className='w-full sm:w-[90%] md:w-[70%] lg:w-[60%] aspect-square bg-lightColor rounded-md m-3 flex flex-col justify-start items-center space-y-3 py-3 px-3 border-b border-b-midColor sm:border-0 sm:shadow-lg sm:shadow-midColor mb-4' onClick={() => {
-        console.log(` L `)
+        console.log(postData)
     } }>
 
         {/* Header */}
@@ -166,26 +216,39 @@ const Post = ({at , postData}:IProps) => {
                         Join
                     </button>
                 )}
+
+                {postData && postData.postCreatorID === user?.uid && (
+                    <PostExtraOptions postID={postData?.postID as string} postCreatorID={postData?.postCreatorID} postCreateAtCommunityID={postData.postCreateAtCommunityID} />
+                )}
             </div>
         )}
 
 
         {/* Title */}
-        <div className='w-full flex justify-start items-center flex-wrap '>
+        <div className='w-full flex justify-start items-center flex-wrap'>
             <h2 className='text-xl font-medium font-poppins'> {postData?.postTitle} </h2>
         </div>
 
-        {/* Image */}
-        {postData?.postImageURL && (
-            <div className='w-full flex justify-center items-center'>
-                <Image src={postData?.postImageURL} alt="image" className='aspect-auto rounded-sm' width={300} height={300} layout={"responsive"} />
+        {/* Caption */}
+        {postData?.postCaption && (
+            <div className='w-full flex justify-start items-center '>
+                {postData?.postCaption.length > 750 && isPostFullyExtended === false && <p className='text-darkColor font-poppins' onClick={() => setIsPostFullyExtended(!isPostFullyExtended)}> {postData?.postCaption?.slice(0,750)}....... </p>}
+
+                {isPostFullyExtended === true && <p className='text-darkColor font-poppins' onClick={() => setIsPostFullyExtended(!isPostFullyExtended)}> {postData?.postCaption} </p>}
             </div>
         )}
+
+        {/* Image */}
+        {postData?.postImageURL ? (
+            <div className='w-full flex justify-center items-center bg-red-900'>
+                <Image src={postData?.postImageURL} alt="image" className='aspect-auto rounded-sm' width={300} height={300} layout={"responsive"} onClick={() => console.log(`isPostUpvoted => ${isPostUpvoted} , isPostDownvoted => ${isPostDownVoted}`)}/>
+            </div>
+        ) : null}
 
         {/* Video */}
         {postData?.postVideoURL && (
             <div className='w-full'>
-
+                <video src={postData?.postVideoURL} controls ></video>
             </div>
         )}
 
@@ -194,22 +257,14 @@ const Post = ({at , postData}:IProps) => {
         <div className='w-full flex justify-start items-center space-x-3 rounded-md py-3 px-3'>
 
             <div className='flex justify-center items-center space-x-2 px-3 py-2 bg-midColor rounded-full'>
-                <BiUpvote className={ isPostUpVoted ? 'text-brandColor opacity-75 hover:cursor-pointer' : 'text-darkColor opacity-75 hover:cursor-pointer'} onClick={() => {
-                    if(isPostUpVoted === false) {
-                        upvoteThePost()
-                    }
-                }}/>
+                <BiUpvote className={ isPostUpVoted ? 'text-brandColor opacity-75 hover:cursor-pointer' : 'text-darkColor opacity-75 hover:cursor-pointer'} onClick={ upvoteThePost }/>
 
                 <span className='text-darkColor font-poppins text-xs hover:cursor-pointer'> {postUpvotedDownvotedValue} </span>
-                <BiDownvote className={ isPostUpVoted ? 'text-brandColor opacity-75 hover:cursor-pointer' : 'text-darkColor opacity-75 hover:cursor-pointer'} onClick={() => {
-                    if(isPostUpVoted === true) {
-                        downvoteThePost()
-                    }
-                }}/>
+                <BiDownvote className={ isPostDownVoted ? 'text-brandColor opacity-75 hover:cursor-pointer' : 'text-darkColor opacity-75 hover:cursor-pointer'} onClick={ downvoteThePost } />
             </div>
 
             <button className='flex justify-center items-center space-x-2 px-3 py-2 bg-midColor rounded-full hover:cursor-pointer' type='button'>
-                <BiComment className='text-darkColor opacity-75'/>
+                <BiComment className='text-darkColor opacity-75' />
                 <span className='text-darkColor font-poppins text-xs'> 0 </span>
             </button>
 

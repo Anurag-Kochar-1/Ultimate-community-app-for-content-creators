@@ -4,10 +4,14 @@ import React from 'react'
 import { FcGoogle } from 'react-icons/fc'
 import { auth, db } from '../../../firebaseConfig'
 import { useRouter } from 'next/router'
+import { useDispatch } from 'react-redux'
+import { setIsLoginModalOpen } from '../../../redux/slices/modalSlices'
 
 const SignInWithGoogleButton = () => {
   const router = useRouter()
+  const dispatch = useDispatch()
   const googleProvider = new GoogleAuthProvider()
+  
 
   const googleLogin =  async() => {
     try {
@@ -29,6 +33,7 @@ const SignInWithGoogleButton = () => {
         })
       }
 
+      dispatch(setIsLoginModalOpen(false))
       router.push("/")
     } catch (error) {
       console.log(error)

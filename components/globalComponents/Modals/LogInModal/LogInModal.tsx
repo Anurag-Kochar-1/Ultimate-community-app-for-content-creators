@@ -19,7 +19,7 @@ const LogInModal = () => {
             <div className="z-50 fixed inset-0 w-screen h-screen bg-darkColor bg-opacity-80 flex flex-col justify-center items-center">
 
                 {/* ====== MODAL ====== */}
-                <div className="w-[70%] h-[50vh] bg-lightColor flex flex-col justify-between items-center rounded-md">
+                <div className="w-[70%] sm:w-[60%] md:w-[50%] lg:w-[30%] xl:w-[25%] 2xl:w-[25%] h-[50vh] bg-lightColor flex flex-col justify-between items-center rounded-md">
                     {/*  Close Icon  */}
                     {false && <div className="w-full py-3 px-3 flex justify-end items-center rounded-md">
                         <IoClose className="text-darkColor opacity-60 hover:cursor-pointer" onClick={() => dispatch(setIsLoginModalOpen(false))} />
